@@ -43,6 +43,7 @@ if (navToggle && navLinks) {
 
 const heroCanvas = document.querySelector("[data-hero-canvas]");
 const heroContainer = document.querySelector("[data-hero-container]");
+const heroPoster = document.querySelector("[data-hero-poster]");
 const fallback = document.querySelector("[data-hero-fallback]");
 let cleanupScene = null;
 
@@ -51,6 +52,8 @@ const enableHero = () => {
     fallback?.setAttribute("data-visible", "true");
     if (fallback) fallback.style.display = "flex";
     if (heroCanvas) heroCanvas.style.display = "none";
+    heroPoster?.setAttribute("data-visible", "true");
+    heroPoster?.setAttribute("aria-hidden", "false");
     return;
   }
 
@@ -58,11 +61,18 @@ const enableHero = () => {
     fallback?.setAttribute("data-visible", "true");
     if (fallback) fallback.style.display = "flex";
     if (heroCanvas) heroCanvas.style.display = "none";
+    heroPoster?.setAttribute("data-visible", "true");
+    heroPoster?.setAttribute("aria-hidden", "false");
     return;
   }
 
-  if (fallback) fallback.style.display = "none";
+  if (fallback) {
+    fallback.style.display = "none";
+    fallback.setAttribute("data-visible", "false");
+  }
   heroCanvas.style.display = "block";
+  heroPoster?.setAttribute("data-visible", "false");
+  heroPoster?.setAttribute("aria-hidden", "true");
   cleanupScene = initHeroScene(heroCanvas, heroContainer);
 };
 

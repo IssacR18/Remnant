@@ -16,10 +16,16 @@
     <a class="skip-link" href="#story">Skip to content</a>
     <header class="shell" data-shell>
       <nav class="nav" aria-label="Primary">
-        <div class="nav__brand" aria-label="Remnant logo">
-          <span class="nav__glyph" aria-hidden="true">⟲</span>
+        <a class="nav__brand" href="#top" aria-label="Remnant home">
+          <img
+            src="images/logo-mark.svg"
+            alt="Remnant"
+            class="nav__logo"
+            width="40"
+            height="40"
+          />
           <span class="nav__wordmark">Remnant</span>
-        </div>
+        </a>
         <button
           class="nav__toggle"
           type="button"
@@ -46,6 +52,13 @@
     <main>
       <section class="hero" id="top">
         <div class="hero__canvas-wrapper" data-hero-container>
+          <img
+            src="images/hero-poster.svg"
+            alt="Remnant memory poster"
+            class="hero__poster"
+            data-hero-poster
+            loading="lazy"
+          />
           <canvas
             class="hero__canvas"
             data-hero-canvas
