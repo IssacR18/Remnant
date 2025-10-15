@@ -91,3 +91,37 @@ window.addEventListener("visibilitychange", () => {
     cleanupScene = initHeroScene(heroCanvas, heroContainer);
   }
 });
+
+const convaiWidget = document.querySelector(
+  "[data-convai-widget] elevenlabs-convai"
+);
+
+if (convaiWidget) {
+  const enforceStaticPlacement = () => {
+    convaiWidget.style.position = "static";
+    convaiWidget.style.inset = "auto";
+    convaiWidget.style.margin = "0";
+    convaiWidget.style.transform = "none";
+    convaiWidget.style.width = "100%";
+    convaiWidget.style.height = "100%";
+  };
+
+  enforceStaticPlacement();
+
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type === "attributes" && mutation.attributeName === "style") {
+        enforceStaticPlacement();
+      }
+    }
+  });
+
+  observer.observe(convaiWidget, {
+    attributes: true,
+    attributeFilter: ["style"],
+  });
+
+  window.addEventListener("beforeunload", () => observer.disconnect(), {
+    once: true,
+  });
+}

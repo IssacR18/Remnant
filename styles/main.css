@@ -321,6 +321,17 @@ ul {
   width: 100%;
 }
 
+.hero__convai-frame > elevenlabs-convai {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
 .hero__convai-caption {
   color: var(--muted);
   font-size: 0.9rem;
