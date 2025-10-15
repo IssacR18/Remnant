@@ -270,6 +270,65 @@ ul {
   margin-top: 1.5rem;
 }
 
+.hero__convai {
+  background: var(--surface);
+  border: 1px solid rgba(131, 166, 255, 0.25);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  margin-top: 2.25rem;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.hero__convai::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+      circle at 20% 20%,
+      rgba(124, 242, 208, 0.22),
+      transparent 65%
+    ),
+    radial-gradient(circle at 80% 0%, rgba(131, 166, 255, 0.2), transparent 60%);
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero__convai-frame {
+  aspect-ratio: 16 / 9;
+  background: rgba(5, 10, 25, 0.9);
+  border-radius: 16px;
+  border: 1px solid rgba(124, 242, 208, 0.2);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.hero__convai-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(124, 242, 208, 0.18), transparent 65%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero__convai-frame > * {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.hero__convai-caption {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 1rem 0 0;
+  position: relative;
+  z-index: 1;
+}
+
 .story {
   margin: 5rem auto;
   max-width: 1000px;
@@ -395,6 +454,15 @@ ul {
 
   .nav__toggle[aria-expanded="true"] .nav__toggle-bar:nth-child(2) {
     opacity: 0;
+  }
+
+  .hero__convai {
+    margin-top: 2rem;
+    padding: 1.25rem;
+  }
+
+  .hero__convai-frame {
+    aspect-ratio: 4 / 3;
   }
 }
 
