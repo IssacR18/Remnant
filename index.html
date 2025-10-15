@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remnant | Archive Your Memories</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#story">Skip to content</a>
+    <header class="shell" data-shell>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__brand" href="#top" aria-label="Remnant home">
+          <img
+            src="images/logo-mark.svg"
+            alt="Remnant"
+            class="nav__logo"
+            width="40"
+            height="40"
+          />
+          <span class="nav__wordmark">Remnant</span>
+        </a>
+        <button
+          class="nav__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-menu"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <span class="nav__toggle-bar"></span>
+          <span class="nav__toggle-bar"></span>
+        </button>
+        <div class="nav__links" id="primary-menu">
+          <a href="#story" class="nav__link">How it works</a>
+          <a href="#portalcam" class="nav__link">PortalCam</a>
+          <a href="#testimonials" class="nav__link">Stories</a>
+          <div class="nav__cta">
+            <a class="btn btn--ghost" href="#support">Support</a>
+            <a class="btn btn--primary" href="#schedule">Schedule Scan</a>
+            <a class="btn btn--accent" href="#login">Enter Archive</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="top">
+        <div class="hero__canvas-wrapper" data-hero-container>
+          <img
+            src="images/hero-poster.svg"
+            alt="Remnant memory poster"
+            class="hero__poster"
+            data-hero-poster
+            loading="lazy"
+          />
+          <canvas
+            class="hero__canvas"
+            data-hero-canvas
+            aria-hidden="true"
+          ></canvas>
+          <div class="hero__fallback" data-hero-fallback>
+            <p>
+              Step through Remnant's archive. The interactive portal preview
+              requires WebGL. You're viewing the accessible fallback.
+            </p>
+          </div>
+        </div>
+        <div class="hero__copy">
+          <p class="eyebrow">Preserve. Revisit. Feel again.</p>
+          <h1>Memories captured as living lightfields.</h1>
+          <p>
+            We arrive with PortalCam, capture your space as a shimmering
+            memory capsule, and deliver it to your secure Remnant archive. Log
+            in to relive every detail.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#schedule">Book the PortalCam</a>
+            <a class="btn btn--ghost" href="#story">Explore the pipeline</a>
+          </div>
+          <div class="hero__convai" data-convai-widget>
+            <div class="hero__convai-frame">
+              <elevenlabs-convai agent-id="agent_4801k7g6mcw9e2k9tr660wde8re4"></elevenlabs-convai>
+            </div>
+            <p class="hero__convai-caption">
+              Preview a guided Remnant consult with our portal archivist AI.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="story" id="story">
+        <h2>From capture to archive in three phases</h2>
+        <div class="story__grid">
+          <article class="story__phase">
+            <h3>01 · Capture</h3>
+            <p>
+              Our archivists scan your environment with PortalCam, mapping
+              every photon into a responsive `.lcc` memory lattice.
+            </p>
+          </article>
+          <article class="story__phase" id="portalcam">
+            <h3>02 · Remaster</h3>
+            <p>
+              Proprietary reconstruction polishes depth, light, and emotional
+              cues so your memory is vivid yet authentic.
+            </p>
+          </article>
+          <article class="story__phase" id="login">
+            <h3>03 · Relive</h3>
+            <p>
+              Sign into your archive to browse capsules, annotate them with
+              family, and launch the full LCC viewer (coming soon).
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="cta-band" id="schedule">
+        <div class="cta-band__content">
+          <h2>Schedule your scan</h2>
+          <p>
+            Secure a visit from a PortalCam archivist. We'll prepare your space
+            and capture your story with respect and care.
+          </p>
+          <a class="btn btn--accent" href="#">Reserve a time</a>
+        </div>
+      </section>
+
+      <section class="testimonials" id="testimonials">
+        <h2>Stories held in the archive</h2>
+        <div class="testimonials__grid">
+          <figure class="testimonial">
+            <blockquote>
+              "The PortalCam captured every detail of my grandmother's studio.
+              It's like stepping back into her creative world."
+            </blockquote>
+            <figcaption>— Aya, Memory Capsule #219</figcaption>
+          </figure>
+          <figure class="testimonial">
+            <blockquote>
+              "Seeing our wedding venue as a living lightfield made our
+              anniversary unforgettable."
+            </blockquote>
+            <figcaption>— Malik & Rey, Capsule #312</figcaption>
+          </figure>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" id="support">
+      <div class="footer__col">
+        <h2 class="sr-only">Remnant footer</h2>
+        <p class="footer__tagline">
+          Remnant preserves the spaces that hold your memories.
+        </p>
+      </div>
+      <div class="footer__col">
+        <h3>Support</h3>
+        <ul>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">PortalCam prep guide</a></li>
+          <li><a href="#">Contact archivist</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h3>Policies</h3>
+        <ul>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Accessibility</a></li>
+        </ul>
+      </div>
+    </footer>
+
+    <script
+      src="https://unpkg.com/@elevenlabs/convai-widget-embed"
+      async
+      type="text/javascript"
+    ></script>
+    <script type="module" src="scripts/main.js"></script>
+  </body>
+</html>
