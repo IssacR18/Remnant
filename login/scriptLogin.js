@@ -1,6 +1,6 @@
 /* ==== Supabase config (EDIT THESE) ==== */
-const SUPABASE_URL = "https://laqmvbcvlzdzzmphfctv.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxhcW12YmN2bHpkenptcGhmY3R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NTk5MDcsImV4cCI6MjA3NjAzNTkwN30.FO1xj7SEu34oxO7dRjR5e-q9t_bC9OcyDHCIkWKLc4s";     // Project Settings → API → anon key
+const SUPABASE_URL = "https://vtzwjjzmptokrxslfbra.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0endqanptcHRva3J4c2xmYnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2NDk3OTIsImV4cCI6MjA3NjIyNTc5Mn0.g-iatnLPgDERvKcMahD545_qMdYIFDlLeylqtRMz2AM";     // Project Settings → API → anon key
 /* ===================================== */
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
