@@ -7,36 +7,54 @@ const prefersReducedMotion = window.matchMedia(
 const navToggle = document.querySelector(".nav__toggle");
 const navLinks = document.querySelector(".nav__links");
 
-if (navLinks) {
-  navLinks.setAttribute("data-open", window.innerWidth > 840 ? "true" : "false");
-}
+const setNavState = (expanded) => {
+  navToggle?.setAttribute("aria-expanded", String(expanded));
+  navLinks?.setAttribute("data-open", String(expanded));
 
-const closeNav = () => {
-  navToggle.setAttribute("aria-expanded", "false");
-  navLinks?.setAttribute("data-open", "false");
+  if (!navLinks) return;
+
+  if (expanded) {
+    const targetHeight = navLinks.scrollHeight;
+    navLinks.style.maxHeight = `${targetHeight}px`;
+  } else {
+    navLinks.style.maxHeight = "0px";
+  }
 };
+
+const enableDesktopNav = () => {
+  if (!navLinks) return;
+  navLinks.style.maxHeight = "none";
+  navLinks.setAttribute("data-open", "true");
+  navToggle?.setAttribute("aria-expanded", "false");
+};
+
+if (navLinks) {
+  if (window.innerWidth > 840) {
+    enableDesktopNav();
+  } else {
+    setNavState(false);
+  }
+}
 
 if (navToggle && navLinks) {
   navToggle.addEventListener("click", () => {
     const expanded = navToggle.getAttribute("aria-expanded") === "true";
-    navToggle.setAttribute("aria-expanded", String(!expanded));
-    navLinks.setAttribute("data-open", String(!expanded));
+    setNavState(!expanded);
   });
 
   navLinks.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", () => {
       if (window.innerWidth <= 840) {
-        closeNav();
+        setNavState(false);
       }
     });
   });
 
   window.addEventListener("resize", () => {
     if (window.innerWidth > 840) {
-      navLinks.setAttribute("data-open", "true");
-      navToggle.setAttribute("aria-expanded", "false");
+      enableDesktopNav();
     } else {
-      navLinks.setAttribute("data-open", "false");
+      setNavState(false);
     }
   });
 }
