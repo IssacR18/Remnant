@@ -83,6 +83,66 @@ ul {
   top: 1rem;
 }
 
+.coming-soon {
+  align-items: center;
+  backdrop-filter: blur(22px);
+  background: rgba(5, 8, 20, 0.86);
+  display: grid;
+  inset: 0;
+  padding: 2rem;
+  place-items: center;
+  position: fixed;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  z-index: 1000;
+}
+
+.coming-soon[data-modal-open="false"] {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.coming-soon__dialog {
+  background: rgba(9, 14, 30, 0.94);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  max-width: 420px;
+  padding: 2.5rem 2.5rem 2.2rem;
+  position: relative;
+  text-align: center;
+}
+
+.coming-soon__dialog h2 {
+  margin-bottom: 0.75rem;
+}
+
+.coming-soon__dialog p:last-of-type {
+  color: var(--muted);
+  margin-bottom: 0;
+}
+
+.coming-soon__close {
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1.6rem;
+  font-weight: 300;
+  inset: 1.2rem 1.2rem auto auto;
+  line-height: 1;
+  padding: 0.25rem;
+  position: absolute;
+  transition: color 0.2s ease;
+}
+
+.coming-soon__close:hover,
+.coming-soon__close:focus {
+  color: var(--text);
+}
+
 .shell {
   backdrop-filter: blur(18px);
   background: var(--surface);

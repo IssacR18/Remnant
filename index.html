@@ -14,6 +14,31 @@
   </head>
   <body>
     <a class="skip-link" href="#story">Skip to content</a>
+    <div
+      class="coming-soon"
+      data-coming-soon-modal
+      data-modal-open="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="coming-soon-title"
+      aria-hidden="false"
+    >
+      <div class="coming-soon__dialog">
+        <button
+          class="coming-soon__close"
+          type="button"
+          aria-label="Dismiss coming soon notice"
+          data-modal-close
+        >
+          &times;
+        </button>
+        <p class="eyebrow">Coming Soon</p>
+        <h2 id="coming-soon-title">This experience is still in development</h2>
+        <p>
+          We&apos;re building the full Remnant System. Explore the preview while we finish the launch.
+        </p>
+      </div>
+    </div>
     <header class="shell" data-shell>
       <nav class="nav" aria-label="Primary">
         <a class="nav__brand" href="#top" aria-label="Remnant home">
@@ -55,9 +80,9 @@
           <a href="stories.html" class="nav__link">Stories</a>
           <a href="login.html" class="nav__link">Log in</a>
           <div class="nav__cta">
-            <a class="btn btn--primary" href="#schedule">Schedule Scan</a>
-            <a class="btn btn--accent" href="#login">Enter Vault</a>
-            <a class="btn btn--ghost" href="#support">Support</a>
+            <a class="btn btn--primary" href="order.html">Schedule Scan</a>
+            <a class="btn btn--accent" href="login.html">Enter Vault</a>
+            <a class="btn btn--ghost" href="support.html">Support</a>
           </div>
         </div>
       </nav>

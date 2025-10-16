@@ -1,3 +1,24 @@
+// ----- COMING SOON MODAL -----
+const comingSoonModal = document.querySelector("[data-coming-soon-modal]");
+const comingSoonClose = comingSoonModal?.querySelector("[data-modal-close]");
+
+const closeComingSoonModal = () => {
+  if (!comingSoonModal) return false;
+  if (comingSoonModal.getAttribute("data-modal-open") !== "true") return false;
+  comingSoonModal.setAttribute("data-modal-open", "false");
+  comingSoonModal.setAttribute("aria-hidden", "true");
+  return true;
+};
+
+if (comingSoonModal) {
+  comingSoonModal.setAttribute("aria-hidden", "false");
+  comingSoonClose?.addEventListener("click", closeComingSoonModal);
+  comingSoonModal.addEventListener("click", (event) => {
+    if (event.target === comingSoonModal) closeComingSoonModal();
+  });
+  window.setTimeout(() => comingSoonClose?.focus({ preventScroll: true }), 0);
+}
+
 // ----- NAV MENU (runs regardless of heroScene) -----
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -37,9 +58,9 @@ navLinks?.querySelectorAll("a").forEach((link) => {
 
 // Close on Esc
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && nav && navLinks?.getAttribute("data-open") === "true") {
-    setNavState(false);
-  }
+  if (e.key !== "Escape") return;
+  if (closeComingSoonModal()) return;
+  if (nav && navLinks?.getAttribute("data-open") === "true") setNavState(false);
 });
 
 // Close when clicking outside
