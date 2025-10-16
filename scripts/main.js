@@ -1,22 +1,53 @@
 // ----- COMING SOON MODAL -----
+const COMING_SOON_STORAGE_KEY = "remnantComingSoonDismissed";
 const comingSoonModal = document.querySelector("[data-coming-soon-modal]");
 const comingSoonClose = comingSoonModal?.querySelector("[data-modal-close]");
+
+const markComingSoonDismissed = () => {
+  try {
+    window.localStorage?.setItem(COMING_SOON_STORAGE_KEY, "true");
+  } catch (error) {
+    // Ignore storage limitations (private mode, etc.)
+  }
+};
+
+const hasDismissedComingSoon = () => {
+  try {
+    return window.localStorage?.getItem(COMING_SOON_STORAGE_KEY) === "true";
+  } catch (error) {
+    return false;
+  }
+};
 
 const closeComingSoonModal = () => {
   if (!comingSoonModal) return false;
   if (comingSoonModal.getAttribute("data-modal-open") !== "true") return false;
   comingSoonModal.setAttribute("data-modal-open", "false");
   comingSoonModal.setAttribute("aria-hidden", "true");
+  markComingSoonDismissed();
+  return true;
+};
+
+const openComingSoonModal = () => {
+  if (!comingSoonModal) return false;
+  comingSoonModal.setAttribute("data-modal-open", "true");
+  comingSoonModal.setAttribute("aria-hidden", "false");
+  window.setTimeout(() => comingSoonClose?.focus({ preventScroll: true }), 0);
   return true;
 };
 
 if (comingSoonModal) {
-  comingSoonModal.setAttribute("aria-hidden", "false");
+  if (!hasDismissedComingSoon()) {
+    openComingSoonModal();
+  } else {
+    comingSoonModal.setAttribute("data-modal-open", "false");
+    comingSoonModal.setAttribute("aria-hidden", "true");
+  }
+
   comingSoonClose?.addEventListener("click", closeComingSoonModal);
   comingSoonModal.addEventListener("click", (event) => {
     if (event.target === comingSoonModal) closeComingSoonModal();
   });
-  window.setTimeout(() => comingSoonClose?.focus({ preventScroll: true }), 0);
 }
 
 // ----- NAV MENU (runs regardless of heroScene) -----
