@@ -243,7 +243,7 @@ class LoginForm1 {
       this.successMessage.classList.add('show');
 
       // quick redirect
-      setTimeout(() => { window.location.href = "/dashboard/index.html"; }, 900);
+      setTimeout(() => { window.location.href = "vault.html"; }, 900);
     }, 300);
   }
 
