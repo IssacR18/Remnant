@@ -1,96 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login to Your Remnant Account</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="../styles/main.css">
-    <link rel="stylesheet" href="styleLogin.css">
-</head>
-<body class="login-page">
-    <div class="login-container">
-        <div class="login-card">
-            <a href="../index.html" class="home-exit-button" data-home-return aria-label="Back to home">
-                <span aria-hidden="true">X</span>
-            </a>
-            <div class="login-header">
-                <h2>Welcome Back</h2>
-                <p>Sign in to your account</p>
-            </div>
-            
-            <form class="login-form" id="loginForm" novalidate>
-                <div class="form-group">
-                    <div class="input-wrapper">
-                        <input type="email" id="email" name="email" required autocomplete="email">
-                        <label for="email">Email Address</label>
-                        <span class="focus-border"></span>
-                    </div>
-                    <span class="error-message" id="emailError"></span>
-                </div>
+// api/ai/check-account.js
 
-                <div class="form-group">
-                    <div class="input-wrapper password-wrapper">
-                        <input type="password" id="password" name="password" required autocomplete="current-password">
-                        <label for="password">Password</label>
-                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
-                            <span class="eye-icon"></span>
-                        </button>
-                        <span class="focus-border"></span>
-                    </div>
-                    <span class="error-message" id="passwordError"></span>
-                </div>
+async function readBody(req) {
+  if (req.body && typeof req.body === 'object') return req.body;
+  const chunks = []; for await (const c of req) chunks.push(c);
+  try { return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); } catch { return {}; }
+}
+function send(res, code, obj){ return res.status(code).json(obj); }
 
-                <div class="form-options">
-                    <label class="remember-wrapper">
-                        <input type="checkbox" id="remember" name="remember">
-                        <span class="checkbox-label">
-                            <span class="checkmark"></span>
-                            Remember me
-                        </span>
-                    </label>
-                    <a href="#" class="forgot-password">Forgot password?</a>
-                </div>
+async function fetchJSON(url, key) {
+  const r = await fetch(url, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
+  const text = await r.text();
+  let json; try { json = JSON.parse(text); } catch { json = null; }
+  return { r, json, text };
+}
 
-                <button type="submit" class="login-btn btn">
-                    <span class="btn-text">Sign In</span>
-                    <span class="btn-loader"></span>
-                </button>
-            </form>
+function normalizeEmail(v) {
+  return (v ?? '').toString().trim().replace(/\s+/g, '').toLowerCase();
+}
 
-            <div class="divider">
-                <span>or continue with</span>
-            </div>
+function pullUsersFrom(json) {
+  if (!json) return [];
+  if (Array.isArray(json)) return json;
+  if (Array.isArray(json.users)) return json.users;
+  if (json.user) return [json.user];
+  return [];
+}
 
-            <div class="social-login">
-                <button type="button" class="social-btn google-btn">
-                    <span class="social-icon google-icon"></span>
-                    Google
-                </button>
-                <button type="button" class="social-btn github-btn">
-                    <span class="social-icon github-icon"></span>
-                    GitHub
-                </button>
-            </div>
+export default async function handler(req, res) {
+  const t0 = Date.now();
+  if (req.method !== 'POST') return send(res, 405, { error: 'Only POST allowed' });
 
-            <div class="signup-link">
-                <p>Don't have an account? <a href="indexSignup.html">Sign up</a></p>
-            </div>
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key  = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!base || !key) return send(res, 500, { error: 'Missing env vars' });
 
-            <div class="success-message" id="successMessage">
-                <div class="success-icon">✓</div>
-                <h3>Login Successful!</h3>
-                <p>Redirecting to your dashboard...</p>
-            </div>
-        </div>
-    </div>
+  try {
+    const { email: rawEmail } = await readBody(req);
+    const email = normalizeEmail(rawEmail);
 
-    <script src="form-utils.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="scriptLogin.js"></script>
-</body>
-</html>
+    console.log('[check-account] raw:', rawEmail);
+    console.log('[check-account] normalized:', email);
+
+    if (!email || !email.includes('@')) {
+      return send(res, 400, { error: 'email required', debug: { rawEmail, email } });
+    }
+
+    // 1) Direct lookup (with audience) — some projects need aud=authenticated
+    const url1 = `${base}/auth/v1/admin/users?email=${encodeURIComponent(email)}&aud=authenticated`;
+    const { r: r1, json: j1, text: text1 } = await fetchJSON(url1, key);
+    const users1 = pullUsersFrom(j1);
+    let exists = users1.some(u => (u?.email || '').toLowerCase() === email);
+
+    console.log('[check-account] step1 status:', r1.status, r1.statusText);
+    console.log('[check-account] step1 users_len:', users1.length);
+    if (!exists) console.log('[check-account] step1 raw json:', text1);
+
+    // 2) Fallback: page through users and match email server-side
+    let pagesChecked = 0;
+    if (!exists) {
+      for (let page = 1; page <= 5; page++) {
+        const urlPage = `${base}/auth/v1/admin/users?aud=authenticated&page=${page}&per_page=200`;
+        const { r, json, text } = await fetchJSON(urlPage, key);
+        const users = pullUsersFrom(json);
+        pagesChecked = page;
+        const hit = users.find(u => (u?.email || '').toLowerCase() === email);
+
+        console.log(`[check-account] page ${page} status:`, r.status, r.statusText, 'users_len:', users.length);
+
+        if (hit) { exists = true; break; }
+        if (!Array.isArray(users) || users.length === 0) break; // reached end
+        // Optionally log first page json for debugging:
+        if (page === 1 && !exists) console.log('[check-account] page1 sample json:', text.slice(0, 500));
+      }
+    }
+
+    console.log('[check-account] exists:', exists, 'pagesChecked:', pagesChecked, 'done in ms:', Date.now() - t0);
+
+    return send(res, 200, {
+      exists,
+      debug: {
+        emailRaw: rawEmail,
+        emailNormalized: email,
+        step1UsersLen: users1.length,
+        pagesChecked
+      }
+    });
+  } catch (e) {
+    console.error('[check-account] fatal:', e);
+    return send(res, 500, { error: e?.message || 'unknown error' });
+  }
+}
