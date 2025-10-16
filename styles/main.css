@@ -205,15 +205,33 @@ ul {
   background: transparent;
   border: none;
   cursor: pointer;
+  padding: 0.25rem;
 }
 
-.nav__toggle-bar {
+.nav__toggle-icon {
   display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--text);
-  margin: 5px 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  color: var(--text);
+  transition: transform 0.3s ease;
+}
+
+.nav__toggle-icon path {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 1;
+}
+
+.nav__toggle-icon-close {
+  opacity: 0;
+  transform: scale(0.7);
+}
+
+.nav__toggle[aria-expanded="true"] .nav__toggle-icon-bars {
+  opacity: 0;
+  transform: scale(0.7);
+}
+
+.nav__toggle[aria-expanded="true"] .nav__toggle-icon-close {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .hero {
@@ -452,18 +470,22 @@ ul {
     box-shadow: var(--shadow);
     flex-direction: column;
     inset: 72px 1.5rem auto;
+    max-height: 0;
+    overflow: hidden;
     padding: 1.5rem;
     position: absolute;
-    transform: translateY(-16px) scale(0.98);
+    transform: translateY(-12px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    transition: opacity 0.25s ease, transform 0.25s ease, max-height 0.3s ease;
+    width: calc(100% - 3rem);
   }
 
   .nav__links[data-open="true"] {
     opacity: 1;
     pointer-events: auto;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
+    max-height: 480px;
   }
 
   .nav__cta {
@@ -473,18 +495,17 @@ ul {
 
   .nav__toggle {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .nav__toggle[aria-expanded="true"] .nav__toggle-bar:first-child {
-    transform: translateY(7px) rotate(45deg);
+  .nav__toggle[aria-expanded="true"] .nav__toggle-icon {
+    transform: rotate(0deg);
   }
 
-  .nav__toggle[aria-expanded="true"] .nav__toggle-bar:last-child {
-    transform: translateY(-7px) rotate(-45deg);
-  }
-
-  .nav__toggle[aria-expanded="true"] .nav__toggle-bar:nth-child(2) {
-    opacity: 0;
+  .nav__links a,
+  .nav__cta a {
+    width: 100%;
   }
 
   .hero__convai {

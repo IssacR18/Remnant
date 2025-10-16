@@ -33,17 +33,38 @@
           aria-controls="primary-menu"
         >
           <span class="sr-only">Toggle navigation</span>
-          <span class="nav__toggle-bar"></span>
-          <span class="nav__toggle-bar"></span>
+          <svg
+            class="nav__toggle-icon"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-hidden="true"
+          >
+            <path
+              class="nav__toggle-icon-bars"
+              d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+            <path
+              class="nav__toggle-icon-close"
+              d="M6 6l12 12M18 6l-12 12"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
         </button>
         <div class="nav__links" id="primary-menu">
           <a href="#story" class="nav__link">How it works</a>
           <a href="#testimonials" class="nav__link">Stories</a>
-          <a href="#testimonials" class="nav__link">Log in</a>
+          <a href="#login" class="nav__link">Log in</a>
           <div class="nav__cta">
-            <a class="btn btn--ghost" href="#support">Support</a>
             <a class="btn btn--primary" href="#schedule">Schedule Scan</a>
             <a class="btn btn--accent" href="#login">Enter Vault</a>
+            <a class="btn btn--ghost" href="#support">Support</a>
           </div>
         </div>
       </nav>
