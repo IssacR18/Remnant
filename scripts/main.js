@@ -10,22 +10,14 @@ const navLinks = document.querySelector(".nav__links");
 const setNavState = (expanded) => {
   navToggle?.setAttribute("aria-expanded", String(expanded));
   navLinks?.setAttribute("data-open", String(expanded));
-
-  if (!navLinks) return;
-
-  if (expanded) {
-    const targetHeight = navLinks.scrollHeight;
-    navLinks.style.maxHeight = `${targetHeight}px`;
-  } else {
-    navLinks.style.maxHeight = "0px";
-  }
+  navLinks?.style.removeProperty("max-height");
 };
 
 const enableDesktopNav = () => {
   if (!navLinks) return;
-  navLinks.style.maxHeight = "none";
   navLinks.setAttribute("data-open", "true");
   navToggle?.setAttribute("aria-expanded", "false");
+  navLinks.style.removeProperty("max-height");
 };
 
 if (navLinks) {

@@ -211,27 +211,6 @@ ul {
 .nav__toggle-icon {
   display: block;
   color: var(--text);
-  transition: transform 0.3s ease;
-}
-
-.nav__toggle-icon path {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  opacity: 1;
-}
-
-.nav__toggle-icon-close {
-  opacity: 0;
-  transform: scale(0.7);
-}
-
-.nav__toggle[aria-expanded="true"] .nav__toggle-icon-bars {
-  opacity: 0;
-  transform: scale(0.7);
-}
-
-.nav__toggle[aria-expanded="true"] .nav__toggle-icon-close {
-  opacity: 1;
-  transform: scale(1);
 }
 
 .hero {
@@ -467,17 +446,19 @@ ul {
     background: var(--surface-strong);
     border-radius: 18px;
     border: 1px solid var(--border);
-    box-shadow: var(--shadow);
+    border-width: 0;
+    box-shadow: none;
     flex-direction: column;
     inset: 72px 1.5rem auto;
     max-height: 0;
     overflow: hidden;
-    padding: 1.5rem;
+    padding: 0;
     position: absolute;
     transform: translateY(-12px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.25s ease, max-height 0.3s ease;
+    transition: opacity 0.25s ease, transform 0.25s ease, max-height 0.3s ease,
+      padding 0.25s ease, border-width 0.2s ease, box-shadow 0.25s ease;
     width: calc(100% - 3rem);
   }
 
@@ -485,7 +466,10 @@ ul {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
-    max-height: 480px;
+    max-height: 600px;
+    padding: 1.5rem;
+    border-width: 1px;
+    box-shadow: var(--shadow);
   }
 
   .nav__cta {
@@ -497,10 +481,6 @@ ul {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-  }
-
-  .nav__toggle[aria-expanded="true"] .nav__toggle-icon {
-    transform: rotate(0deg);
   }
 
   .nav__links a,
