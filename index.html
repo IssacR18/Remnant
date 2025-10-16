@@ -24,7 +24,7 @@
             width="40"
             height="40"
           />
-          <span class="nav__wordmark">Remnant</span>
+          <span class="nav__wordmark">emnant</span>
         </a>
         <button
           class="nav__toggle"
@@ -38,12 +38,12 @@
         </button>
         <div class="nav__links" id="primary-menu">
           <a href="#story" class="nav__link">How it works</a>
-          <a href="#portalcam" class="nav__link">PortalCam</a>
           <a href="#testimonials" class="nav__link">Stories</a>
+          <a href="#testimonials" class="nav__link">Log in</a>
           <div class="nav__cta">
             <a class="btn btn--ghost" href="#support">Support</a>
             <a class="btn btn--primary" href="#schedule">Schedule Scan</a>
-            <a class="btn btn--accent" href="#login">Enter Archive</a>
+            <a class="btn btn--accent" href="#login">Enter Vault</a>
           </div>
         </div>
       </nav>
@@ -52,13 +52,21 @@
     <main>
       <section class="hero" id="top">
         <div class="hero__canvas-wrapper" data-hero-container>
-          <img
-            src="images/hero-poster.png"
-            alt="Remnant memory poster"
+          <video
+            autoplay
+            muted
+            loop
+            playsinline
             class="hero__poster"
             data-hero-poster
-            loading="lazy"
-          />
+            disablePictureInPicture
+            controlslist="nodownload nofullscreen noremoteplayback"
+          >
+            <source src="videos/logo-poster.mov" type="video/quicktime" />
+            <!-- Fallback: -->
+            <source src="videos/logo-poster.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
           <canvas
             class="hero__canvas"
             data-hero-canvas
@@ -73,35 +81,38 @@
         </div>
         <div class="hero__copy">
           <p class="eyebrow">Preserve. Revisit. Feel again.</p>
-          <h1>Memories captured as living lightfields.</h1>
+          <h1>Memories captured as living gaussian splats.</h1>
           <p>
-            We arrive with PortalCam, capture your space as a shimmering
-            memory capsule, and deliver it to your secure Remnant archive. Log
+            Introducing Remnant. We capture your space as a ultra-realistic 3D experience, and deliver it to your secure Remnant Memory Vault. Log
             in to relive every detail.
           </p>
           <div class="hero__actions">
-            <a class="btn btn--primary" href="#schedule">Book the PortalCam</a>
-            <a class="btn btn--ghost" href="#story">Explore the pipeline</a>
+            <a class="btn btn--primary" href="#schedule">Book the Scan</a>
+            <a class="btn btn--accent" href="#story">Explore the Memory Vault</a>
           </div>
           <div class="hero__convai" data-convai-widget>
             <div class="hero__convai-frame">
               <elevenlabs-convai agent-id="agent_4801k7g6mcw9e2k9tr660wde8re4"></elevenlabs-convai>
             </div>
             <p class="hero__convai-caption">
-              Preview a guided Remnant consult with our portal archivist AI.
+              Meet John, our Remnant Q&A Bot,
+               Ask him to place an order!
             </p>
           </div>
         </div>
       </section>
 
       <section class="story" id="story">
-        <h2>From capture to archive in three phases</h2>
+        <div class="section-heading">
+          <h2>From capture to archive in three phases</h2>
+          <a href="#learnmore" class="btn btn--ghost btn--tiny">Learn more</a>
+        </div>
         <div class="story__grid">
           <article class="story__phase">
             <h3>01 · Capture</h3>
             <p>
               Our archivists scan your environment with PortalCam, mapping
-              every photon into a responsive `.lcc` memory lattice.
+              every particle into a responsive gaussian splat.
             </p>
           </article>
           <article class="story__phase" id="portalcam">
@@ -114,8 +125,8 @@
           <article class="story__phase" id="login">
             <h3>03 · Relive</h3>
             <p>
-              Sign into your archive to browse capsules, annotate them with
-              family, and launch the full LCC viewer (coming soon).
+              Sign into your memory vault to browse experiences, play them with
+              family, and send each other memories (coming soon).
             </p>
           </article>
         </div>
@@ -137,14 +148,14 @@
         <div class="testimonials__grid">
           <figure class="testimonial">
             <blockquote>
-              "The PortalCam captured every detail of my grandmother's studio.
+              "The guys at Remnant captured every detail of my grandmother's studio.
               It's like stepping back into her creative world."
             </blockquote>
             <figcaption>— Aya, Memory Capsule #219</figcaption>
           </figure>
           <figure class="testimonial">
             <blockquote>
-              "Seeing our wedding venue as a living lightfield made our
+              "Seeing our wedding venue as a living experience again made our
               anniversary unforgettable."
             </blockquote>
             <figcaption>— Malik & Rey, Capsule #312</figcaption>
