@@ -1,43 +1,42 @@
 import { createClient } from '@supabase/supabase-js';
 
-function missingEnv(res) {
-  return res.status(500).json({ error: 'Missing env vars. Check NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.' });
-}
-
 async function getJsonBody(req) {
-  // Works whether body is already parsed or is a raw string/stream
   if (req.body && typeof req.body === 'object') return req.body;
-  if (req.body && typeof req.body === 'string') {
-    try { return JSON.parse(req.body); } catch { /* fallthrough */ }
-  }
   const chunks = [];
   for await (const c of req) chunks.push(c);
-  const raw = Buffer.concat(chunks).toString('utf8') || '{}';
-  try { return JSON.parse(raw); } catch { return {}; }
+  try { return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); } catch { return {}; }
+}
+
+function makeAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Missing env vars: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+  return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
+}
+
+async function userExistsByEmail(supabaseAdmin, email) {
+  // Scan up to 1000 users (5 pages × 200). Fine for your scale; easy to switch later.
+  let page = 1;
+  while (page <= 5) {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 200 });
+    if (error) throw error;
+    const users = data?.users || [];
+    if (users.some(u => (u.email || '').toLowerCase() === email.toLowerCase())) return true;
+    if (!users.length || (data?.lastPage && page >= data.lastPage)) break;
+    page++;
+  }
+  return false;
 }
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Only POST allowed' });
-
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return missingEnv(res);
-
-  const supabaseAdmin = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
-
   try {
-    const body = await getJsonBody(req);
-    const email = body?.email;
+    const { email } = await getJsonBody(req);
     if (!email) return res.status(400).json({ error: 'email required' });
 
-    const { data, error } = await supabaseAdmin.auth.admin.getUserByEmail(email);
+    const supabaseAdmin = makeAdmin();
+    const exists = await userExistsByEmail(supabaseAdmin, email);
 
-    // If the SDK returns no user, just say exists:false (don’t 500)
-    if (error && !data?.user) {
-      // Log server-side for debugging, but respond cleanly
-      console.error('check-account admin error:', error);
-    }
-    const exists = !!data?.user;
     return res.status(200).json({ exists });
   } catch (e) {
     console.error('check-account fatal:', e);
