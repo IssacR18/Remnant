@@ -1,16 +1,15 @@
-import { initHeroScene, supportsWebGL } from "./heroScene.js";
+// ----- NAV MENU (runs regardless of heroScene) -----
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-const prefersReducedMotion = window.matchMedia(
-  "(prefers-reduced-motion: reduce)"
-);
-
+const nav = document.querySelector(".nav");
 const navToggle = document.querySelector(".nav__toggle");
 const navLinks = document.querySelector(".nav__links");
 
 const setNavState = (expanded) => {
-  navToggle?.setAttribute("aria-expanded", String(expanded));
-  navLinks?.setAttribute("data-open", String(expanded));
-  navLinks?.style.removeProperty("max-height");
+  if (!navToggle || !navLinks) return;
+  navToggle.setAttribute("aria-expanded", String(expanded));
+  navLinks.setAttribute("data-open", String(expanded));
+  navLinks.style.removeProperty("max-height");
 };
 
 const enableDesktopNav = () => {
@@ -20,92 +19,95 @@ const enableDesktopNav = () => {
   navLinks.style.removeProperty("max-height");
 };
 
-if (navLinks) {
-  if (window.innerWidth > 840) {
-    enableDesktopNav();
-  } else {
+const mq = window.matchMedia("(max-width: 840px)");
+const applyMode = () => (mq.matches ? setNavState(false) : enableDesktopNav());
+mq.addEventListener("change", applyMode);
+applyMode();
+
+navToggle?.addEventListener("click", () => {
+  const expanded = navToggle.getAttribute("aria-expanded") === "true";
+  setNavState(!expanded);
+});
+
+navLinks?.querySelectorAll("a").forEach((link) => {
+  link.addEventListener("click", () => {
+    if (mq.matches) setNavState(false);
+  });
+});
+
+// Close on Esc
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && nav && navLinks?.getAttribute("data-open") === "true") {
     setNavState(false);
   }
-}
+});
 
-if (navToggle && navLinks) {
-  navToggle.addEventListener("click", () => {
-    const expanded = navToggle.getAttribute("aria-expanded") === "true";
-    setNavState(!expanded);
-  });
+// Close when clicking outside
+document.addEventListener("click", (e) => {
+  if (mq.matches && nav && !nav.contains(e.target) && navLinks?.getAttribute("data-open") === "true") {
+    setNavState(false);
+  }
+});
 
-  navLinks.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      if (window.innerWidth <= 840) {
-        setNavState(false);
+// ----- HERO SCENE (safe dynamic import so it can't break the menu) -----
+(async () => {
+  const heroCanvas = document.querySelector("[data-hero-canvas]");
+  const heroContainer = document.querySelector("[data-hero-container]");
+  const heroPoster = document.querySelector("[data-hero-poster]");
+  const fallback = document.querySelector("[data-hero-fallback]");
+  let cleanupScene = null;
+
+  const showFallback = () => {
+    fallback?.setAttribute("data-visible", "true");
+    if (fallback) fallback.style.display = "flex";
+    if (heroCanvas) heroCanvas.style.display = "none";
+    heroPoster?.setAttribute("data-visible", "true");
+    heroPoster?.setAttribute("aria-hidden", "false");
+  };
+
+  try {
+    const mod = await import("./heroScene.js"); // <-- won’t kill the whole file if it fails
+    const { initHeroScene, supportsWebGL } = mod;
+
+    const enableHero = () => {
+      if (!heroCanvas || !heroContainer || !supportsWebGL() || prefersReducedMotion.matches) {
+        showFallback();
+        return;
+      }
+      if (fallback) {
+        fallback.style.display = "none";
+        fallback.setAttribute("data-visible", "false");
+      }
+      heroCanvas.style.display = "block";
+      heroPoster?.setAttribute("data-visible", "false");
+      heroPoster?.setAttribute("aria-hidden", "true");
+      cleanupScene = initHeroScene(heroCanvas, heroContainer);
+    };
+
+    enableHero();
+
+    prefersReducedMotion.addEventListener("change", () => {
+      cleanupScene?.cleanup?.();
+      cleanupScene = null;
+      enableHero();
+    });
+
+    window.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        cleanupScene?.cleanup?.();
+      } else if (!cleanupScene && !prefersReducedMotion.matches && supportsWebGL()) {
+        cleanupScene = initHeroScene(heroCanvas, heroContainer);
       }
     });
-  });
-
-  window.addEventListener("resize", () => {
-    if (window.innerWidth > 840) {
-      enableDesktopNav();
-    } else {
-      setNavState(false);
-    }
-  });
-}
-
-const heroCanvas = document.querySelector("[data-hero-canvas]");
-const heroContainer = document.querySelector("[data-hero-container]");
-const heroPoster = document.querySelector("[data-hero-poster]");
-const fallback = document.querySelector("[data-hero-fallback]");
-let cleanupScene = null;
-
-const enableHero = () => {
-  if (!heroCanvas || !heroContainer || !supportsWebGL()) {
-    fallback?.setAttribute("data-visible", "true");
-    if (fallback) fallback.style.display = "flex";
-    if (heroCanvas) heroCanvas.style.display = "none";
-    heroPoster?.setAttribute("data-visible", "true");
-    heroPoster?.setAttribute("aria-hidden", "false");
-    return;
+  } catch (err) {
+    // If heroScene.js is missing or errors, gracefully show fallback and keep nav working
+    console.warn("heroScene.js failed to load:", err);
+    showFallback();
   }
+})();
 
-  if (prefersReducedMotion.matches) {
-    fallback?.setAttribute("data-visible", "true");
-    if (fallback) fallback.style.display = "flex";
-    if (heroCanvas) heroCanvas.style.display = "none";
-    heroPoster?.setAttribute("data-visible", "true");
-    heroPoster?.setAttribute("aria-hidden", "false");
-    return;
-  }
-
-  if (fallback) {
-    fallback.style.display = "none";
-    fallback.setAttribute("data-visible", "false");
-  }
-  heroCanvas.style.display = "block";
-  heroPoster?.setAttribute("data-visible", "false");
-  heroPoster?.setAttribute("aria-hidden", "true");
-  cleanupScene = initHeroScene(heroCanvas, heroContainer);
-};
-
-enableHero();
-
-prefersReducedMotion.addEventListener("change", () => {
-  cleanupScene?.cleanup?.();
-  cleanupScene = null;
-  enableHero();
-});
-
-window.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    cleanupScene?.cleanup?.();
-  } else if (!cleanupScene && !prefersReducedMotion.matches && supportsWebGL()) {
-    cleanupScene = initHeroScene(heroCanvas, heroContainer);
-  }
-});
-
-const convaiWidget = document.querySelector(
-  "[data-convai-widget] elevenlabs-convai"
-);
-
+// ----- ELEVENLABS WIDGET (unchanged, but guarded) -----
+const convaiWidget = document.querySelector("[data-convai-widget] elevenlabs-convai");
 if (convaiWidget) {
   const enforceStaticPlacement = () => {
     convaiWidget.style.position = "static";
@@ -115,23 +117,12 @@ if (convaiWidget) {
     convaiWidget.style.width = "100%";
     convaiWidget.style.height = "100%";
   };
-
   enforceStaticPlacement();
-
   const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "style") {
-        enforceStaticPlacement();
-      }
+    for (const m of mutations) {
+      if (m.type === "attributes" && m.attributeName === "style") enforceStaticPlacement();
     }
   });
-
-  observer.observe(convaiWidget, {
-    attributes: true,
-    attributeFilter: ["style"],
-  });
-
-  window.addEventListener("beforeunload", () => observer.disconnect(), {
-    once: true,
-  });
+  observer.observe(convaiWidget, { attributes: true, attributeFilter: ["style"] });
+  window.addEventListener("beforeunload", () => observer.disconnect(), { once: true });
 }
