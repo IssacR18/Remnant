@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vault</title>
+  <link rel="icon" href="images/logo-mark.png" type="image/png" />
+</head>
+<body>
+  <h1>Vault</h1>
+  <p id="welcome"></p>
+  <button id="logoutBtn">Log Out</button>
+
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    /* ==== Supabase Config ==== */
+    const SUPABASE_URL = "https://laqmvbcvlzdzzmphfctv.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxhcW12YmN2bHpkenptcGhmY3R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NTk5MDcsImV4cCI6MjA3NjAzNTkwN30.FO1xj7SEu34oxO7dRjR5e-q9t_bC9OcyDHCIkWKLc4s";     // Project Settings → API → anon key
+    /* ========================= */
+
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+
+    (async () => {
+      // 1️⃣ Check if user is signed in
+      const { data: { session } } = await sb.auth.getSession();
+
+      if (!session) {
+        // Not logged in → redirect to login page
+        window.location.href = "/login/indexLogin.html";
+        return;
+      }
+
+      // 2️⃣ Show basic user info
+      const user = session.user;
+      document.getElementById("welcome").textContent = `Welcome, ${user.email}!`;
+
+      // 3️⃣ Keep listening for sign-out from another tab
+      sb.auth.onAuthStateChange((event) => {
+        if (event === "SIGNED_OUT") {
+          window.location.href = "/login/indexLogin.html";
+        }
+      });
+    })();
+
+    // 4️⃣ Logout button
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await sb.auth.signOut();
+      window.location.href = "/login/indexLogin.html";
+    });
+  </script>
+</body>
+</html>
