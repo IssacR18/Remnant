@@ -2,8 +2,305 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Support</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remnant Support | Vault Assistance &amp; Capture Care</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="styles/support.css" />
     <link rel="icon" href="images/logo-mark.png" type="image/png" />
   </head>
-  <body><h1>Support Page - Coming Soon</h1></body>
+  <body class="support-page">
+    <header class="shell">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="nav__brand" href="index.html#top" aria-label="Remnant home">
+          <img
+            src="images/logo-mark.png"
+            alt="Remnant"
+            class="nav__logo"
+            width="40"
+            height="40"
+          />
+          <span class="nav__wordmark">emnant</span>
+        </a>
+        <button
+          class="nav__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-menu"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <svg
+            class="nav__toggle-icon"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-hidden="true"
+          >
+            <path
+              class="nav__toggle-icon-bars"
+              d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="nav__cluster">
+          <span class="nav__status" data-auth-status hidden aria-live="polite">
+            <span class="nav__status-label">Logged in as</span>
+            <span class="nav__status-email" data-auth-email></span>
+          </span>
+          <div class="nav__links" id="primary-menu">
+            <a href="index.html#top" class="nav__link">Home</a>
+            <a href="how-it-works/" class="nav__link">How it works</a>
+            <a href="stories/" class="nav__link">Stories</a>
+            <a href="login/indexSignup.html" class="nav__link">Sign Up</a>
+            <div class="nav__cta">
+              <a class="btn btn--primary" href="order.html">Schedule Scan</a>
+              <a class="btn btn--accent" href="login/vault.html">Enter Vault</a>
+              <a class="btn btn--ghost btn--current" href="support.html" aria-current="page">Support</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="support-hero" aria-labelledby="support-hero-heading">
+        <div class="support-hero__copy">
+          <p class="eyebrow">We&apos;re here for your memories</p>
+          <h1 id="support-hero-heading">Dedicated archivists ready to guide your Remnant experience.</h1>
+          <p>
+            Whether you&apos;re preparing for a capture, onboarding family into your vault, or resolving
+            access questions, the Support Studio is on-call with real humans who know the process end-to-end.
+          </p>
+          <div class="support-hero__actions">
+            <a class="btn btn--primary" href="#contact-team">Contact the team</a>
+            <a class="btn btn--ghost" href="#support-faq">Browse FAQs</a>
+          </div>
+        </div>
+        <aside class="support-hero__panel" aria-label="Support availability">
+          <h2>Studio availability</h2>
+          <ul>
+            <li><span>Live chat</span><strong>Daily · 9am–9pm ET</strong></li>
+            <li><span>Vault hotline</span><strong>+1 (844) 555-REMN</strong></li>
+            <li><span>Priority response</span><strong>&lt; 1 hour for active captures</strong></li>
+          </ul>
+          <p class="support-hero__note">
+            Outside those windows, leave us a note—your archivist will reach out first thing the next day.
+          </p>
+        </aside>
+      </section>
+
+      <section class="support-contact" id="contact-team" aria-labelledby="contact-heading">
+        <div class="section-heading">
+          <h2 id="contact-heading">Ways to reach the Support Studio</h2>
+          <p class="section-heading__description">
+            Pick the channel that fits your timeline. Every request receives a tracking ID and vault-safe transcript.
+          </p>
+        </div>
+        <div class="support-contact__grid">
+          <article class="support-card">
+            <h3>Email concierge</h3>
+            <p>
+              Message the archivist desk with context about your capture, vault, or billing. We&apos;ll assign
+              a dedicated specialist and follow up with next steps.
+            </p>
+            <ul class="support-card__list">
+              <li>Ideal for detailed troubleshooting</li>
+              <li>Response in under 6 business hours</li>
+              <li>Encrypted attachments supported</li>
+            </ul>
+            <a class="support-card__cta" href="mailto:support@remnant0.com">support@remnant0.com</a>
+          </article>
+
+          <article class="support-card">
+            <h3>Live vault chat</h3>
+            <p>
+              Connect with a Remnant archivist while you&apos;re browsing your vault. We can co-browse, reset
+              access, or walk you through a feature in real time.
+            </p>
+            <ul class="support-card__list">
+              <li>Secure co-browsing with screen blur</li>
+              <li>Step-by-step walkthroughs</li>
+              <li>Escalation to engineers when needed</li>
+            </ul>
+            <a class="support-card__cta" href="login/vault.html">Open chat in your vault</a>
+          </article>
+
+          <article class="support-card">
+            <h3>Capture hotline</h3>
+            <p>
+              Session tomorrow? Call the hotline to coordinate arrival windows, gear setup, or special requests
+              for your space. We love to over-prepare.
+            </p>
+            <ul class="support-card__list">
+              <li>Immediate escalation for day-of changes</li>
+              <li>Field archivists looped in automatically</li>
+              <li>Optional SMS updates for your crew</li>
+            </ul>
+            <a class="support-card__cta" href="tel:+18445557366">+1 (844) 555-7366</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="support-status" aria-labelledby="status-heading">
+        <div class="support-status__intro">
+          <h2 id="status-heading">Your request, tracked from first ping to resolution</h2>
+          <p>
+            Every support ticket travels through the same transparent lifecycle so you always know who&apos;s on it.
+          </p>
+        </div>
+        <ol class="support-status__steps">
+          <li class="support-status__step">
+            <span class="support-status__badge">01</span>
+            <div>
+              <h3>Intake &amp; context capture</h3>
+              <p>
+                We gather vault IDs, capture dates, and device specifics to replicate the issue. Diagnostics sync
+                quietly in the background—no guesswork required.
+              </p>
+            </div>
+          </li>
+          <li class="support-status__step">
+            <span class="support-status__badge">02</span>
+            <div>
+              <h3>Specialist assignment</h3>
+              <p>
+                Requests route to archivists, capture engineers, or vault ops depending on the need. You&apos;ll meet
+                the exact teammate working the problem.
+              </p>
+            </div>
+          </li>
+          <li class="support-status__step">
+            <span class="support-status__badge">03</span>
+            <div>
+              <h3>Resolution &amp; walkthrough</h3>
+              <p>
+                We ship a fix, share a recap, and offer a live walkthrough so you understand what changed. All notes
+                live in your vault support log for future reference.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="support-faq" id="support-faq" aria-labelledby="faq-heading">
+        <div class="support-faq__intro">
+          <h2 id="faq-heading">Frequently asked questions</h2>
+          <p>
+            Quick answers for the most common requests. Still puzzled? Ping the team and we&apos;ll dive in with you.
+          </p>
+        </div>
+        <div class="support-faq__grid">
+          <article class="support-faq__item">
+            <h3>How do I invite family or collaborators into my vault?</h3>
+            <p>
+              Inside your vault, head to <strong>Access &gt; Invite</strong>. Add emails and choose their role.
+              Guests receive a secure link that expires in 24 hours if unused.
+            </p>
+          </article>
+          <article class="support-faq__item">
+            <h3>Can I reschedule a capture after we&apos;ve confirmed?</h3>
+            <p>
+              Absolutely. Contact the hotline at least 12 hours before your window and we&apos;ll rebook with no fee.
+              Weather or unexpected closures are covered at any time.
+            </p>
+          </article>
+          <article class="support-faq__item">
+            <h3>What if my vault playback looks choppy?</h3>
+            <p>
+              Try toggling <strong>Adaptive Quality</strong> in the player settings. If you&apos;re still seeing stutters,
+              open a ticket with your device model—we&apos;ll optimize your stream.
+            </p>
+          </article>
+          <article class="support-faq__item">
+            <h3>Do you offer on-site assistance for headset setups?</h3>
+            <p>
+              Yes. Our concierge team can ship a pre-configured headset or schedule a remote pairing session. Let us
+              know your hardware and we&apos;ll tailor the walkthrough.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="support-form" aria-labelledby="form-heading">
+        <div class="support-form__card">
+          <h2 id="form-heading">Send the team a note</h2>
+          <p>
+            Share a few details and we&apos;ll reply from <strong>support@remnant0.com</strong> with a personalized plan.
+            The more context you have, the faster we can help.
+          </p>
+          <form class="support-form__fields">
+            <div class="support-form__row">
+              <label>
+                Full name
+                <input type="text" name="name" autocomplete="name" placeholder="Ada Lovelace" required />
+              </label>
+              <label>
+                Email
+                <input type="email" name="email" autocomplete="email" placeholder="you@remnant0.com" required />
+              </label>
+            </div>
+            <div class="support-form__row">
+              <label>
+                Vault ID (optional)
+                <input type="text" name="vault" autocomplete="off" placeholder="RVLT-2048B" />
+              </label>
+              <label>
+                Priority
+                <select name="priority">
+                  <option value="standard">Standard · respond within 6 hrs</option>
+                  <option value="expedited">Expedited · respond within 2 hrs</option>
+                  <option value="urgent">Urgent capture-day issue</option>
+                </select>
+              </label>
+            </div>
+            <label class="support-form__full">
+              How can we help?
+              <textarea
+                name="message"
+                rows="5"
+                placeholder="Tell us what you’re seeing, what device you’re on, and any deadlines we should know about."
+                required
+              ></textarea>
+            </label>
+            <button type="submit" class="btn btn--primary support-form__submit">Create support request</button>
+            <p class="support-form__legal">
+              By submitting, you agree to the Remnant Support Terms. We&apos;ll send a confirmation email with your case ID.
+            </p>
+          </form>
+        </div>
+      </section>
+
+      <section class="support-cta" aria-labelledby="cta-heading">
+        <div class="support-cta__content">
+          <h2 id="cta-heading">Need hands-on help during a capture?</h2>
+          <p>
+            Text <strong>CAPTURE</strong> to <a href="sms:+18445557366">+1 (844) 555-7366</a> and we&apos;ll loop in your field archivist instantly.
+          </p>
+        </div>
+        <div class="support-cta__actions">
+          <a class="btn btn--accent" href="order.html">Book a new session</a>
+          <a class="btn btn--ghost" href="mailto:support@remnant0.com">Email the studio</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span data-current-year></span> Remnant Labs. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="scripts/main.js"></script>
+    <script>
+      document.querySelector("[data-current-year]").textContent = new Date().getFullYear();
+    </script>
+  </body>
 </html>
