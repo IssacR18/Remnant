@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remnant Stories | Memory Vault Highlights</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="../images/logo-mark.png" type="image/png" />
+  </head>
+  <body class="stories-page">
+    <header class="shell">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="nav__brand" href="../index.html#top" aria-label="Remnant home">
+          <img
+            src="../images/logo-mark.png"
+            alt="Remnant"
+            class="nav__logo"
+            width="40"
+            height="40"
+          />
+          <span class="nav__wordmark">emnant</span>
+        </a>
+        <button
+          class="nav__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-menu"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <svg
+            class="nav__toggle-icon"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-hidden="true"
+          >
+            <path
+              class="nav__toggle-icon-bars"
+              d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="nav__links" id="primary-menu">
+          <a href="../how-it-works/" class="nav__link">How it works</a>
+          <a href="./" class="nav__link nav__link--active" aria-current="page">Stories</a>
+          <a href="../login/indexSignup.html" class="nav__link">Sign Up</a>
+          <div class="nav__cta">
+            <a class="btn btn--primary" href="../order.html">Schedule Scan</a>
+            <a class="btn btn--accent" href="../login/vault.html">Enter Vault</a>
+            <a class="btn btn--ghost" href="../support.html">Support</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="stories-hero">
+        <div class="stories-hero__copy">
+          <p class="eyebrow">Stories preserved in living light</p>
+          <h1>Step inside the vault and relive our clients’ favorite moments.</h1>
+          <p>
+            Each Remnant capture blends volumetric splats with ambient sound so you can
+            revisit your space exactly as it felt. Explore how other families, creators,
+            and collectors are archiving their worlds forever.
+          </p>
+          <div class="stories-hero__actions">
+            <a class="btn btn--primary" href="../order.html">Start your capture</a>
+            <a class="btn btn--ghost" href="../login/indexLogin.html">Enter your vault</a>
+          </div>
+        </div>
+        <div class="stories-hero__media">
+          <div class="stories-hero__card">
+            <p class="stories-hero__tag">Featured Memory</p>
+            <h2 class="stories-hero__title">The Willow Loft Session</h2>
+            <p class="stories-hero__excerpt">
+              A Brooklyn musician layered her studio with splines of sound, inviting fans
+              into the creative moment that sparked her latest single.
+            </p>
+            <span class="stories-hero__meta">Captured in 9K · Multi-angle audio mix</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="story-grid" aria-labelledby="story-grid-heading">
+        <div class="section-heading">
+          <h2 id="story-grid-heading">Remnant Spotlights</h2>
+          <p class="section-heading__description">
+            A few of the experiences vault members revisit the most. Tap to read how each
+            capture came together.
+          </p>
+        </div>
+        <div class="story-grid__items">
+          <article class="story-card">
+            <p class="story-card__eyebrow">Family Archive</p>
+            <h3 class="story-card__title">Grandma June’s Kitchen</h3>
+            <p class="story-card__body">
+              Three generations recorded the recipes, textures, and laughter from a final
+              summer together. The capture preserves every handwritten note on the fridge.
+            </p>
+            <a class="story-card__link" href="#story-june">See the session notes</a>
+          </article>
+
+          <article class="story-card">
+            <p class="story-card__eyebrow">Creative Studio</p>
+            <h3 class="story-card__title">Neon Bloom Atelier</h3>
+            <p class="story-card__body">
+              Artist Mina Cho invites collectors on a walk-through of her installation
+              captured the night before it opened, with animated annotations pinned to each piece.
+            </p>
+            <a class="story-card__link" href="#story-neon">Explore the capture</a>
+          </article>
+
+          <article class="story-card">
+            <p class="story-card__eyebrow">Memory Vault</p>
+            <h3 class="story-card__title">The Mason Draft House</h3>
+            <p class="story-card__body">
+              A father narrated the board games, secret handshakes, and soundtrack of family
+              nights so his kids can revisit the space from anywhere in the world.
+            </p>
+            <a class="story-card__link" href="#story-mason">Read the family interview</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="story-details" id="story-june">
+        <div class="story-details__intro">
+          <h2>How a kitchen became a living time capsule</h2>
+          <p>
+            Grandma June’s recipes now live in an explorable capture layered with aromas,
+            voice notes, and annotations from every family member. Tap a recipe card to
+            watch each step unfold.
+          </p>
+        </div>
+        <dl class="story-details__grid">
+          <div class="story-details__item">
+            <dt>Surfaces scanned</dt>
+            <dd>327</dd>
+          </div>
+          <div class="story-details__item">
+            <dt>Audio layers</dt>
+            <dd>11</dd>
+          </div>
+          <div class="story-details__item">
+            <dt>Interactive notes</dt>
+            <dd>24 cards</dd>
+          </div>
+          <div class="story-details__item">
+            <dt>Turnaround time</dt>
+            <dd>72 hours</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="story-cta">
+        <div class="story-cta__content">
+          <h2>Ready to capture your own story?</h2>
+          <p>
+            Our archivists arrive with PortalCam, spatial audio arrays, and light rigs tuned
+            to your space. You get a secure, sharable vault built in days—not months.
+          </p>
+        </div>
+        <div class="story-cta__actions">
+          <a class="btn btn--primary" href="../order.html">Schedule a consult</a>
+          <a class="btn btn--accent" href="../support.html">Talk with support</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span data-current-year></span> Remnant Labs. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="../scripts/main.js"></script>
+    <script>
+      document.querySelector("[data-current-year]").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
