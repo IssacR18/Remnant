@@ -38,7 +38,7 @@ class LoginForm1 {
 
   async redirectIfAlreadySignedIn() {
     const { data: { session } } = await sb.auth.getSession();
-    if (session) window.location.href = "/dashboard/index.html";
+    if (session) window.location.href = "/login/vault.html";
   }
 
   addEventListeners() {

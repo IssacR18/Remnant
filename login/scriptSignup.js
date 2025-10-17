@@ -201,6 +201,10 @@ class SignupForm {
     const password  = document.getElementById('signupPassword')?.value;
 
     try {
+      window.localStorage?.setItem('remnantPendingEmail', email || '');
+    } catch (_) {}
+
+    try {
       const { error: signUpErr } = await sb.auth.signUp({
         email,
         password,
@@ -246,7 +250,7 @@ class SignupForm {
 
   showSuccessThenRedirect() {
     this.showSuccessMessage();
-    setTimeout(() => (window.location.href = "/dashboard/index.html"), 600);
+    setTimeout(() => (window.location.href = "/login/vault.html"), 600);
   }
 
   showSuccessMessage() {
@@ -271,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   new SignupForm();
 
   const { data: { session } } = await sb.auth.getSession();
-  if (session) window.location.href = "/dashboard/index.html";
+  if (session) window.location.href = "/login/confirm.html";
 
   const homeReturnLink = document.querySelector('[data-home-return]');
   if (homeReturnLink) {
