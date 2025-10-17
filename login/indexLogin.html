@@ -1,59 +1,303 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Remnant Login</title>
-  <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; max-width: 420px; margin: 4rem auto; padding: 0 1rem; }
-    label { display:block; margin:.75rem 0 .25rem; }
-    input,button { width:100%; padding:.75rem; font-size:1rem; margin:.25rem 0; }
-    .row { display:flex; gap:.5rem; }
-    .row > * { flex:1; }
-    .muted { color:#666; font-size:.9rem; }
-    #msg { margin-top:.75rem; white-space:pre-wrap; }
-  </style>
-</head>
-<body>
-  <h1>Sign in to Remnant</h1>
+/* ==== Supabase config (EDIT THESE) ==== */
+const SUPABASE_URL = "https://vtzwjjzmptokrxslfbra.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0endqanptcHRva3J4c2xmYnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2NDk3OTIsImV4cCI6MjA3NjIyNTc5Mn0.g-iatnLPgDERvKcMahD545_qMdYIFDlLeylqtRMz2AM";     // Project Settings → API → anon key
+/* ===================================== */
 
-  <!-- choose one of the forms below -->
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true }
+});
 
-  <!-- PASSWORD SIGN-IN -->
-  <form id="form-password">
-    <label>Email</label>
-    <input id="pw-email" type="email" required autocomplete="email" />
-    <label>Password</label>
-    <input id="pw-pass" type="password" required autocomplete="current-password" />
-    <div class="row">
-      <button type="submit">Sign in</button>
-      <button id="btn-signup" type="button">Sign up</button>
-    </div>
-  </form>
+const COMING_SOON_STORAGE_KEY = 'remnantComingSoonDismissed';
 
-  <hr/>
+class LoginForm1 {
+  constructor() {
+    this.form = document.getElementById('loginForm');
+    this.submitBtn = this.form.querySelector('.login-btn');
+    this.passwordToggle = document.getElementById('passwordToggle');
+    this.passwordInput = document.getElementById('password');
+    this.successMessage = document.getElementById('successMessage');
+    this.isSubmitting = false;
 
-  <!-- MAGIC LINK SIGN-IN (optional) -->
-  <form id="form-magic">
-    <label>Magic-link email</label>
-    <input id="ml-email" type="email" autocomplete="email" />
-    <button type="submit">Send magic link</button>
-    <p class="muted">You must configure SMTP in Supabase for this.</p>
-  </form>
+    this.validators = {
+      email: FormUtils.validateEmail,
+      password: FormUtils.validatePassword
+    };
 
-  <p id="msg" class="muted"></p>
+    this.init();
+  }
 
-  <!-- Config (public) -->
-  <script>
-    // Put your project's public values here (NOT the service key):
-    window.SUPABASE_URL = "https://<YOUR-PROJECT>.supabase.co";
-    window.SUPABASE_ANON_KEY = "<YOUR-PUBLIC-ANON-KEY>";
-    window.POST_LOGIN_REDIRECT = "https://remnant0.com/"; // where to go after login
-  </script>
+  init() {
+    this.addEventListeners();
+    FormUtils.setupFloatingLabels(this.form);
+    this.addInputAnimations();
+    FormUtils.setupPasswordToggle(this.passwordInput, this.passwordToggle);
+    this.setupSocialButtons();
+    FormUtils.addSharedAnimations();
+    this.redirectIfAlreadySignedIn();
+  }
 
-  <!-- Supabase JS (CDN ESM) -->
-  <script type="module" src="https://esm.sh/@supabase/supabase-js@2"></script>
-  <!-- Your login logic -->
-  <script type="module" src="/login/scriptLogin.js"></script>
-</body>
-</html>
+  async redirectIfAlreadySignedIn() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) window.location.href = "/dashboard/index.html";
+  }
+
+  addEventListeners() {
+    this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+
+    Object.keys(this.validators).forEach(fieldName => {
+      const field = document.getElementById(fieldName);
+      if (field) {
+        field.addEventListener('blur', () => this.validateField(fieldName));
+        field.addEventListener('input', () => FormUtils.clearError(fieldName));
+      }
+    });
+
+    const inputs = this.form.querySelectorAll('input');
+    inputs.forEach(input => {
+      input.addEventListener('focus', (e) => this.handleFocus(e));
+      input.addEventListener('blur', (e) => this.handleBlur(e));
+    });
+
+    const checkbox = document.getElementById('remember');
+    if (checkbox) {
+      checkbox.addEventListener('change', () => this.animateCheckbox());
+    }
+
+    const forgotLink = document.querySelector('.forgot-password');
+    if (forgotLink) {
+      forgotLink.addEventListener('click', (e) => this.handleForgotPassword(e));
+    }
+
+    const signupLink = document.querySelector('.signup-link a');
+    if (signupLink) {
+      signupLink.addEventListener('click', (e) => this.handleSignupLink(e));
+    }
+
+    this.setupKeyboardShortcuts();
+  }
+
+  addInputAnimations() {
+    const inputs = this.form.querySelectorAll('input');
+    inputs.forEach((input, index) => {
+      setTimeout(() => {
+        input.style.opacity = '1';
+        input.style.transform = 'translateY(0)';
+      }, index * 150);
+    });
+  }
+
+  setupSocialButtons() {
+    const socialButtons = document.querySelectorAll('.social-btn');
+    socialButtons.forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const provider = btn.classList.contains('google-btn') ? 'google' : 'github';
+
+        // lil animation
+        btn.style.transform = 'scale(0.95)';
+        btn.style.opacity = '0.8';
+        setTimeout(() => { btn.style.transform = 'scale(1)'; btn.style.opacity = '1'; }, 200);
+
+        FormUtils.showNotification(`Connecting to ${provider === 'google' ? 'Google' : 'GitHub'}...`, 'info', this.form);
+
+        try {
+          const { error } = await sb.auth.signInWithOAuth({
+            provider,
+            options: { redirectTo: window.location.origin + "/auth/callback.html" }
+          });
+          if (error) throw error;
+        } catch (err) {
+          FormUtils.showNotification(err.message || 'OAuth failed. Try again.', 'error', this.form);
+        }
+      });
+    });
+  }
+
+  handleFocus(e) {
+    const wrapper = e.target.closest('.input-wrapper');
+    if (wrapper) wrapper.classList.add('focused');
+  }
+
+  handleBlur(e) {
+    const wrapper = e.target.closest('.input-wrapper');
+    if (wrapper) wrapper.classList.remove('focused');
+  }
+
+  animateCheckbox() {
+    const checkmark = document.querySelector('.checkmark');
+    if (checkmark) {
+      checkmark.style.transform = 'scale(0.8)';
+      setTimeout(() => { checkmark.style.transform = 'scale(1)'; }, 150);
+    }
+  }
+
+  async handleForgotPassword(e) {
+    e.preventDefault();
+    const email = document.getElementById('email')?.value.trim();
+    if (!email) {
+      FormUtils.showNotification('Enter your email first.', 'info', this.form);
+      return;
+    }
+    try {
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/auth/callback.html"
+      });
+      if (error) throw error;
+      FormUtils.showNotification('If an account exists, a reset link was sent.', 'success', this.form);
+    } catch (err) {
+      FormUtils.showNotification(err.message || 'Could not send reset email.', 'error', this.form);
+    }
+  }
+
+  handleSignupLink(e) {
+    e.preventDefault();
+    const link = e.target;
+    link.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      link.style.transform = 'scale(1)';
+      window.location.href = 'indexSignup.html';
+    }, 120);
+  }
+
+  handleSocialLogin(e) {
+    // (kept for compatibility; real OAuth is in setupSocialButtons)
+  }
+
+  async handleSubmit(e) {
+    e.preventDefault();
+    if (this.isSubmitting) return;
+
+    const isValid = this.validateForm();
+    if (!isValid) return this.shakeForm();
+
+    this.isSubmitting = true;
+    this.submitBtn.classList.add('loading');
+
+    try {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      // REAL Supabase login (replaces simulateLogin)
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      // success → show message then redirect
+      this.showSuccessMessage();
+
+    } catch (error) {
+      console.error('Login error:', error);
+      this.showLoginError(error.message);
+    } finally {
+      this.isSubmitting = false;
+      this.submitBtn.classList.remove('loading');
+    }
+  }
+
+  validateForm() {
+    let isValid = true;
+    Object.keys(this.validators).forEach(fieldName => {
+      if (!this.validateField(fieldName)) isValid = false;
+    });
+    return isValid;
+  }
+
+  validateField(fieldName) {
+    const field = document.getElementById(fieldName);
+    const validator = this.validators[fieldName];
+    if (!field || !validator) return true;
+
+    const result = validator(field.value.trim(), field);
+    if (result.isValid) {
+      FormUtils.clearError(fieldName);
+      FormUtils.showSuccess(fieldName);
+    } else {
+      FormUtils.showError(fieldName, result.message);
+    }
+    return result.isValid;
+  }
+
+  shakeForm() {
+    this.form.style.animation = 'shake 0.5s ease-in-out';
+    setTimeout(() => { this.form.style.animation = ''; }, 500);
+  }
+
+  showSuccessMessage() {
+    this.form.style.opacity = '0';
+    this.form.style.transform = 'translateY(-20px)';
+
+    const elementsToHide = ['.divider', '.social-login', '.signup-link'];
+    elementsToHide.forEach(selector => {
+      const el = document.querySelector(selector);
+      if (el) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-20px)';
+      }
+    });
+
+    setTimeout(() => {
+      this.form.style.display = 'none';
+      elementsToHide.forEach(selector => {
+        const el = document.querySelector(selector);
+        if (el) el.style.display = 'none';
+      });
+
+      this.successMessage.classList.add('show');
+
+      // quick redirect
+      setTimeout(() => { window.location.href = "vault.html"; }, 900);
+    }, 300);
+  }
+
+  showLoginError(message) {
+    FormUtils.showNotification(message || 'Login failed. Please try again.', 'error', this.form);
+    const card = document.querySelector('.login-card');
+    card.style.animation = 'shake 0.5s ease-in-out';
+    setTimeout(() => { card.style.animation = ''; }, 500);
+  }
+
+  resetForm() { /* not needed now, kept for parity */ }
+
+  setupKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.closest('#loginForm')) {
+        e.preventDefault();
+        this.handleSubmit(e);
+      }
+      if (e.key === 'Escape') {
+        ['email','password'].forEach(fieldName => FormUtils.clearError(fieldName));
+      }
+    });
+  }
+
+  // Public helpers
+  validate() { return this.validateForm(); }
+  getFormData() {
+    const formData = new FormData(this.form);
+    const data = {};
+    for (let [k, v] of formData.entries()) data[k] = v;
+    return data;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const loginCard = document.querySelector('.login-card');
+  FormUtils.addEntranceAnimation(loginCard);
+  new LoginForm1();
+
+  const homeReturnLink = document.querySelector('[data-home-return]');
+  if (homeReturnLink) {
+    homeReturnLink.addEventListener('click', () => {
+      try { window.localStorage?.setItem(COMING_SOON_STORAGE_KEY, 'true'); } catch {}
+    });
+  }
+});
+
+// Keep focus behavior as you had it
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    const activeElement = document.activeElement;
+    if (activeElement && activeElement.tagName !== 'INPUT') {
+      const emailInput = document.querySelector('#email');
+      if (emailInput && !emailInput.value) setTimeout(() => emailInput.focus(), 100);
+    }
+  }
+});
