@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How Remnant Works | Capture · Remaster · Relive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="../images/logo-mark.png" type="image/png" />
+  </head>
+  <body class="how-it-works-page">
+    <header class="shell">
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="nav__brand" href="../index.html#top" aria-label="Remnant home">
+          <img
+            src="../images/logo-mark.png"
+            alt="Remnant"
+            class="nav__logo"
+            width="40"
+            height="40"
+          />
+          <span class="nav__wordmark">emnant</span>
+        </a>
+        <button
+          class="nav__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-menu"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <svg
+            class="nav__toggle-icon"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-hidden="true"
+          >
+            <path
+              class="nav__toggle-icon-bars"
+              d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="nav__links" id="primary-menu">
+          <a href="./" class="nav__link nav__link--active" aria-current="page">How it works</a>
+          <a href="../stories/" class="nav__link">Stories</a>
+          <a href="../login/indexSignup.html" class="nav__link">Sign Up</a>
+          <div class="nav__cta">
+            <a class="btn btn--primary" href="../order.html">Schedule Scan</a>
+            <a class="btn btn--accent" href="../login/vault.html">Enter Vault</a>
+            <a class="btn btn--ghost" href="../support.html">Support</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hiw-hero">
+        <div class="hiw-hero__intro">
+          <p class="eyebrow">How Remnant captures your space</p>
+          <h1>Three carefully engineered phases turn your memory into a living archive.</h1>
+          <p>
+            From scanning day to your first login, our archivists take care of the process.
+            We coordinate equipment, calibrate PortalCam, and deliver a secure Remnant Vault
+            that feels like stepping back in time.
+          </p>
+          <div class="hiw-hero__actions">
+            <a class="btn btn--primary" href="../order.html#schedule">Book a consult</a>
+            <a class="btn btn--ghost" href="../support.html">Ask an archivist</a>
+          </div>
+        </div>
+        <div class="hiw-hero__stats">
+          <div class="hiw-stat">
+            <span class="hiw-stat__value">36 hrs</span>
+            <span class="hiw-stat__label">Typical turnaround</span>
+          </div>
+          <div class="hiw-stat">
+            <span class="hiw-stat__value">9K</span>
+            <span class="hiw-stat__label">Photonic detail</span>
+          </div>
+          <div class="hiw-stat">
+            <span class="hiw-stat__value">∞</span>
+            <span class="hiw-stat__label">Vault revisits</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="hiw-steps" aria-labelledby="hiw-steps-heading">
+        <div class="section-heading">
+          <h2 id="hiw-steps-heading">Capture · Remaster · Relive</h2>
+          <p class="section-heading__description">
+            Your archivist leads each phase and keeps you updated with real-time status alerts.
+          </p>
+        </div>
+        <ol class="hiw-steps__list">
+          <li class="hiw-step">
+            <div class="hiw-step__badge">01</div>
+            <div class="hiw-step__content">
+              <h3>Capture · PortalCam session</h3>
+              <p>
+                We map your space with spatial lidar and volumetric gaussian splats, layering
+                ambient audio, light probes, and annotations in a single pass.
+              </p>
+              <ul class="hiw-step__bullets">
+                <li>Pre-session briefing to stage important artifacts.</li>
+                <li>Multi-array microphones for immersive playback.</li>
+                <li>On-site compression for secure transfer to Remnant Cloud.</li>
+              </ul>
+            </div>
+          </li>
+
+          <li class="hiw-step">
+            <div class="hiw-step__badge">02</div>
+            <div class="hiw-step__content">
+              <h3>Remaster · Neural refinement</h3>
+              <p>
+                Our pipeline refines light scattering, denoises audio, and rebuilds every
+                surface with cinematic fidelity—all while preserving the authenticity of the moment.
+              </p>
+              <ul class="hiw-step__bullets">
+                <li>AI-assisted cleanup with human colorists supervising each frame.</li>
+                <li>Semantic tagging so memories are searchable inside your vault.</li>
+                <li>Secure encryption before the experience leaves our facility.</li>
+              </ul>
+            </div>
+          </li>
+
+          <li class="hiw-step">
+            <div class="hiw-step__badge">03</div>
+            <div class="hiw-step__content">
+              <h3>Relive · Vault delivery</h3>
+              <p>
+                We hand off a private Remnant Vault with web, headset, and tablet access. Invite
+                collaborators or family, manage permissions, and revisit anytime.
+              </p>
+              <ul class="hiw-step__bullets">
+                <li>Guided orientation session for your first walkthrough.</li>
+                <li>Shareable highlights and time-based bookmarks.</li>
+                <li>Ongoing storage, versioning, and optional public showcases.</li>
+              </ul>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="hiw-tech" aria-labelledby="hiw-tech-heading">
+        <div class="hiw-tech__content">
+          <h2 id="hiw-tech-heading">Technology that keeps memories alive</h2>
+          <p>
+            Remnant’s hybrid stack combines volumetric capture, gaussian splatting, and secure
+            edge compute. That lets us deliver uncanny realism while keeping everything private.
+          </p>
+        </div>
+        <div class="hiw-tech__grid">
+          <article class="hiw-tech__card">
+            <h3>PortalCam</h3>
+            <p>
+              Custom rigs with synchronized sensors, depth projectors, and calibrated light tunnels
+              record every detail in a single sweep.
+            </p>
+          </article>
+          <article class="hiw-tech__card">
+            <h3>Remnant Cloud</h3>
+            <p>
+              Distributed rendering nodes remaster captures and push them to your vault with
+              encrypted delivery channels.
+            </p>
+          </article>
+          <article class="hiw-tech__card">
+            <h3>Memory Vault</h3>
+            <p>
+              A secure portal where you can annotate, share, and relive every capture on any device.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="hiw-cta">
+        <div class="hiw-cta__copy">
+          <h2>Bring the Remnant team to your space</h2>
+          <p>
+            Tell us what you want to preserve, and we’ll craft a capture plan, timeline, and budget
+            tailored to your story.
+          </p>
+        </div>
+        <div class="hiw-cta__actions">
+          <a class="btn btn--primary" href="../order.html">Schedule your capture</a>
+          <a class="btn btn--accent" href="../support.html">Chat with support</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span data-current-year></span> Remnant Labs. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="../scripts/main.js"></script>
+    <script>
+      document.querySelector("[data-current-year]").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
