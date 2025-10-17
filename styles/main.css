@@ -161,7 +161,7 @@ ul {
   align-items: center;
   display: flex;
   gap: 1.5rem;
-  justify-content: space-between;
+  justify-content: flex-start;
   position: relative;
 }
 
@@ -194,10 +194,17 @@ ul {
   filter: drop-shadow(0 6px 18px rgba(124, 242, 208, 0.35));
 }
 
+.nav__cluster {
+  align-items: center;
+  display: flex;
+  gap: 1.25rem;
+  margin-left: auto;
+}
+
 .nav__links {
   align-items: center;
   display: flex;
-  gap: 4rem;
+  gap: 2rem;
 
 }
 
@@ -533,6 +540,12 @@ ul {
 }
 
 @media (max-width: 840px) {
+  .nav__cluster {
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+  }
+
   .nav__links {
     gap: 0.9rem;
     align-items: flex-start;
@@ -597,16 +610,19 @@ ul {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
   }
 
-  /* Optional: give each of the first 3 its own color while keeping the same style */
+  /* Optional: give each link its own color while keeping the same style */
   .nav__links > a.nav__link:nth-of-type(1) {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%); /* How it works */
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%); /* Home */
   }
   .nav__links > a.nav__link:nth-of-type(2) {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%); /* How it works */
+  }
+  .nav__links > a.nav__link:nth-of-type(3) {
     background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);   /* Stories */
     color: #052620;
   }
-  .nav__links > a.nav__link:nth-of-type(3) {
-    background: linear-gradient(135deg, #a98aff 0%, #6e53ff 100%);                      /* Log in (purple) */
+  .nav__links > a.nav__link:nth-of-type(4) {
+    background: linear-gradient(135deg, #a98aff 0%, #6e53ff 100%);                      /* Sign Up (purple) */
     color: #fff;
   }
 
