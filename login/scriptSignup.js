@@ -4,6 +4,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 /* ===================================== */
 
 const COMING_SOON_STORAGE_KEY = 'remnantComingSoonDismissed';
+const ACCOUNT_CHECK_ENDPOINT = '/api/ai/check-account';
 
 // uses the global 'supabase' from the CDN script
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -201,6 +202,15 @@ class SignupForm {
     const password  = document.getElementById('signupPassword')?.value;
 
     try {
+      const isAvailable = await this.ensureEmailIsAvailable(email);
+      if (isAvailable === false) {
+        FormUtils.showError('signupEmail', 'An account with this email already exists. Sign in instead.');
+        FormUtils.showNotification('Looks like you already have an account with this email. Try signing in.', 'info', this.form);
+        this.shakeForm();
+        return;
+      }
+      if (isAvailable === null) return;
+
       const { data: signUpData, error: signUpErr } = await sb.auth.signUp({
         email,
         password,
@@ -257,6 +267,27 @@ class SignupForm {
         updated_at: new Date().toISOString()
       }, { onConflict: 'id' });
     } catch (_) {}
+  }
+
+  async ensureEmailIsAvailable(email) {
+    if (!email) return false;
+
+    try {
+      const res = await fetch(ACCOUNT_CHECK_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      if (!res.ok) throw new Error('Account lookup failed');
+
+      const data = await res.json();
+      return data?.exists ? false : true;
+    } catch (error) {
+      console.warn('Email availability check failed:', error);
+      FormUtils.showNotification('We could not verify your email. Please try again.', 'error', this.form);
+      return null;
+    }
   }
 
   showSuccessThenRedirect() {
