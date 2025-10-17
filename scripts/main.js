@@ -178,3 +178,31 @@ if (convaiWidget) {
   observer.observe(convaiWidget, { attributes: true, attributeFilter: ["style"] });
   window.addEventListener("beforeunload", () => observer.disconnect(), { once: true });
 }
+
+// ----- AUTH STATUS (HOME NAV) -----
+const authStatusEl = document.querySelector("[data-auth-status]");
+const authEmailEl = document.querySelector("[data-auth-email]");
+
+if (window?.supabase && authStatusEl && authEmailEl) {
+  const SUPABASE_URL = "https://vtzwjjzmptokrxslfbra.supabase.co";
+  const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0endqanptcHRva3J4c2xmYnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2NDk3OTIsImV4cCI6MjA3NjIyNTc5Mn0.g-iatnLPgDERvKcMahD545_qMdYIFDlLeylqtRMz2AM";
+
+  const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true }
+  });
+
+  const renderAuthStatus = (session) => {
+    const email = session?.user?.email;
+    if (!email) {
+      authEmailEl.textContent = "";
+      authStatusEl.hidden = true;
+      return;
+    }
+    authEmailEl.textContent = email;
+    authStatusEl.hidden = false;
+  };
+
+  sbClient.auth.getSession().then(({ data }) => renderAuthStatus(data?.session));
+  sbClient.auth.onAuthStateChange((_event, session) => renderAuthStatus(session));
+}
