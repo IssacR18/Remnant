@@ -201,7 +201,7 @@ class SignupForm {
     const password  = document.getElementById('signupPassword')?.value;
 
     try {
-      const { error: signUpErr } = await sb.auth.signUp({
+      const { data: signUpData, error: signUpErr } = await sb.auth.signUp({
         email,
         password,
         options: {
@@ -211,10 +211,25 @@ class SignupForm {
       });
       if (signUpErr) throw signUpErr;
 
-      const { data: { session } } = await sb.auth.getSession();
+      let session = signUpData?.session ?? null;
+
+      if (!session) {
+        const { data: signInData, error: signInErr } = await sb.auth.signInWithPassword({ email, password });
+        if (signInErr) {
+          const message = signInErr.message || 'Account created! Please sign in.';
+          const notificationType = message.toLowerCase().includes('confirm') ? 'info' : 'error';
+          FormUtils.showNotification(message, notificationType, this.form);
+          this.showSuccessMessage();
+          setTimeout(() => (window.location.href = "/login/indexLogin.html"), 1200);
+          return;
+        }
+        session = signInData?.session ?? null;
+      }
+
       if (session?.user?.id) {
         await this.upsertProfile(session.user.id, { firstName, lastName, phone, birthDate });
         this.showSuccessThenRedirect();
+        return;
       } else {
         FormUtils.showNotification("Account created! You can now sign in.", "success", this.form);
         this.showSuccessMessage();
