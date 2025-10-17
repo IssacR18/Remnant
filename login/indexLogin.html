@@ -1,92 +1,59 @@
-// api/ai/check-account.js
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Remnant Login</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; max-width: 420px; margin: 4rem auto; padding: 0 1rem; }
+    label { display:block; margin:.75rem 0 .25rem; }
+    input,button { width:100%; padding:.75rem; font-size:1rem; margin:.25rem 0; }
+    .row { display:flex; gap:.5rem; }
+    .row > * { flex:1; }
+    .muted { color:#666; font-size:.9rem; }
+    #msg { margin-top:.75rem; white-space:pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Sign in to Remnant</h1>
 
-async function readBody(req) {
-  if (req.body && typeof req.body === 'object') return req.body;
-  const chunks = []; for await (const c of req) chunks.push(c);
-  try { return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); } catch { return {}; }
-}
-function send(res, code, obj){ return res.status(code).json(obj); }
+  <!-- choose one of the forms below -->
 
-async function fetchJSON(url, key) {
-  const r = await fetch(url, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
-  const text = await r.text();
-  let json; try { json = JSON.parse(text); } catch { json = null; }
-  return { r, json, text };
-}
+  <!-- PASSWORD SIGN-IN -->
+  <form id="form-password">
+    <label>Email</label>
+    <input id="pw-email" type="email" required autocomplete="email" />
+    <label>Password</label>
+    <input id="pw-pass" type="password" required autocomplete="current-password" />
+    <div class="row">
+      <button type="submit">Sign in</button>
+      <button id="btn-signup" type="button">Sign up</button>
+    </div>
+  </form>
 
-function normalizeEmail(v) {
-  return (v ?? '').toString().trim().replace(/\s+/g, '').toLowerCase();
-}
+  <hr/>
 
-function pullUsersFrom(json) {
-  if (!json) return [];
-  if (Array.isArray(json)) return json;
-  if (Array.isArray(json.users)) return json.users;
-  if (json.user) return [json.user];
-  return [];
-}
+  <!-- MAGIC LINK SIGN-IN (optional) -->
+  <form id="form-magic">
+    <label>Magic-link email</label>
+    <input id="ml-email" type="email" autocomplete="email" />
+    <button type="submit">Send magic link</button>
+    <p class="muted">You must configure SMTP in Supabase for this.</p>
+  </form>
 
-export default async function handler(req, res) {
-  const t0 = Date.now();
-  if (req.method !== 'POST') return send(res, 405, { error: 'Only POST allowed' });
+  <p id="msg" class="muted"></p>
 
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key  = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!base || !key) return send(res, 500, { error: 'Missing env vars' });
+  <!-- Config (public) -->
+  <script>
+    // Put your project's public values here (NOT the service key):
+    window.SUPABASE_URL = "https://<YOUR-PROJECT>.supabase.co";
+    window.SUPABASE_ANON_KEY = "<YOUR-PUBLIC-ANON-KEY>";
+    window.POST_LOGIN_REDIRECT = "https://remnant0.com/"; // where to go after login
+  </script>
 
-  try {
-    const { email: rawEmail } = await readBody(req);
-    const email = normalizeEmail(rawEmail);
-
-    console.log('[check-account] raw:', rawEmail);
-    console.log('[check-account] normalized:', email);
-
-    if (!email || !email.includes('@')) {
-      return send(res, 400, { error: 'email required', debug: { rawEmail, email } });
-    }
-
-    // 1) Direct lookup (with audience) — some projects need aud=authenticated
-    const url1 = `${base}/auth/v1/admin/users?email=${encodeURIComponent(email)}&aud=authenticated`;
-    const { r: r1, json: j1, text: text1 } = await fetchJSON(url1, key);
-    const users1 = pullUsersFrom(j1);
-    let exists = users1.some(u => (u?.email || '').toLowerCase() === email);
-
-    console.log('[check-account] step1 status:', r1.status, r1.statusText);
-    console.log('[check-account] step1 users_len:', users1.length);
-    if (!exists) console.log('[check-account] step1 raw json:', text1);
-
-    // 2) Fallback: page through users and match email server-side
-    let pagesChecked = 0;
-    if (!exists) {
-      for (let page = 1; page <= 5; page++) {
-        const urlPage = `${base}/auth/v1/admin/users?aud=authenticated&page=${page}&per_page=200`;
-        const { r, json, text } = await fetchJSON(urlPage, key);
-        const users = pullUsersFrom(json);
-        pagesChecked = page;
-        const hit = users.find(u => (u?.email || '').toLowerCase() === email);
-
-        console.log(`[check-account] page ${page} status:`, r.status, r.statusText, 'users_len:', users.length);
-
-        if (hit) { exists = true; break; }
-        if (!Array.isArray(users) || users.length === 0) break; // reached end
-        // Optionally log first page json for debugging:
-        if (page === 1 && !exists) console.log('[check-account] page1 sample json:', text.slice(0, 500));
-      }
-    }
-
-    console.log('[check-account] exists:', exists, 'pagesChecked:', pagesChecked, 'done in ms:', Date.now() - t0);
-
-    return send(res, 200, {
-      exists,
-      debug: {
-        emailRaw: rawEmail,
-        emailNormalized: email,
-        step1UsersLen: users1.length,
-        pagesChecked
-      }
-    });
-  } catch (e) {
-    console.error('[check-account] fatal:', e);
-    return send(res, 500, { error: e?.message || 'unknown error' });
-  }
-}
+  <!-- Supabase JS (CDN ESM) -->
+  <script type="module" src="https://esm.sh/@supabase/supabase-js@2"></script>
+  <!-- Your login logic -->
+  <script type="module" src="/login/scriptLogin.js"></script>
+</body>
+</html>
