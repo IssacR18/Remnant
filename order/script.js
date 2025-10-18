@@ -8,6 +8,7 @@ const sb = window.supabase?.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 const STORAGE_KEY = "remnantOrderDraft";
 const SUBMIT_COOLDOWN_MS = 3500;
 const TOAST_DURATION_MS = 5200;
+const AUTH_EVENT_NAME = "remnant:auth-state";
 const PROGRESSIVE_FIELDS = [
   "package",
   "address",
@@ -546,6 +547,13 @@ const renderGate = (session) => {
   }
 };
 
+const handleSharedAuthEvent = (event) => {
+  const session = event?.detail?.session ?? null;
+  renderGate(session);
+};
+
+window.addEventListener(AUTH_EVENT_NAME, handleSharedAuthEvent);
+
 const applyStateToInputs = () => {
   const addressInputs = document.querySelectorAll("[data-address-field]");
   addressInputs.forEach((input) => {
@@ -791,6 +799,11 @@ const initSupabase = async () => {
   updateReview();
   updateNavButtons();
 
+  const sharedSession = window.__remnantAuthSession ?? null;
+  if (sharedSession) {
+    renderGate(sharedSession);
+  }
+
   if (!sb) {
     console.warn("Supabase client not available for order page.");
     return;
@@ -799,10 +812,12 @@ const initSupabase = async () => {
   try {
     const { data, error } = await sb.auth.getSession();
     if (error) throw error;
-    renderGate(data?.session ?? null);
+    const session = data?.session ?? (window.__remnantAuthSession ?? null);
+    renderGate(session);
   } catch (error) {
     console.warn("order-page: unable to fetch session", error);
-    renderGate(null);
+    const fallbackSession = window.__remnantAuthSession ?? null;
+    renderGate(fallbackSession);
   }
 
   sb.auth.onAuthStateChange((_event, session) => {
