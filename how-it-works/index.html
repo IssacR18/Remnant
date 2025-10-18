@@ -17,7 +17,11 @@
   <body class="how-it-works-page">
     <header class="shell">
       <nav class="nav" aria-label="Primary navigation">
-        <a class="nav__brand" href="../index.html#top" aria-label="Remnant home">
+        <div class="auth-badge" data-auth-status hidden aria-live="polite">
+          <span class="auth-badge__label">Logged in as</span>
+          <span class="auth-badge__email" data-auth-email></span>
+        </div>
+        <a class="nav__brand" href="../#top" aria-label="Remnant home">
           <img
             src="../images/logo-mark.png"
             alt="Remnant"
@@ -52,19 +56,15 @@
           </svg>
         </button>
         <div class="nav__cluster">
-          <span class="nav__status" data-auth-status hidden aria-live="polite">
-            <span class="nav__status-label">Logged in as</span>
-            <span class="nav__status-email" data-auth-email></span>
-          </span>
           <div class="nav__links" id="primary-menu">
-            <a href="../index.html#top" class="nav__link">Home</a>
+            <a href="../#top" class="nav__link">Home</a>
             <a href="./" class="nav__link nav__link--active" aria-current="page">How it works</a>
             <a href="../stories/" class="nav__link">Stories</a>
-            <a href="../login/indexSignup.html" class="nav__link">Sign Up</a>
+            <a href="../signup/" class="nav__link">Sign Up</a>
             <div class="nav__cta">
-              <a class="btn btn--primary" href="../order.html">Schedule Scan</a>
-              <a class="btn btn--accent" href="../login/vault.html">Enter Vault</a>
-              <a class="btn btn--ghost" href="../support.html">Support</a>
+              <a class="btn btn--primary" href="../order/">Schedule Scan</a>
+              <a class="btn btn--accent" href="../vault/">Enter Vault</a>
+              <a class="btn btn--ghost" href="../support/">Support</a>
             </div>
           </div>
         </div>
@@ -82,8 +82,8 @@
             that feels like stepping back in time.
           </p>
           <div class="hiw-hero__actions">
-            <a class="btn btn--primary" href="../order.html#schedule">Book a consult</a>
-            <a class="btn btn--ghost" href="../support.html">Ask an archivist</a>
+            <a class="btn btn--primary" href="../order/#schedule">Book a consult</a>
+            <a class="btn btn--ghost" href="../support/">Ask an archivist</a>
           </div>
         </div>
         <div class="hiw-hero__stats">
@@ -201,8 +201,8 @@
           </p>
         </div>
         <div class="hiw-cta__actions">
-          <a class="btn btn--primary" href="../order.html">Schedule your capture</a>
-          <a class="btn btn--accent" href="../support.html">Chat with support</a>
+          <a class="btn btn--primary" href="../order/">Schedule your capture</a>
+          <a class="btn btn--accent" href="../support/">Chat with support</a>
         </div>
       </section>
     </main>

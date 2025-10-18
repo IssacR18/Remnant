@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vault</title>
-  <link rel="icon" href="images/logo-mark.png" type="image/png" />
+  <link rel="icon" href="../images/logo-mark.png" type="image/png" />
 </head>
 <body>
   <h1>Vault</h1>
@@ -29,7 +29,7 @@
 
       if (!session) {
         // Not logged in → redirect to login page
-        window.location.href = "/login/indexLogin.html";
+        window.location.href = "/signin/";
         return;
       }
 
@@ -40,7 +40,7 @@
       // 3️⃣ Keep listening for sign-out from another tab
       sb.auth.onAuthStateChange((event) => {
         if (event === "SIGNED_OUT") {
-          window.location.href = "/login/indexLogin.html";
+          window.location.href = "/signin/";
         }
       });
     })();
@@ -48,7 +48,7 @@
     // 4️⃣ Logout button
     document.getElementById("logoutBtn").addEventListener("click", async () => {
       await sb.auth.signOut();
-      window.location.href = "/login/indexLogin.html";
+      window.location.href = "/signin/";
     });
   </script>
 </body>

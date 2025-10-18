@@ -230,7 +230,7 @@ class SignupForm {
           const notificationType = message.toLowerCase().includes('confirm') ? 'info' : 'error';
           FormUtils.showNotification(message, notificationType, this.form);
           this.showSuccessMessage();
-          setTimeout(() => (window.location.href = "/login/indexLogin.html"), 1200);
+          setTimeout(() => (window.location.href = "/signin/"), 1200);
           return;
         }
         session = signInData?.session ?? null;
@@ -243,7 +243,7 @@ class SignupForm {
       } else {
         FormUtils.showNotification("Account created! You can now sign in.", "success", this.form);
         this.showSuccessMessage();
-        setTimeout(() => (window.location.href = "/login/indexLogin.html"), 1200);
+        setTimeout(() => (window.location.href = "/signin/"), 1200);
       }
     } catch (error) {
       const msg = (error?.message || '').toLowerCase();
@@ -292,7 +292,7 @@ class SignupForm {
 
   showSuccessThenRedirect() {
     this.showSuccessMessage();
-    setTimeout(() => (window.location.href = "/login/vault.html"), 600);
+    setTimeout(() => (window.location.href = "/vault/"), 600);
   }
 
   showSuccessMessage() {
@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   new SignupForm();
 
   const { data: { session } } = await sb.auth.getSession();
-  if (session) window.location.href = "/login/vault.html";
+  if (session) window.location.href = "/vault/";
 
   const homeReturnLink = document.querySelector('[data-home-return]');
   if (homeReturnLink) {
