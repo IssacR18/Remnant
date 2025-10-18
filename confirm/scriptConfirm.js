@@ -1,8 +1,7 @@
-/* ==== Supabase config (match login/signup) ==== */
-const SUPABASE_URL = "https://vtzwjjzmptokrxslfbra.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0endqanptcHRva3J4c2xmYnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2NDk3OTIsImV4cCI6MjA3NjIyNTc5Mn0.g-iatnLPgDERvKcMahD545_qMdYIFDlLeylqtRMz2AM";
-/* ============================================= */
+/* ==== Supabase config (EDIT THESE) ==== */
+const SUPABASE_URL = "https://vtzwjjzmptokrxslfbra.supabase.co"; // your project URL
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0endqanptcHRva3J4c2xmYnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2NDk3OTIsImV4cCI6MjA3NjIyNTc5Mn0.g-iatnLPgDERvKcMahD545_qMdYIFDlLeylqtRMz2AM";     // Project Settings → API → anon key
+/* ===================================== */
 
 const PENDING_EMAIL_KEY = "remnantPendingEmail";
 
