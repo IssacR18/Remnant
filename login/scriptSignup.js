@@ -5,6 +5,8 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const COMING_SOON_STORAGE_KEY = 'remnantComingSoonDismissed';
 const ACCOUNT_CHECK_ENDPOINT = '/api/ai/check-account';
+const CONFIRM_PAGE_URL = '/confirm/';
+const PENDING_EMAIL_STORAGE_KEY = 'remnantPendingEmail';
 
 // uses the global 'supabase' from the CDN script
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -114,6 +116,15 @@ class SignupForm {
     });
   }
 
+  storePendingEmail(email) {
+    if (!email) return;
+    try {
+      window.sessionStorage?.setItem(PENDING_EMAIL_STORAGE_KEY, email);
+    } catch (_) {
+      /* storage disabled */
+    }
+  }
+
   async handleSubmit(e) {
     e.preventDefault();
     if (this.isSubmitting) return;
@@ -216,7 +227,7 @@ class SignupForm {
         password,
         options: {
           data: { first_name: firstName, last_name: lastName, phone, birth_date: birthDate },
-          // emailRedirectTo: window.location.origin + "/auth/callback.html"
+          emailRedirectTo: `${window.location.origin}${CONFIRM_PAGE_URL}`
         }
       });
       if (signUpErr) throw signUpErr;
@@ -226,11 +237,12 @@ class SignupForm {
       if (!session) {
         const { data: signInData, error: signInErr } = await sb.auth.signInWithPassword({ email, password });
         if (signInErr) {
-          const message = signInErr.message || 'Account created! Please sign in.';
-          const notificationType = message.toLowerCase().includes('confirm') ? 'info' : 'error';
-          FormUtils.showNotification(message, notificationType, this.form);
-          this.showSuccessMessage();
-          setTimeout(() => (window.location.href = "/signin/"), 1200);
+          const rawMessage = signInErr.message || '';
+          const notifyMessage = rawMessage.toLowerCase().includes('confirm')
+            ? rawMessage
+            : 'Account created! Check your email to confirm your account.';
+          FormUtils.showNotification(notifyMessage, 'info', this.form);
+          this.showSuccessThenRedirect(email, 1400);
           return;
         }
         session = signInData?.session ?? null;
@@ -238,13 +250,11 @@ class SignupForm {
 
       if (session?.user?.id) {
         await this.upsertProfile(session.user.id, { firstName, lastName, phone, birthDate });
-        this.showSuccessThenRedirect();
-        return;
-      } else {
-        FormUtils.showNotification("Account created! You can now sign in.", "success", this.form);
-        this.showSuccessMessage();
-        setTimeout(() => (window.location.href = "/signin/"), 1200);
       }
+
+      FormUtils.showNotification("Account created! Check your email to confirm your account.", "success", this.form);
+      this.showSuccessThenRedirect(email);
+      return;
     } catch (error) {
       const msg = (error?.message || '').toLowerCase();
       if (msg.includes('email')) FormUtils.showError('signupEmail', error.message);
@@ -290,9 +300,10 @@ class SignupForm {
     }
   }
 
-  showSuccessThenRedirect() {
+  showSuccessThenRedirect(email, delay = 900) {
+    this.storePendingEmail(email);
     this.showSuccessMessage();
-    setTimeout(() => (window.location.href = "/vault/"), 600);
+    setTimeout(() => (window.location.href = CONFIRM_PAGE_URL), delay);
   }
 
   showSuccessMessage() {
