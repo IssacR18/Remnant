@@ -190,7 +190,7 @@ const renderOdometer = (amount) => {
     container.appendChild(wheel);
     requestAnimationFrame(() => {
       const target = Number(char);
-      track.style.transform = `translateY(-${target * 100}%)`;
+      track.style.transform = `translateY(-${target * 10}%)`;
     });
   });
 
