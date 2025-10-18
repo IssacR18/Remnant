@@ -192,7 +192,23 @@ if (window?.supabase && authStatusEl && authEmailEl) {
     auth: { persistSession: true, autoRefreshToken: true }
   });
 
+  const authEventName = "remnant:auth-state";
+  const dispatchAuthState = (session) => {
+    window.__remnantAuthSession = session ?? null;
+    try {
+      window.dispatchEvent(new CustomEvent(authEventName, { detail: { session: session ?? null } }));
+    } catch (error) {
+      // Older browsers may not support CustomEvent; fall back quietly.
+      if (typeof document?.createEvent === "function") {
+        const legacyEvent = document.createEvent("CustomEvent");
+        legacyEvent.initCustomEvent(authEventName, false, false, { session: session ?? null });
+        window.dispatchEvent(legacyEvent);
+      }
+    }
+  };
+
   const renderAuthStatus = (session) => {
+    dispatchAuthState(session);
     const email = session?.user?.email;
     if (!email) {
       authEmailEl.textContent = "";
