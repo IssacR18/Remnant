@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirm Your Remnant Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../login/styleLogin.css" />
+    <link rel="stylesheet" href="confirm.css" />
+    <link rel="icon" href="../images/logo-mark.png" type="image/png" />
+  </head>
+  <body class="login-page confirm-page">
+    <a class="skip-link" href="#confirm-content">Skip to confirmation info</a>
+    <div class="login-container">
+      <div class="login-card confirm-card" data-confirm-card>
+        <a href="../" class="home-exit-button" aria-label="Back to home">
+          <span aria-hidden="true">X</span>
+        </a>
+        <div class="confirm-illustration" aria-hidden="true">
+          <img src="../images/logo-mark.png" alt="" width="64" height="64" />
+        </div>
+        <div class="login-header" id="confirm-content">
+          <p class="eyebrow">One more step</p>
+          <h2>Confirm your email</h2>
+          <p class="confirm-subtitle">
+            We just sent a confirmation link to
+            <strong data-confirm-email>your inbox</strong>. Check junk or spam if you do not see it.
+          </p>
+        </div>
+        <div class="confirm-status" data-confirm-status role="status" aria-live="polite"></div>
+        <div class="confirm-actions">
+          <button type="button" class="btn confirm-btn" data-confirm-complete>
+            I confirmed my email
+          </button>
+          <button type="button" class="btn btn--ghost confirm-btn" data-resend-email>
+            Resend confirmation email
+          </button>
+        </div>
+        <footer class="confirm-footer">
+          <p>
+            Need help? <a href="../support/">Reach out to support</a> or
+            <a href="../signin/">sign in</a> if you already verified.
+          </p>
+        </footer>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../login/form-utils.js"></script>
+    <script src="scriptConfirm.js"></script>
+  </body>
+</html>
