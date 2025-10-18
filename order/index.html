@@ -2,8 +2,391 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Order</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schedule Your Remnant Capture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="icon" href="../images/logo-mark.png" type="image/png" />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body><h1>Order Page - Coming Soon</h1></body>
+  <body class="order-page">
+    <a class="skip-link" href="#order-wizard">Skip to order wizard</a>
+    <header class="shell">
+      <nav class="nav" aria-label="Primary navigation">
+        <div class="auth-badge" data-auth-status hidden aria-live="polite">
+          <span class="auth-badge__label">Logged in as</span>
+          <span class="auth-badge__email" data-auth-email></span>
+        </div>
+        <a class="nav__brand" href="../#top" aria-label="Remnant home">
+          <img
+            src="../images/logo-mark.png"
+            alt="Remnant"
+            class="nav__logo"
+            width="40"
+            height="40"
+          />
+          <span class="nav__wordmark">emnant</span>
+        </a>
+        <button
+          class="nav__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-menu"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <svg
+            class="nav__toggle-icon"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-hidden="true"
+          >
+            <path
+              class="nav__toggle-icon-bars"
+              d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="nav__cluster">
+          <div class="nav__links" id="primary-menu">
+            <a href="../#top" class="nav__link">Home</a>
+            <a href="../how-it-works/" class="nav__link">How it works</a>
+            <a href="../stories/" class="nav__link">Stories</a>
+            <a href="../signup/" class="nav__link">Sign Up</a>
+            <div class="nav__cta">
+              <a class="btn btn--primary" href="./" aria-current="page">Schedule Scan</a>
+              <a class="btn btn--accent" href="../vault/">Enter Vault</a>
+              <a class="btn btn--ghost" href="../support/">Support</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="order-main">
+      <section class="order-hero">
+        <div class="order-hero__content">
+          <p class="eyebrow">Remnant Order Portal</p>
+          <h1>Craft your capture itinerary in five luminous steps.</h1>
+          <p>
+            Tell us what you want to preserve, where to arrive, and how you would like your
+            vault prepared. We will choreograph the entire session and send a confirmation the
+            moment it locks in.
+          </p>
+          <div class="order-hero__meta">
+            <span class="order-hero__meta-item">Live availability sync</span>
+            <span class="order-hero__meta-item">Auto-saves every choice</span>
+            <span class="order-hero__meta-item">Secure Supabase checkout</span>
+          </div>
+        </div>
+        <div class="order-hero__orb" aria-hidden="true">
+          <canvas class="memory-orb" data-memory-orb width="280" height="280"></canvas>
+          <div class="memory-orb__halo"></div>
+        </div>
+      </section>
+
+      <section class="order-gate" data-auth-gate aria-live="polite">
+        <div class="order-gate__card">
+          <h2>Sign in to place an order</h2>
+          <p>
+            You&apos;ll need to be logged in so we can attach this order to your vault. Sign in or
+            create an account—your progress will be waiting here when you return.
+          </p>
+          <div class="order-gate__actions">
+            <a class="btn btn--primary" href="../signin/">Sign in</a>
+            <a class="btn btn--ghost" href="../signup/">Create an account</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="order-wizard" id="order-wizard" data-order-wizard hidden>
+        <header class="order-wizard__header">
+          <h2>Schedule your Remnant capture</h2>
+          <p>Five deliberate steps so we can prepare the perfect archival session.</p>
+        </header>
+
+        <ol class="order-progress" data-progress role="list" aria-label="Order steps">
+          <li class="order-progress__step" data-progress-step>
+            <span class="order-progress__badge">1</span>
+            <span class="order-progress__label">Package</span>
+          </li>
+          <li class="order-progress__step" data-progress-step>
+            <span class="order-progress__badge">2</span>
+            <span class="order-progress__label">Location &amp; Time</span>
+          </li>
+          <li class="order-progress__step" data-progress-step>
+            <span class="order-progress__badge">3</span>
+            <span class="order-progress__label">Add-ons</span>
+          </li>
+          <li class="order-progress__step" data-progress-step>
+            <span class="order-progress__badge">4</span>
+            <span class="order-progress__label">Review</span>
+          </li>
+          <li class="order-progress__step" data-progress-step>
+            <span class="order-progress__badge">5</span>
+            <span class="order-progress__label">Confirm</span>
+          </li>
+        </ol>
+
+        <div class="order-total" aria-live="polite">
+          <span class="order-total__label">Current total</span>
+          <div class="order-total__value" data-odometer aria-label="Order total">$0.00</div>
+        </div>
+
+        <form class="order-form" data-order-form novalidate>
+          <section
+            class="order-step is-active"
+            data-step="0"
+            aria-labelledby="step-package-heading"
+          >
+            <div class="order-step__content">
+              <div class="order-step__intro">
+                <p class="step-kicker">Step 1</p>
+                <h3 id="step-package-heading">Choose your capture package</h3>
+                <p class="step-description">
+                  Each package includes the Remnant crew, PortalCam rig, and your dedicated
+                  archivist. Pick the scope that fits your memory.
+                </p>
+              </div>
+              <fieldset class="option-grid" data-package-options>
+                <legend class="sr-only">Capture packages</legend>
+                <label class="option-card">
+                  <input
+                    type="radio"
+                    name="package"
+                    value="Full Home" data-price="1499"
+                    required
+                  />
+                  <div class="option-card__body">
+                    <span class="option-card__eyebrow">Signature</span>
+                    <span class="option-card__title">Full Home Immersion</span>
+                    <p class="option-card__copy">
+                      Every room, every artifact—multi-angle volumetric scan with ambient audio
+                      layers and heirloom cataloguing.
+                    </p>
+                    <span class="option-card__price">$1,499</span>
+                  </div>
+                </label>
+
+                <label class="option-card">
+                  <input
+                    type="radio"
+                    name="package"
+                    value="Gathering" data-price="1199"
+                  />
+                  <div class="option-card__body">
+                    <span class="option-card__eyebrow">Event</span>
+                    <span class="option-card__title">Gathering Spotlight</span>
+                    <p class="option-card__copy">
+                      Capture a ceremony or celebration with synchronized spatial audio and
+                      cinematic relighting.
+                    </p>
+                    <span class="option-card__price">$1,199</span>
+                  </div>
+                </label>
+
+                <label class="option-card">
+                  <input
+                    type="radio"
+                    name="package"
+                    value="Artifact" data-price="899"
+                  />
+                  <div class="option-card__body">
+                    <span class="option-card__eyebrow">Focused</span>
+                    <span class="option-card__title">Artifact Capsule</span>
+                    <p class="option-card__copy">
+                      Micro-capture of a single room or collection with macro textures and guided
+                      narrative prompts.
+                    </p>
+                    <span class="option-card__price">$899</span>
+                  </div>
+                </label>
+              </fieldset>
+            </div>
+          </section>
+
+          <section class="order-step" data-step="1" aria-labelledby="step-location-heading">
+            <div class="order-step__content">
+              <div class="order-step__intro">
+                <p class="step-kicker">Step 2</p>
+                <h3 id="step-location-heading">Where and when should we arrive?</h3>
+                <p class="step-description">
+                  Share the location details, preferred access notes, and an ideal arrival window.
+                </p>
+              </div>
+              <div class="form-grid">
+                <label class="field">
+                  <span class="field__label">Address line 1 <span aria-hidden="true">*</span></span>
+                  <input type="text" name="address1" data-address-field="line1" required autocomplete="address-line1" />
+                </label>
+                <label class="field">
+                  <span class="field__label">Address line 2</span>
+                  <input type="text" name="address2" data-address-field="line2" autocomplete="address-line2" />
+                </label>
+                <label class="field">
+                  <span class="field__label">City <span aria-hidden="true">*</span></span>
+                  <input type="text" name="city" data-address-field="city" required autocomplete="address-level2" />
+                </label>
+                <label class="field">
+                  <span class="field__label">State / Region <span aria-hidden="true">*</span></span>
+                  <input type="text" name="state" data-address-field="state" required autocomplete="address-level1" />
+                </label>
+                <label class="field">
+                  <span class="field__label">Postal code <span aria-hidden="true">*</span></span>
+                  <input type="text" name="postal" data-address-field="postal" required autocomplete="postal-code" />
+                </label>
+                <label class="field">
+                  <span class="field__label">Gate / access codes</span>
+                  <input type="text" name="gate" data-field="gateCodes" autocomplete="off" placeholder="Optional" />
+                </label>
+                <label class="field">
+                  <span class="field__label">Preferred date <span aria-hidden="true">*</span></span>
+                  <input type="date" name="date" data-field="date" required />
+                </label>
+                <label class="field">
+                  <span class="field__label">Arrival window <span aria-hidden="true">*</span></span>
+                  <input type="time" name="time" data-field="time" required />
+                </label>
+                <label class="field field--textarea">
+                  <span class="field__label">What should we focus on?</span>
+                  <textarea
+                    name="scope"
+                    data-field="scope"
+                    rows="3"
+                    placeholder="Share specific rooms, objects, or stories we should prepare for."
+                  ></textarea>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="order-step" data-step="2" aria-labelledby="step-addons-heading">
+            <div class="order-step__content">
+              <div class="order-step__intro">
+                <p class="step-kicker">Step 3</p>
+                <h3 id="step-addons-heading">Enhance your capture</h3>
+                <p class="step-description">
+                  Optional upgrades add more layers to your archive. Toggle the ones that resonate.
+                </p>
+              </div>
+              <fieldset class="addon-grid" data-addons>
+                <legend class="sr-only">Add-on options</legend>
+                <label class="addon-card">
+                  <input type="checkbox" value="Vault Orientation" data-price="149" />
+                  <div class="addon-card__body">
+                    <span class="addon-card__title">Vault orientation for your family</span>
+                    <p>Guided walkthrough for up to 8 guests plus concierge Q&amp;A.</p>
+                    <span class="addon-card__price">+$149</span>
+                  </div>
+                </label>
+                <label class="addon-card">
+                  <input type="checkbox" value="Legacy Highlight Reel" data-price="199" />
+                  <div class="addon-card__body">
+                    <span class="addon-card__title">Legacy highlight reel</span>
+                    <p>One-minute cinematic cut with captions for sharing beyond the vault.</p>
+                    <span class="addon-card__price">+$199</span>
+                  </div>
+                </label>
+                <label class="addon-card">
+                  <input type="checkbox" value="Archive Transcripts" data-price="129" />
+                  <div class="addon-card__body">
+                    <span class="addon-card__title">Archive transcripts</span>
+                    <p>Full speech-to-text transcripts for every captured room.</p>
+                    <span class="addon-card__price">+$129</span>
+                  </div>
+                </label>
+              </fieldset>
+            </div>
+          </section>
+
+          <section class="order-step" data-step="3" aria-labelledby="step-review-heading">
+            <div class="order-step__content">
+              <div class="order-step__intro">
+                <p class="step-kicker">Step 4</p>
+                <h3 id="step-review-heading">Review and finalize details</h3>
+                <p class="step-description">
+                  Confirm the essentials. We&apos;ll send a full itinerary and prep list as soon as you
+                  submit.
+                </p>
+              </div>
+              <div class="review-card">
+                <dl class="review-list" data-review-list></dl>
+                <div class="review-note">
+                  <strong>Heads up:</strong> You can adjust details with your archivist after
+                  scheduling. We&apos;ll confirm availability within 12 hours.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="order-step" data-step="4" aria-labelledby="step-confirm-heading">
+            <div class="order-step__content">
+              <div class="order-step__intro">
+                <p class="step-kicker">Step 5</p>
+                <h3 id="step-confirm-heading">Confirm your capture request</h3>
+                <p class="step-description">
+                  Press confirm to reserve this itinerary. We&apos;ll log it instantly in your vault and
+                  send your order number.
+                </p>
+              </div>
+              <div class="confirm-card">
+                <p>
+                  Double-check the summary above. When you submit, we&apos;ll gently pulse your total,
+                  create the order in Supabase, and email you a copy.
+                </p>
+                <label class="confirm-checkbox">
+                  <input type="checkbox" data-confirm-checkbox required />
+                  <span>I&apos;m ready to confirm this capture plan.</span>
+                </label>
+                <p class="confirm-hint">
+                  Need to revisit later? Your progress is saved locally and will reload when you
+                  return.
+                </p>
+              </div>
+            </div>
+          </section>
+        </form>
+
+        <div class="order-actions">
+          <button class="btn btn--ghost" type="button" data-prev disabled>Back</button>
+          <button class="btn btn--primary" type="button" data-next disabled>
+            Next step
+          </button>
+        </div>
+      </section>
+
+      <section class="order-success" data-order-success hidden aria-live="polite">
+        <div class="order-success__card">
+          <div class="order-success__icon" aria-hidden="true">
+            <span></span>
+          </div>
+          <h2>Your order is locked in</h2>
+          <p>
+            We&apos;ve logged your capture itinerary and alerted your archivist. You&apos;ll receive an
+            email with all the details momentarily.
+          </p>
+          <p class="order-success__id">Order ID: <span data-order-id></span></p>
+          <div class="order-success__actions">
+            <a class="btn btn--accent" href="../vault/">Go to Vault</a>
+            <a class="btn btn--ghost" href="../support/">Talk with support</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../scripts/main.js" defer></script>
+    <script src="script.js" defer></script>
+  </body>
 </html>
