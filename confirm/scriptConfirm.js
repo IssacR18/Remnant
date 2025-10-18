@@ -246,6 +246,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const { confirmed } = await checkConfirmedViaAdmin(email);
       if (confirmed) {
         setStatus("Email confirmed on another device.", "success");
+        goVault();
         // reveal magic sign-in button for this device
         if (selectors.magicBtn) {
           selectors.magicBtn.hidden = false;
