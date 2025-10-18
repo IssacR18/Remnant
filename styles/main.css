@@ -156,6 +156,61 @@ ul {
   z-index: 50;
   box-shadow: var(--shadow);
 }
+/* Badge that sits OUTSIDE the shell bubble, to the LEFT */
+.auth-badge {
+  position: absolute;       /* positioned relative to .shell (sticky is positioned) */
+  right: 100%;              /* place the badge immediately to the left of the shell */
+  margin-right: 100px;       /* gap between badge and bubble edge */
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  color: var(--muted);
+  background: rgba(12, 18, 38, 0.78);
+  border: 1px solid rgba(130, 164, 255, 0.45);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  box-shadow: var(--shadow);
+  pointer-events: none;     /* not part of the menu */
+  z-index: 60;              /* above page content, below modals */
+}
+
+.auth-badge__email {
+  color: var(--accent);
+  font-weight: 600;
+}
+.auth-badge[hidden] {
+  display: none !important;
+}
+
+@media (min-width: 841px) {
+  .auth-badge {               /* desktop badge shows and sits left of bubble */
+    display: inline-flex;
+    position: absolute;
+    right: 100%;
+    margin-right: 100px;      /* your preferred spacing */
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0.35rem 0.9rem;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    color: var(--muted);
+    background: rgba(12, 18, 38, 0.78);
+    border: 1px solid rgba(130, 164, 255, 0.45);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    z-index: 60;
+  }
+  .auth-badge--mobile {
+    display: none;            /* hide mobile version on desktop */
+  }
+}
+
 
 .nav {
   align-items: center;

@@ -41,63 +41,67 @@
       </div>
     </div>
     <header class="shell" data-shell>
-      <nav class="nav" aria-label="Primary">
-        <a class="nav__brand" href="#top" aria-label="Remnant home">
-          <img
-            src="images/logo-mark.png"
-            alt="Remnant"
-            class="nav__logo"
-            width="40"
-            height="40"
-          />
-          <span class="nav__wordmark">emnant</span>
-        </a>
-        <button
-          class="nav__toggle"
-          type="button"
-          aria-expanded="false"
-          aria-controls="primary-menu"
-        >
-          <span class="sr-only">Toggle navigation</span>
-          <svg
-            class="nav__toggle-icon"
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            role="img"
-            aria-hidden="true"
-          >
-            <path
-              class="nav__toggle-icon-bars"
-              d="M4 6h16M4 12h16M4 18h16"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
-          </svg>
-        </button>
-        <div class="nav__cluster">
-          <span class="nav__status" data-auth-status hidden aria-live="polite">
-            <span class="nav__status-label">Logged in as</span>
-            <span class="nav__status-email" data-auth-email></span>
-          </span>
-          <div class="nav__links" id="primary-menu">
-            <a href="#top" class="nav__link nav__link--active" aria-current="page">Home</a>
-            <a href="how-it-works/" class="nav__link">How it works</a>
-            <a href="stories/" class="nav__link">Stories</a>
-            <a href="login/indexSignup.html" class="nav__link">Sign Up</a>
-            <div class="nav__cta">
-              <a class="btn btn--primary" href="order.html">Schedule Scan</a>
-              <a class="btn btn--accent" href="login/vault.html">Enter Vault</a>
-              <a class="btn btn--ghost" href="support.html">Support</a>
-            </div>
-          </div>
+  <nav class="nav" aria-label="Primary">
+    <!-- NEW: logged-in badge, visually outside the bubble -->
+    <div class="auth-badge" data-auth-status hidden aria-live="polite">
+      <span class="auth-badge__label">Logged in as</span>
+      <span class="auth-badge__email" data-auth-email></span>
+    </div>
+
+    <a class="nav__brand" href="#top" aria-label="Remnant home">
+      <img
+        src="images/logo-mark.png"
+        alt="Remnant"
+        class="nav__logo"
+        width="40"
+        height="40"
+      />
+      <span class="nav__wordmark">emnant</span>
+    </a>
+
+    <button
+      class="nav__toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="primary-menu"
+    >
+      <span class="sr-only">Toggle navigation</span>
+      <svg class="nav__toggle-icon" width="28" height="28" viewBox="0 0 24 24" role="img" aria-hidden="true">
+        <path class="nav__toggle-icon-bars" d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    </button>
+
+    <div class="nav__cluster">
+      <!-- REMOVED: the old .nav__status that sat inside the menu -->
+      <div class="nav__links" id="primary-menu">
+        <a href="#top" class="nav__link nav__link--active" aria-current="page">Home</a>
+        <a href="how-it-works/" class="nav__link">How it works</a>
+        <a href="stories/" class="nav__link">Stories</a>
+        <a href="signup/" class="nav__link">Sign Up</a>
+        <div class="nav__cta">
+          <a class="btn btn--primary" href="order/">Schedule Scan</a>
+          <a class="btn btn--accent" href="vault/">Enter Vault</a>
+          <a class="btn btn--ghost" href="support/">Support</a>
         </div>
-      </nav>
-    </header>
+      </div>
+    </div>
+  </nav>
+</header>
+
+
 
     <main>
       <section class="hero" id="top">
+        <div
+          class="auth-badge auth-badge--mobile"
+          data-auth-status-mobile
+          hidden
+          aria-live="polite"
+        >
+          <span class="auth-badge__label">Logged in as</span>
+          <span class="auth-badge__email" data-auth-email-mobile></span>
+        </div>
         <div class="hero__canvas-wrapper" data-hero-container>
           <video
             autoplay
@@ -128,8 +132,8 @@
             in to relive every detail.
           </p>
           <div class="hero__actions">
-            <a class="btn btn--primary" href="order.html">Book the Scan</a>
-            <a class="btn btn--accent" href="login/vault.html">Explore the Memory Vault</a>
+            <a class="btn btn--primary" href="order/">Book the Scan</a>
+            <a class="btn btn--accent" href="vault/">Explore the Memory Vault</a>
           </div>
           <div class="hero__convai" data-convai-widget>
             <div class="hero__convai-frame">
@@ -180,7 +184,7 @@
             Secure a visit from a PortalCam archivist. We'll prepare your space
             and capture your story with respect and care.
           </p>
-          <a class="btn btn--accent" href="order.html">Reserve a time</a>
+          <a class="btn btn--accent" href="order/">Reserve a time</a>
         </div>
       </section>
 
@@ -238,4 +242,46 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="scripts/main.js"></script>
   </body>
+  <script>
+    /* ==== Supabase config (EDIT THESE) ==== */
+    const SUPABASE_URL = "https://vtzwjjzmptokrxslfbra.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0endqanptcHRva3J4c2xmYnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2NDk3OTIsImV4cCI6MjA3NjIyNTc5Mn0.g-iatnLPgDERvKcMahD545_qMdYIFDlLeylqtRMz2AM";
+    /* ====================================== */
+
+    // Create client
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Elements (desktop + mobile badges)
+    const desktopBadge   = document.querySelector('[data-auth-status]');
+  const desktopEmailEl = document.querySelector('[data-auth-email]');
+  const mobileBadge    = document.querySelector('[data-auth-status-mobile]');
+  const mobileEmailEl  = document.querySelector('[data-auth-email-mobile]');
+
+  function showBadges(email){
+    if (desktopEmailEl) desktopEmailEl.textContent = email;
+    if (mobileEmailEl)  mobileEmailEl.textContent  = email;
+    if (desktopBadge)   desktopBadge.hidden = false;  // removes [hidden]
+    if (mobileBadge)    mobileBadge.hidden  = false;  // removes [hidden]
+  }
+  function hideBadges(){
+    if (desktopBadge)   desktopBadge.hidden = true;
+    if (mobileBadge)    mobileBadge.hidden  = true;
+    if (desktopEmailEl) desktopEmailEl.textContent = "";
+    if (mobileEmailEl)  mobileEmailEl.textContent  = "";
+  }
+
+  async function refreshAuthUI(){
+    const { data, error } = await sb.auth.getUser();
+    if (error || !data?.user) return hideBadges();
+    const email = data.user.email || data.user.user_metadata?.email || "";
+    email ? showBadges(email) : hideBadges();
+  }
+
+  document.addEventListener('DOMContentLoaded', refreshAuthUI);
+
+  sb.auth.onAuthStateChange((_event, session) => {
+    const email = session?.user?.email || session?.user?.user_metadata?.email || "";
+    email ? showBadges(email) : hideBadges();
+  });
+</script>
 </html>

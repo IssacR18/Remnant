@@ -10,16 +10,20 @@
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles/main.css" />
-    <link rel="stylesheet" href="styles/support.css" />
-    <link rel="icon" href="images/logo-mark.png" type="image/png" />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/support.css" />
+    <link rel="icon" href="../images/logo-mark.png" type="image/png" />
   </head>
   <body class="support-page">
     <header class="shell">
       <nav class="nav" aria-label="Primary navigation">
-        <a class="nav__brand" href="index.html#top" aria-label="Remnant home">
+        <div class="auth-badge" data-auth-status hidden aria-live="polite">
+          <span class="auth-badge__label">Logged in as</span>
+          <span class="auth-badge__email" data-auth-email></span>
+        </div>
+        <a class="nav__brand" href="../#top" aria-label="Remnant home">
           <img
-            src="images/logo-mark.png"
+            src="../images/logo-mark.png"
             alt="Remnant"
             class="nav__logo"
             width="40"
@@ -52,19 +56,15 @@
           </svg>
         </button>
         <div class="nav__cluster">
-          <span class="nav__status" data-auth-status hidden aria-live="polite">
-            <span class="nav__status-label">Logged in as</span>
-            <span class="nav__status-email" data-auth-email></span>
-          </span>
           <div class="nav__links" id="primary-menu">
-            <a href="index.html#top" class="nav__link">Home</a>
-            <a href="how-it-works/" class="nav__link">How it works</a>
-            <a href="stories/" class="nav__link">Stories</a>
-            <a href="login/indexSignup.html" class="nav__link">Sign Up</a>
+            <a href="../#top" class="nav__link">Home</a>
+            <a href="../how-it-works/" class="nav__link">How it works</a>
+            <a href="../stories/" class="nav__link">Stories</a>
+            <a href="../signup/" class="nav__link">Sign Up</a>
             <div class="nav__cta">
-              <a class="btn btn--primary" href="order.html">Schedule Scan</a>
-              <a class="btn btn--accent" href="login/vault.html">Enter Vault</a>
-              <a class="btn btn--ghost btn--current" href="support.html" aria-current="page">Support</a>
+              <a class="btn btn--primary" href="../order/">Schedule Scan</a>
+              <a class="btn btn--accent" href="../vault/">Enter Vault</a>
+              <a class="btn btn--ghost btn--current" href="../support/" aria-current="page">Support</a>
             </div>
           </div>
         </div>
@@ -131,7 +131,7 @@
               <li>Step-by-step walkthroughs</li>
               <li>Escalation to engineers when needed</li>
             </ul>
-            <a class="support-card__cta" href="login/vault.html">Open chat in your vault</a>
+            <a class="support-card__cta" href="../vault/">Open chat in your vault</a>
           </article>
 
           <article class="support-card">
@@ -287,7 +287,7 @@
           </p>
         </div>
         <div class="support-cta__actions">
-          <a class="btn btn--accent" href="order.html">Book a new session</a>
+          <a class="btn btn--accent" href="../order/">Book a new session</a>
           <a class="btn btn--ghost" href="mailto:support@remnant0.com">Email the studio</a>
         </div>
       </section>

@@ -38,7 +38,7 @@ class LoginForm1 {
 
   async redirectIfAlreadySignedIn() {
     const { data: { session } } = await sb.auth.getSession();
-    if (session) window.location.href = "/login/vault.html";
+    if (session) window.location.href = "/vault/";
   }
 
   addEventListeners() {
@@ -154,7 +154,7 @@ class LoginForm1 {
     link.style.transform = 'scale(0.95)';
     setTimeout(() => {
       link.style.transform = 'scale(1)';
-      window.location.href = 'indexSignup.html';
+      window.location.href = '/signup/';
     }, 120);
   }
 
@@ -243,7 +243,7 @@ class LoginForm1 {
       this.successMessage.classList.add('show');
 
       // quick redirect
-      setTimeout(() => { window.location.href = "vault.html"; }, 900);
+      setTimeout(() => { window.location.href = "/vault/"; }, 900);
     }, 300);
   }
 
