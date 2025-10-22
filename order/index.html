@@ -117,7 +117,7 @@
         <ol class="order-progress" data-progress role="list" aria-label="Order steps">
           <li class="order-progress__step" data-progress-step>
             <span class="order-progress__badge">1</span>
-            <span class="order-progress__label">Package</span>
+            <span class="order-progress__label">Quote</span>
           </li>
           <li class="order-progress__step" data-progress-step>
             <span class="order-progress__badge">2</span>
@@ -146,71 +146,157 @@
           <section
             class="order-step is-active"
             data-step="0"
-            aria-labelledby="step-package-heading"
+            aria-labelledby="step-quote-heading"
           >
             <div class="order-step__content">
               <div class="order-step__intro">
                 <p class="step-kicker">Step 1</p>
-                <h3 id="step-package-heading">Choose your capture package</h3>
+                <h3 id="step-quote-heading">Build your custom capture quote</h3>
                 <p class="step-description">
-                  Each package includes the Remnant crew, PortalCam rig, and your dedicated
-                  archivist. Pick the scope that fits your memory.
+                  Tell us the scope, environment, and production intensity you need. We’ll calculate
+                  the logistics instantly and feed the total into the rest of your order.
                 </p>
               </div>
-              <fieldset class="option-grid" data-package-options>
-                <legend class="sr-only">Capture packages</legend>
-                <label class="option-card">
-                  <input
-                    type="radio"
-                    name="package"
-                    value="Full Home" data-price="1499"
-                    required
-                  />
-                  <div class="option-card__body">
-                    <span class="option-card__eyebrow">Signature</span>
-                    <span class="option-card__title">Full Home Immersion</span>
-                    <p class="option-card__copy">
-                      Every room, every artifact—multi-angle volumetric scan with ambient audio
-                      layers and heirloom cataloguing.
+              <section
+                class="price-estimator"
+                data-price-estimator
+                aria-labelledby="price-estimator-heading"
+              >
+                <div class="price-estimator__header">
+                  <p class="price-estimator__eyebrow">Live quote</p>
+                  <h3 id="price-estimator-heading">Preview your capture investment</h3>
+                  <p class="price-estimator__description">
+                    Adjust the scope and production tier to see a live estimate grounded in our current
+                    pricing model. Add-ons you choose later layer on top of this base quote automatically.
+                  </p>
+                </div>
+                <div class="price-estimator__grid">
+                  <div class="price-estimator__summary" aria-live="polite">
+                    <span class="price-estimator__label">Estimated total</span>
+                    <div class="price-estimator__amount" data-price-amount>
+                      <span class="price-estimator__value" data-price-value>$0</span>
+                    </div>
+                    <span class="price-estimator__exact" data-price-exact>
+                      Quote exact (before rounding): $0.00
+                    </span>
+                    <dl class="price-estimator__breakdown" data-price-breakdown></dl>
+                    <div class="price-estimator__modifiers" data-price-modifiers></div>
+                    <p class="price-estimator__timeline" data-price-timeline>
+                      Standard: ~5–7 business days (up to 10 for very large jobs)
                     </p>
-                    <span class="option-card__price">$1,499</span>
                   </div>
-                </label>
-
-                <label class="option-card">
-                  <input
-                    type="radio"
-                    name="package"
-                    value="Gathering" data-price="1199"
-                  />
-                  <div class="option-card__body">
-                    <span class="option-card__eyebrow">Event</span>
-                    <span class="option-card__title">Gathering Spotlight</span>
-                    <p class="option-card__copy">
-                      Capture a ceremony or celebration with synchronized spatial audio and
-                      cinematic relighting.
-                    </p>
-                    <span class="option-card__price">$1,199</span>
+                  <div class="price-estimator__inputs">
+                    <div class="price-field">
+                      <label for="price-sqft" class="price-field__label">Square footage</label>
+                      <div class="price-field__control">
+                        <input
+                          type="number"
+                          id="price-sqft"
+                          name="sqft"
+                          inputmode="numeric"
+                          min="100"
+                          max="10000"
+                          step="50"
+                          value="1500"
+                          data-price-input="sqft"
+                          required
+                        />
+                      </div>
+                      <p class="price-field__hint" data-price-error="sqft" aria-live="polite"></p>
+                    </div>
+                    <div class="price-field">
+                      <label for="price-distance" class="price-field__label">
+                        Distance from Temecula hub (miles)
+                      </label>
+                      <div class="price-field__control">
+                        <input
+                          type="number"
+                          id="price-distance"
+                          name="distance"
+                          inputmode="numeric"
+                          min="0"
+                          max="150"
+                          step="1"
+                          value="10"
+                          data-price-input="distance"
+                          required
+                        />
+                      </div>
+                      <p class="price-field__hint" data-price-error="distance" aria-live="polite"></p>
+                    </div>
+                    <fieldset class="price-fieldset" data-price-input="environment">
+                      <legend class="price-fieldset__legend">Environment</legend>
+                      <div class="price-options">
+                        <label class="price-option">
+                          <input
+                            type="radio"
+                            name="environment"
+                            value="indoor"
+                            data-price-input="environment"
+                            checked
+                          />
+                          <span>Indoor</span>
+                        </label>
+                        <label class="price-option">
+                          <input
+                            type="radio"
+                            name="environment"
+                            value="outdoor"
+                            data-price-input="environment"
+                          />
+                          <span>Outdoor</span>
+                        </label>
+                        <label class="price-option">
+                          <input
+                            type="radio"
+                            name="environment"
+                            value="both"
+                            data-price-input="environment"
+                          />
+                          <span>Both</span>
+                        </label>
+                      </div>
+                    </fieldset>
+                    <fieldset class="price-fieldset" data-price-input="tier">
+                      <legend class="price-fieldset__legend">Immersion tier</legend>
+                      <div class="price-options">
+                        <label class="price-option">
+                          <input
+                            type="radio"
+                            name="tier"
+                            value="basic"
+                            data-price-input="tier"
+                            checked
+                          />
+                          <span>Basic</span>
+                        </label>
+                        <label class="price-option">
+                          <input
+                            type="radio"
+                            name="tier"
+                            value="realistic"
+                            data-price-input="tier"
+                          />
+                          <span>Realistic</span>
+                        </label>
+                        <label class="price-option">
+                          <input
+                            type="radio"
+                            name="tier"
+                            value="immersive"
+                            data-price-input="tier"
+                          />
+                          <span>Immersive</span>
+                        </label>
+                      </div>
+                    </fieldset>
+                    <label class="price-checkbox">
+                      <input type="checkbox" name="rush" value="rush" data-price-input="rush" />
+                      <span>Rush delivery (+20%)</span>
+                    </label>
                   </div>
-                </label>
-
-                <label class="option-card">
-                  <input
-                    type="radio"
-                    name="package"
-                    value="Artifact" data-price="899"
-                  />
-                  <div class="option-card__body">
-                    <span class="option-card__eyebrow">Focused</span>
-                    <span class="option-card__title">Artifact Capsule</span>
-                    <p class="option-card__copy">
-                      Micro-capture of a single room or collection with macro textures and guided
-                      narrative prompts.
-                    </p>
-                    <span class="option-card__price">$899</span>
-                  </div>
-                </label>
-              </fieldset>
+                </div>
+              </section>
             </div>
           </section>
 
