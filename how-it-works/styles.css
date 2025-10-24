@@ -88,6 +88,7 @@
 
 .hiw-steps {
   margin-bottom: 3.75rem;
+  place-items: center;
 }
 
 .hiw-steps__list {
