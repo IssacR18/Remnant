@@ -1,55 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vault</title>
-  <link rel="icon" href="../images/logo-mark.png" type="image/png" />
-</head>
-<body>
-  <h1>Vault</h1>
-  <p id="welcome"></p>
-  <button id="logoutBtn">Log Out</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remnant Memory Vault | Coming Soon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="../images/logo-mark.png" type="image/png" />
+  </head>
+  <body class="vault-page">
+    <a class="skip-link" href="#vault-main">Skip to content</a>
+    <header class="shell" data-shell>
+      <nav class="nav" aria-label="Primary navigation">
+        <div class="auth-badge" data-auth-status hidden aria-live="polite">
+          <span class="auth-badge__label">Logged in as</span>
+          <span class="auth-badge__email" data-auth-email></span>
+        </div>
 
-  <!-- Supabase client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    /* ==== Supabase config (match login/signup) ==== */
-    const SUPABASE_URL = "https://vtzwjjzmptokrxslfbra.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0endqanptcHRva3J4c2xmYnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2NDk3OTIsImV4cCI6MjA3NjIyNTc5Mn0.g-iatnLPgDERvKcMahD545_qMdYIFDlLeylqtRMz2AM";
-    /* ============================================ */
+        <a class="nav__brand" href="../#top" aria-label="Remnant home">
+          <img
+            src="../images/logo-mark.png"
+            alt="Remnant"
+            class="nav__logo"
+            width="40"
+            height="40"
+          />
+          <span class="nav__wordmark">emnant</span>
+        </a>
 
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true }
-    });
+        <button
+          class="nav__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-menu"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <svg
+            class="nav__toggle-icon"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-hidden="true"
+          >
+            <path
+              class="nav__toggle-icon-bars"
+              d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
 
-    (async () => {
-      // 1️⃣ Check if user is signed in
-      const { data: { session } } = await sb.auth.getSession();
+        <div class="nav__cluster">
+          <div class="nav__links" id="primary-menu">
+            <a href="../#top" class="nav__link">Home</a>
+            <a href="../how-it-works/" class="nav__link">How it works</a>
+            <a href="../stories/" class="nav__link">Stories</a>
+            <a href="../signup/" class="nav__link" data-auth-visible="signed-out">Sign Up</a>
+            <div class="nav__cta">
+              <a class="btn btn--primary" href="../order/">Schedule Scan</a>
+              <a class="btn btn--accent" href="./" aria-current="page">Enter Vault</a>
+              <a class="btn btn--ghost" href="../support/">Support</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
 
-      if (!session) {
-        // Not logged in → redirect to login page
-        window.location.href = "/signin/";
-        return;
-      }
+    <main class="vault" id="vault-main">
+      <div class="auth-badge auth-badge--mobile" data-auth-status-mobile hidden aria-live="polite">
+        <span class="auth-badge__label">Logged in as</span>
+        <span class="auth-badge__email" data-auth-email-mobile></span>
+      </div>
 
-      // 2️⃣ Show basic user info
-      const user = session.user;
-      document.getElementById("welcome").textContent = `Welcome, ${user.email}!`;
+      <section class="vault-hero">
+        <div class="vault-hero__copy">
+          <p class="eyebrow">Remnant Memory Vault</p>
+          <h1>We are crystallizing your memories.</h1>
+          <p class="vault-hero__status">
+            The Vault experience is coming soon. We will notify you the moment your private space opens.
+          </p>
+          <p class="vault-hero__intro">
+            Our archivists are weaving spatial scans, audio splines, and haptic cues into living memory
+            orbs. The vault will ping <span class="vault-hero__email" data-user-email>—</span> the moment
+            the experience is ready to explore.
+          </p>
 
-      // 3️⃣ Keep listening for sign-out from another tab
-      sb.auth.onAuthStateChange((event) => {
-        if (event === "SIGNED_OUT") {
-          window.location.href = "/signin/";
+          <div class="vault-hero__metrics">
+            <article class="vault-metric vault-metric--identity">
+              <span class="vault-metric__label">Vault channel</span>
+              <span class="vault-metric__value" data-user-email>—</span>
+              <span class="vault-metric__hint">End-to-end encrypted destination</span>
+            </article>
+          </div>
+
+          <div class="vault-hero__actions">
+            <button class="btn btn--accent btn--tiny" type="button" data-logout>Log out</button>
+            <a class="btn btn--accent btn--tiny" href="../support/">Talk with Archivist</a>
+          </div>
+
+        </div>
+
+        <div class="vault-hero__simulation" aria-hidden="true">
+          <div class="memory-orb memory-orb--one" data-orb>
+            <span class="memory-orb__core memory-orb__core--cyan"></span>
+          </div>
+          <div class="memory-orb memory-orb--two" data-orb>
+            <span class="memory-orb__core memory-orb__core--violet"></span>
+          </div>
+          <div class="memory-orb memory-orb--three" data-orb>
+            <span class="memory-orb__core memory-orb__core--amber"></span>
+          </div>
+          <div class="memory-orb memory-orb--four" data-orb>
+            <span class="memory-orb__core memory-orb__core--aqua"></span>
+          </div>
+          <div class="memory-orb memory-orb--five" data-orb>
+            <span class="memory-orb__core memory-orb__core--rose"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="vault-panels" aria-labelledby="vault-panels-heading">
+        <div class="section-heading">
+          <h2 id="vault-panels-heading">What is forming inside the vault</h2>
+          <p>
+            Each orb is a layered memory capsule. Together they reconstruct light, emotion, and context so you
+            can revisit more than a point in space—you can revisit how it felt.
+          </p>
+        </div>
+
+        <div class="vault-panels__grid">
+          <article class="vault-panel">
+            <h3>Temporal Threads</h3>
+            <p>
+              Dynamic splines capture the motion and cadence of the room so your vault opens with the same rhythm
+              you remember.
+            </p>
+            <ul class="vault-panel__list">
+              <li>Ambient noise mapped to orbital drift</li>
+              <li>Micro-shadows stitched across frames</li>
+              <li>Time-coded annotations for loved ones</li>
+            </ul>
+          </article>
+
+          <article class="vault-panel">
+            <h3>Echo Layers</h3>
+            <p>
+              Spatial audio excerpts circle each orb, allowing you to orbit through memory by tone, voice, or emotional weight.
+            </p>
+            <ul class="vault-panel__list">
+              <li>Resonance keys blending to a 3D waveform</li>
+              <li>Selective whisper capture for private notes</li>
+              <li>Personal resonance map linked to your login</li>
+            </ul>
+          </article>
+
+          <article class="vault-panel">
+            <h3>Continuum Console</h3>
+            <p>
+              A guided interface arranges every capture into an intuitive flow—zoom out to overview, dive in to revive details.
+            </p>
+            <ul class="vault-panel__list">
+              <li>Contextual cues generated from your stories</li>
+              <li>Motion bookmarks for future memory sharing</li>
+              <li>Immersive playlists synced with each scene</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="vault-timeline" aria-labelledby="vault-timeline-heading">
+        <div class="vault-timeline__header">
+          <h2 id="vault-timeline-heading">Vault assembly pipeline</h2>
+        </div>
+        <ol class="vault-timeline__track">
+          <li class="vault-timeline__item">
+            <span class="vault-timeline__marker">01</span>
+            <div class="vault-timeline__content">
+              <h3>Quantum capture cleanup</h3>
+              <p>We process your memory, clean up movement and began rendering the fragment.</p>
+            </div>
+          </li>
+          <li class="vault-timeline__item">
+            <span class="vault-timeline__marker">02</span>
+            <div class="vault-timeline__content">
+              <h3>Orb synthesis</h3>
+              <p>Fragments become orbs. Each orb receives texture, audio resonance, and navigational vectors for intuitive replay.</p>
+            </div>
+          </li>
+          <li class="vault-timeline__item">
+            <span class="vault-timeline__marker">03</span>
+            <div class="vault-timeline__content">
+              <h3>Sentiment encoding</h3>
+              <p>Personal narratives and emotions align with the orbs so you can feel your memory.</p>
+            </div>
+          </li>
+          <li class="vault-timeline__item">
+            <span class="vault-timeline__marker">04</span>
+            <div class="vault-timeline__content">
+              <h3>Vault ignition</h3>
+              <p>We seal your experience in the Remnant Memory Vault and give a key directly to <span data-user-email>—</span>.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span data-current-year></span> Remnant Labs. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="../scripts/main.js"></script>
+    <script>
+      (function () {
+        const yearEl = document.querySelector("[data-current-year]");
+        if (yearEl) {
+          yearEl.textContent = new Date().getFullYear();
         }
-      });
-    })();
 
-    // 4️⃣ Logout button
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await sb.auth.signOut();
-      window.location.href = "/signin/";
-    });
-  </script>
-</body>
+        if (!window.supabase) return;
+
+        const SUPABASE_URL = "https://vtzwjjzmptokrxslfbra.supabase.co";
+        const SUPABASE_ANON_KEY =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0endqanptcHRva3J4c2xmYnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2NDk3OTIsImV4cCI6MjA3NjIyNTc5Mn0.g-iatnLPgDERvKcMahD545_qMdYIFDlLeylqtRMz2AM";
+
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: { persistSession: true, autoRefreshToken: true }
+        });
+
+        const userEmailTargets = document.querySelectorAll("[data-user-email]");
+        const logoutButton = document.querySelector("[data-logout]");
+
+        const updateEmail = (email) => {
+          userEmailTargets.forEach((node) => {
+            node.textContent = email || "—";
+          });
+        };
+
+        const redirectToSignin = () => {
+          window.location.href = "../signin/";
+        };
+
+        const renderSession = (session) => {
+          const email = session?.user?.email || session?.user?.user_metadata?.email || "";
+          if (!email) {
+            redirectToSignin();
+            return;
+          }
+          updateEmail(email);
+        };
+
+        sb.auth.getSession().then(({ data, error }) => {
+          if (error || !data?.session) {
+            redirectToSignin();
+            return;
+          }
+          renderSession(data.session);
+        });
+
+        sb.auth.onAuthStateChange((event, session) => {
+          if (event === "SIGNED_OUT" || !session) {
+            redirectToSignin();
+            return;
+          }
+          renderSession(session);
+        });
+
+        logoutButton?.addEventListener("click", async () => {
+          try {
+            await sb.auth.signOut();
+          } catch (error) {
+            console.warn("Unable to sign out of Supabase session", error);
+          } finally {
+            redirectToSignin();
+          }
+        });
+      })();
+    </script>
+  </body>
 </html>
