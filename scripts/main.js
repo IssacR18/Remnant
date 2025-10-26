@@ -208,6 +208,35 @@ if (window?.supabase && (authStatusEl || authVisibilityEls.length > 0)) {
     }
   };
 
+  const handleLogoutClick = async (event) => {
+    event.preventDefault();
+    const trigger = event.currentTarget;
+    if (trigger instanceof HTMLButtonElement) {
+      trigger.disabled = true;
+    }
+    try {
+      await sbClient.auth.signOut();
+    } catch (error) {
+      console.warn("Unable to sign out of Supabase session", error);
+    } finally {
+      const redirect = trigger instanceof HTMLElement ? trigger.dataset.logoutRedirect : undefined;
+      if (!redirect || redirect.toLowerCase() === "reload") {
+        window.location.reload();
+      } else {
+        window.location.href = redirect;
+      }
+    }
+  };
+
+  const bindLogoutButtons = () => {
+    document.querySelectorAll("[data-logout]").forEach((node) => {
+      if (!(node instanceof HTMLElement)) return;
+      if (node.dataset.logoutBound === "true") return;
+      node.dataset.logoutBound = "true";
+      node.addEventListener("click", handleLogoutClick);
+    });
+  };
+
   const applyAuthVisibility = (isAuthenticated) => {
     authVisibilityEls.forEach((node) => {
       const visibility = (node.getAttribute("data-auth-visible") || "").toLowerCase();
@@ -221,6 +250,7 @@ if (window?.supabase && (authStatusEl || authVisibilityEls.length > 0)) {
 
   const renderAuthStatus = (session) => {
     dispatchAuthState(session);
+    bindLogoutButtons();
     const email = session?.user?.email || session?.user?.user_metadata?.email || "";
     const isAuthenticated = Boolean(email);
     if (authEmailEl) authEmailEl.textContent = isAuthenticated ? email : "";
@@ -228,6 +258,7 @@ if (window?.supabase && (authStatusEl || authVisibilityEls.length > 0)) {
     applyAuthVisibility(isAuthenticated);
   };
 
+  bindLogoutButtons();
   sbClient.auth.getSession().then(({ data }) => renderAuthStatus(data?.session));
   sbClient.auth.onAuthStateChange((_event, session) => renderAuthStatus(session));
 }

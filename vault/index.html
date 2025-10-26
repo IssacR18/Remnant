@@ -65,6 +65,16 @@
             <a href="../how-it-works/" class="nav__link">How it works</a>
             <a href="../stories/" class="nav__link">Stories</a>
             <a href="../signup/" class="nav__link" data-auth-visible="signed-out">Sign Up</a>
+            <a
+              href="#"
+              class="nav__link nav__link--logout"
+              data-auth-visible="signed-in"
+              data-logout
+              data-logout-redirect="/signin/"
+              hidden
+            >
+              Log Out
+            </a>
             <div class="nav__cta">
               <a class="btn btn--primary" href="../order/">Schedule Scan</a>
               <a class="btn btn--accent" href="./" aria-current="page">Enter Vault</a>
@@ -103,7 +113,7 @@
           </div>
 
           <div class="vault-hero__actions">
-            <button class="btn btn--accent btn--tiny" type="button" data-logout>Log out</button>
+            <button class="btn btn--accent btn--tiny" type="button" data-logout data-logout-redirect="/signin/">Log out</button>
             <a class="btn btn--accent btn--tiny" href="../support/">Talk with Archivist</a>
           </div>
 
@@ -240,7 +250,6 @@
         });
 
         const userEmailTargets = document.querySelectorAll("[data-user-email]");
-        const logoutButton = document.querySelector("[data-logout]");
 
         const updateEmail = (email) => {
           userEmailTargets.forEach((node) => {
@@ -275,16 +284,6 @@
             return;
           }
           renderSession(session);
-        });
-
-        logoutButton?.addEventListener("click", async () => {
-          try {
-            await sb.auth.signOut();
-          } catch (error) {
-            console.warn("Unable to sign out of Supabase session", error);
-          } finally {
-            redirectToSignin();
-          }
         });
       })();
     </script>
