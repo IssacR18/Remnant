@@ -182,8 +182,9 @@ if (convaiWidget) {
 // ----- AUTH STATUS (HOME NAV) -----
 const authStatusEl = document.querySelector("[data-auth-status]");
 const authEmailEl = document.querySelector("[data-auth-email]");
+const authVisibilityEls = document.querySelectorAll("[data-auth-visible]");
 
-if (window?.supabase && authStatusEl && authEmailEl) {
+if (window?.supabase && (authStatusEl || authVisibilityEls.length > 0)) {
   const SUPABASE_URL = "https://vtzwjjzmptokrxslfbra.supabase.co";
   const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0endqanptcHRva3J4c2xmYnJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2NDk3OTIsImV4cCI6MjA3NjIyNTc5Mn0.g-iatnLPgDERvKcMahD545_qMdYIFDlLeylqtRMz2AM";
@@ -207,16 +208,24 @@ if (window?.supabase && authStatusEl && authEmailEl) {
     }
   };
 
+  const applyAuthVisibility = (isAuthenticated) => {
+    authVisibilityEls.forEach((node) => {
+      const visibility = (node.getAttribute("data-auth-visible") || "").toLowerCase();
+      if (visibility === "signed-in" || visibility === "authenticated") {
+        node.toggleAttribute("hidden", !isAuthenticated);
+      } else if (visibility === "signed-out" || visibility === "unauthenticated") {
+        node.toggleAttribute("hidden", isAuthenticated);
+      }
+    });
+  };
+
   const renderAuthStatus = (session) => {
     dispatchAuthState(session);
-    const email = session?.user?.email;
-    if (!email) {
-      authEmailEl.textContent = "";
-      authStatusEl.hidden = true;
-      return;
-    }
-    authEmailEl.textContent = email;
-    authStatusEl.hidden = false;
+    const email = session?.user?.email || session?.user?.user_metadata?.email || "";
+    const isAuthenticated = Boolean(email);
+    if (authEmailEl) authEmailEl.textContent = isAuthenticated ? email : "";
+    if (authStatusEl) authStatusEl.hidden = !isAuthenticated;
+    applyAuthVisibility(isAuthenticated);
   };
 
   sbClient.auth.getSession().then(({ data }) => renderAuthStatus(data?.session));

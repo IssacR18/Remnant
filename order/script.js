@@ -77,6 +77,12 @@ const roundCurrency = (value, precision = 2) => {
 const formatCurrency = (value) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value || 0);
 
+const toNumberOrDefault = (value, fallback) => {
+  if (value === "" || value === null || value === undefined) return fallback;
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+};
+
 const defaultPriceConfig = () => ({
   sqft: PRICE_DEFAULTS.sqft,
   distance: PRICE_DEFAULTS.distance,
@@ -86,13 +92,11 @@ const defaultPriceConfig = () => ({
 });
 
 function estimatePrice(input = {}) {
+  const rawSqft = toNumberOrDefault(input.sqft, PRICE_DEFAULTS.sqft);
+  const rawDistance = toNumberOrDefault(input.distance, PRICE_DEFAULTS.distance);
   const config = {
-    sqft: clamp(Number(input.sqft) || PRICE_DEFAULTS.sqft, PRICE_LIMITS.sqft.min, PRICE_LIMITS.sqft.max),
-    distance: clamp(
-      Number(input.distance) || PRICE_DEFAULTS.distance,
-      PRICE_LIMITS.distance.min,
-      PRICE_LIMITS.distance.max
-    ),
+    sqft: clamp(rawSqft, PRICE_LIMITS.sqft.min, PRICE_LIMITS.sqft.max),
+    distance: clamp(rawDistance, PRICE_LIMITS.distance.min, PRICE_LIMITS.distance.max),
     environment: input.environment && input.environment in PRICE_ENVIRONMENT_MODIFIERS
       ? input.environment
       : PRICE_DEFAULTS.environment,
@@ -208,6 +212,9 @@ const ESTIMATE_TEST_CASES = [
       multiplier: 1,
       totalExact: 550,
       totalRounded: 550
+    },
+    expectedConfig: {
+      distance: 0
     }
   }
 ];
@@ -218,8 +225,13 @@ const runEstimateTests = () => {
   ESTIMATE_TEST_CASES.forEach((test) => {
     const result = estimatePrice(test.input);
     const expected = test.expected;
+    const expectedConfig = test.expectedConfig || null;
     const almostEqual = (a, b, tolerance = 0.01) => Math.abs(a - b) <= tolerance;
+    const configMatches = expectedConfig
+      ? Object.entries(expectedConfig).every(([key, value]) => result.config?.[key] === value)
+      : true;
     const pass =
+      configMatches &&
       almostEqual(result.baseFee, expected.baseFee) &&
       almostEqual(result.travelFee, expected.travelFee) &&
       almostEqual(result.scanFee, expected.scanFee) &&

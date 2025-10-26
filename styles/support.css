@@ -1,5 +1,6 @@
 :root {
   color-scheme: dark;
+  
 }
 
 .btn--current {
@@ -144,6 +145,7 @@
 
 .support-status__intro p {
   color: var(--muted);
+  
 }
 
 .support-status__steps {

@@ -61,7 +61,7 @@
             <a href="../#top" class="nav__link">Home</a>
             <a href="../how-it-works/" class="nav__link">How it works</a>
             <a href="../stories/" class="nav__link">Stories</a>
-            <a href="../signup/" class="nav__link">Sign Up</a>
+            <a href="../signup/" class="nav__link" data-auth-visible="signed-out">Sign Up</a>
             <div class="nav__cta">
               <a class="btn btn--primary" href="./" aria-current="page">Schedule Scan</a>
               <a class="btn btn--accent" href="../vault/">Enter Vault</a>
@@ -76,7 +76,7 @@
       <section class="order-hero">
         <div class="order-hero__content">
           <p class="eyebrow">Remnant Order Portal</p>
-          <h1>Craft your capture itinerary in five luminous steps.</h1>
+          <h1>Craft your Remnant order in five luminous steps.</h1>
           <p>
             Tell us what you want to preserve, where to arrive, and how you would like your
             vault prepared. We will choreograph the entire session and send a confirmation the
@@ -99,7 +99,7 @@
           <h2>Sign in to place an order</h2>
           <p>
             You&apos;ll need to be logged in so we can attach this order to your vault. Sign in or
-            create an account—your progress will be waiting here when you return.
+            create an account and your progress will be waiting here when you return.
           </p>
           <div class="order-gate__actions">
             <a class="btn btn--primary" href="../signin/">Sign in</a>
@@ -157,19 +157,7 @@
                   the logistics instantly and feed the total into the rest of your order.
                 </p>
               </div>
-              <section
-                class="price-estimator"
-                data-price-estimator
-                aria-labelledby="price-estimator-heading"
-              >
-                <div class="price-estimator__header">
-                  <p class="price-estimator__eyebrow">Live quote</p>
-                  <h3 id="price-estimator-heading">Preview your capture investment</h3>
-                  <p class="price-estimator__description">
-                    Adjust the scope and production tier to see a live estimate grounded in our current
-                    pricing model. Add-ons you choose later layer on top of this base quote automatically.
-                  </p>
-                </div>
+              <div class="price-estimator" data-price-estimator>
                 <div class="price-estimator__grid">
                   <div class="price-estimator__summary" aria-live="polite">
                     <span class="price-estimator__label">Estimated total</span>
@@ -296,7 +284,7 @@
                     </label>
                   </div>
                 </div>
-              </section>
+              </div>
             </div>
           </section>
 
