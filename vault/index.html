@@ -85,6 +85,9 @@
         <div class="vault-hero__copy">
           <p class="eyebrow">Remnant Memory Vault</p>
           <h1>We are crystallizing your memories.</h1>
+          <p class="vault-hero__status">
+            The Vault experience is coming soon. We will notify you the moment your private space opens.
+          </p>
           <p class="vault-hero__intro">
             Our archivists are weaving spatial scans, audio splines, and haptic cues into living memory
             orbs. The vault will ping <span class="vault-hero__email" data-user-email>—</span> the moment
@@ -97,32 +100,16 @@
               <span class="vault-metric__value" data-user-email>—</span>
               <span class="vault-metric__hint">End-to-end encrypted destination</span>
             </article>
-
-            <article class="vault-metric vault-metric--dial">
-              <span class="vault-metric__label">Synthesis index</span>
-              <div class="vault-metric__dial">
-                <span class="vault-metric__dial-value" data-progress-value>72.0</span>
-                <span class="vault-metric__unit">%</span>
-              </div>
-              <span class="vault-metric__hint" data-progress-phase>Linking spatial fragments</span>
-            </article>
           </div>
 
           <div class="vault-hero__actions">
-            <button class="btn btn--ghost btn--tiny" type="button" data-logout>Log out</button>
+            <button class="btn btn--accent btn--tiny" type="button" data-logout>Log out</button>
             <a class="btn btn--accent btn--tiny" href="../support/">Talk with Archivist</a>
           </div>
 
-          <p class="vault-hero__disclaimer">
-            The simulation below is a live preview of how we bundle emotional resonance into navigable memory orbs.
-          </p>
         </div>
 
         <div class="vault-hero__simulation" aria-hidden="true">
-          <div class="memory-thread memory-thread--one"></div>
-          <div class="memory-thread memory-thread--two"></div>
-          <div class="memory-thread memory-thread--three"></div>
-
           <div class="memory-orb memory-orb--one" data-orb>
             <span class="memory-orb__core memory-orb__core--cyan"></span>
           </div>
@@ -193,16 +180,13 @@
       <section class="vault-timeline" aria-labelledby="vault-timeline-heading">
         <div class="vault-timeline__header">
           <h2 id="vault-timeline-heading">Vault assembly pipeline</h2>
-          <p>
-            You are currently in the synthesis stage. Once the index stabilizes we deliver a secure invite with your unique orb alignment key.
-          </p>
         </div>
         <ol class="vault-timeline__track">
           <li class="vault-timeline__item">
             <span class="vault-timeline__marker">01</span>
             <div class="vault-timeline__content">
               <h3>Quantum capture cleanup</h3>
-              <p>We remove scan noise, calibrate light falloff, and normalize the volumetric field that anchors your scene.</p>
+              <p>We process your memory, clean up movement and began rendering the fragment.</p>
             </div>
           </li>
           <li class="vault-timeline__item">
@@ -216,29 +200,20 @@
             <span class="vault-timeline__marker">03</span>
             <div class="vault-timeline__content">
               <h3>Sentiment encoding</h3>
-              <p>Personal narratives and tagged emotions align with the orbs so you can filter experiences by how they feel.</p>
+              <p>Personal narratives and emotions align with the orbs so you can feel your memory.</p>
             </div>
           </li>
           <li class="vault-timeline__item">
             <span class="vault-timeline__marker">04</span>
             <div class="vault-timeline__content">
               <h3>Vault ignition</h3>
-              <p>We seal your experience in the Remnant Memory Fabric and deliver an invite directly to <span data-user-email>—</span>.</p>
+              <p>We seal your experience in the Remnant Memory Vault and give a key directly to <span data-user-email>—</span>.</p>
             </div>
           </li>
         </ol>
       </section>
 
-      <section class="vault-signal" aria-live="polite">
-        <div class="vault-signal__glow" aria-hidden="true"></div>
-        <div class="vault-signal__copy">
-          <h2>Signal locked.</h2>
-          <p>
-            Once the Synthesis Index peaks, we transmit a launch key to <span data-user-email>—</span> with access instructions.
-            Feel free to stay on this page—the orbs will keep evolving in real time.
-          </p>
-        </div>
-      </section>
+      
     </main>
 
     <footer class="site-footer">
@@ -266,11 +241,6 @@
 
         const userEmailTargets = document.querySelectorAll("[data-user-email]");
         const logoutButton = document.querySelector("[data-logout]");
-        const progressValueEl = document.querySelector("[data-progress-value]");
-        const progressPhaseEl = document.querySelector("[data-progress-phase]");
-        const prefersReducedMotion = window.matchMedia
-          ? window.matchMedia("(prefers-reduced-motion: reduce)")
-          : { matches: false };
 
         const updateEmail = (email) => {
           userEmailTargets.forEach((node) => {
@@ -316,46 +286,6 @@
             redirectToSignin();
           }
         });
-
-        if (progressValueEl && !prefersReducedMotion.matches) {
-          const phases = [
-            "Sequencing photons",
-            "Linking spatial fragments",
-            "Calibrating resonance",
-            "Encoding tactile cues",
-            "Anchoring temporal drift"
-          ];
-          let progress = Number(progressValueEl.textContent) || 72;
-          let direction = 1;
-          let phaseIndex = 0;
-
-          const updatePhase = () => {
-            if (progressPhaseEl) {
-              progressPhaseEl.textContent = phases[phaseIndex % phases.length];
-            }
-            phaseIndex += 1;
-          };
-          updatePhase();
-
-          const tick = () => {
-            progress += direction * (Math.random() * 0.6 + 0.2);
-            if (progress >= 97) {
-              progress = 97;
-              direction = -1;
-              updatePhase();
-            } else if (progress <= 48) {
-              progress = 48;
-              direction = 1;
-              updatePhase();
-            }
-            progressValueEl.textContent = progress.toFixed(1);
-            window.setTimeout(tick, 900 + Math.random() * 800);
-          };
-
-          tick();
-        } else if (progressPhaseEl) {
-          progressPhaseEl.textContent = "Synthesis steady";
-        }
       })();
     </script>
   </body>

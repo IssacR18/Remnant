@@ -75,6 +75,13 @@
   margin-bottom: 1.25rem;
 }
 
+.vault-hero__status {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
 .vault-hero__intro {
   color: var(--muted);
   max-width: 36ch;
@@ -130,30 +137,6 @@
   display: block;
 }
 
-.vault-metric--dial {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.vault-metric__dial {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.25rem;
-  font-weight: 600;
-}
-
-.vault-metric__dial-value {
-  font-size: 2.25rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.vault-metric__unit {
-  font-size: 1rem;
-  color: var(--muted);
-}
-
 .vault-hero__actions {
   display: flex;
   flex-wrap: wrap;
@@ -200,55 +183,6 @@
   }
   50% {
     transform: scale(1.06);
-    opacity: 1;
-  }
-}
-
-.memory-thread {
-  position: absolute;
-  inset: 12% 20%;
-  border-radius: 999px;
-  border: 1px solid rgba(124, 242, 208, 0.25);
-  filter: drop-shadow(0 0 18px rgba(124, 242, 208, 0.25));
-  mix-blend-mode: screen;
-  animation: thread-shift 18s ease-in-out infinite;
-  z-index: 1;
-}
-
-.memory-thread::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(90deg, rgba(124, 242, 208, 0.2), transparent 60%);
-}
-
-.memory-thread--one {
-  animation-duration: 18s;
-}
-
-.memory-thread--two {
-  inset: 18% 10%;
-  border-color: rgba(131, 166, 255, 0.22);
-  animation-duration: 22s;
-  animation-delay: -6s;
-}
-
-.memory-thread--three {
-  inset: 25% 25%;
-  border-color: rgba(124, 242, 208, 0.16);
-  animation-duration: 26s;
-  animation-delay: -12s;
-}
-
-@keyframes thread-shift {
-  0%,
-  100% {
-    transform: rotate(12deg) scale(0.96);
-    opacity: 0.8;
-  }
-  50% {
-    transform: rotate(-8deg) scale(1.05);
     opacity: 1;
   }
 }
@@ -621,7 +555,6 @@
 @media (prefers-reduced-motion: reduce) {
   .vault-hero::before,
   .vault-hero__simulation::before,
-  .memory-thread,
   .memory-orb,
   .memory-orb__core,
   .vault-signal__glow {
