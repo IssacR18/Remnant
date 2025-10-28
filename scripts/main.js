@@ -3,6 +3,31 @@ const COMING_SOON_STORAGE_KEY = "remnantComingSoonDismissed";
 const comingSoonModal = document.querySelector("[data-coming-soon-modal]");
 const comingSoonClose = comingSoonModal?.querySelector("[data-modal-close]");
 
+const comingSoonDismissedCallbacks = [];
+let comingSoonHasBeenDismissed = false;
+
+const triggerComingSoonDismissed = () => {
+  if (comingSoonHasBeenDismissed) return;
+  comingSoonHasBeenDismissed = true;
+  while (comingSoonDismissedCallbacks.length) {
+    const callback = comingSoonDismissedCallbacks.shift();
+    try {
+      callback?.();
+    } catch (error) {
+      console.error("Remnant coming soon dismissal callback failed:", error);
+    }
+  }
+};
+
+const onComingSoonDismissed = (callback) => {
+  if (typeof callback !== "function") return;
+  if (comingSoonHasBeenDismissed) {
+    callback();
+  } else {
+    comingSoonDismissedCallbacks.push(callback);
+  }
+};
+
 const markComingSoonDismissed = () => {
   try {
     window.localStorage?.setItem(COMING_SOON_STORAGE_KEY, "true");
@@ -25,6 +50,7 @@ const closeComingSoonModal = () => {
   comingSoonModal.setAttribute("data-modal-open", "false");
   comingSoonModal.setAttribute("aria-hidden", "true");
   markComingSoonDismissed();
+  triggerComingSoonDismissed();
   return true;
 };
 
@@ -42,11 +68,67 @@ if (comingSoonModal) {
   } else {
     comingSoonModal.setAttribute("data-modal-open", "false");
     comingSoonModal.setAttribute("aria-hidden", "true");
+    triggerComingSoonDismissed();
   }
 
   comingSoonClose?.addEventListener("click", closeComingSoonModal);
   comingSoonModal.addEventListener("click", (event) => {
     if (event.target === comingSoonModal) closeComingSoonModal();
+  });
+} else {
+  triggerComingSoonDismissed();
+}
+
+// ----- COOKIE CONSENT BANNER -----
+const COOKIE_STORAGE_KEY = "remnantEssentialCookiesAcknowledged";
+const cookieBanner = document.querySelector("[data-cookie-banner]");
+const cookieDismiss = document.querySelector("[data-cookie-dismiss]");
+
+const setCookieBannerVisibility = (visible) => {
+  if (!cookieBanner) return;
+  cookieBanner.setAttribute("data-visible", visible ? "true" : "false");
+  cookieBanner.setAttribute("aria-hidden", visible ? "false" : "true");
+};
+
+const markCookieConsent = () => {
+  try {
+    window.localStorage?.setItem(COOKIE_STORAGE_KEY, "true");
+  } catch (error) {
+    // Ignore storage limitations (private mode, etc.)
+  }
+};
+
+const hasCookieConsent = () => {
+  try {
+    return window.localStorage?.getItem(COOKIE_STORAGE_KEY) === "true";
+  } catch (error) {
+    return false;
+  }
+};
+
+const showCookieBanner = () => setCookieBannerVisibility(true);
+const hideCookieBanner = () => setCookieBannerVisibility(false);
+
+const maybeShowCookieBanner = () => {
+  if (!cookieBanner) return;
+  if (hasCookieConsent()) {
+    hideCookieBanner();
+  } else {
+    showCookieBanner();
+  }
+};
+
+if (cookieDismiss) {
+  cookieDismiss.addEventListener("click", () => {
+    markCookieConsent();
+    hideCookieBanner();
+  });
+}
+
+if (cookieBanner) {
+  hideCookieBanner();
+  onComingSoonDismissed(() => {
+    window.setTimeout(maybeShowCookieBanner, 400);
   });
 }
 
