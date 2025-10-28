@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remnant | Refund &amp; Cancellation Policy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../styles/main.css" />
+    <link rel="stylesheet" href="../../styles/refund.css" />
+    <link rel="icon" href="../../images/logo-mark.png" type="image/png" />
+  </head>
+  <body class="refund-page">
+    <a class="skip-link" href="#refund-main">Skip to content</a>
+    <header class="shell" data-shell>
+      <nav class="nav" aria-label="Primary navigation">
+        <div class="auth-badge" data-auth-status hidden aria-live="polite">
+          <span class="auth-badge__label">Logged in as</span>
+          <span class="auth-badge__email" data-auth-email></span>
+        </div>
+
+        <a class="nav__brand" href="../../#top" aria-label="Remnant home">
+          <img
+            src="../../images/logo-mark.png"
+            alt="Remnant"
+            class="nav__logo"
+            width="40"
+            height="40"
+          />
+          <span class="nav__wordmark">emnant</span>
+        </a>
+
+        <button
+          class="nav__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-menu"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <svg
+            class="nav__toggle-icon"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-hidden="true"
+          >
+            <path
+              class="nav__toggle-icon-bars"
+              d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+
+        <div class="nav__cluster">
+          <div class="nav__links" id="primary-menu">
+            <a href="../../#top" class="nav__link">Home</a>
+            <a href="../../how-it-works/" class="nav__link">How it works</a>
+            <a href="../../stories/" class="nav__link">Stories</a>
+            <a href="../../signup/" class="nav__link" data-auth-visible="signed-out">Sign Up</a>
+            <a
+              href="#"
+              class="nav__link nav__link--logout"
+              data-auth-visible="signed-in"
+              data-logout
+              data-logout-redirect="/signin/"
+              hidden
+            >
+              Log Out
+            </a>
+            <div class="nav__cta">
+              <a class="btn btn--primary" href="../../order/">Schedule Scan</a>
+              <a class="btn btn--accent" href="../../vault/">Enter Vault</a>
+              <a class="btn btn--ghost" href="../../support/">Support</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main id="refund-main" class="refund">
+      <section class="refund-hero" aria-labelledby="refund-hero-heading">
+        <div class="refund-hero__content">
+          <h1 id="refund-hero-heading">Refund &amp; Cancellation Policy</h1>
+          <p>
+            Booking a capture is a big decision. This guide explains how deposits, cancellations, and refunds work so you
+            always know what to expect—and how to reach us if something changes.
+          </p>
+          <dl class="refund-hero__meta">
+            <div>
+              <dt>Last updated</dt>
+              <dd>October 28, 2025</dd>
+            </div>
+            <div>
+              <dt>Applies to</dt>
+              <dd>All Remnant capture appointments</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="refund-hero__card">
+          <h2>Quick snapshot</h2>
+          <ul>
+            <li>Deposits secure your capture slot.</li>
+            <li>Cancel 48+ hours ahead for a full refund.</li>
+            <li>Post-capture refunds go up to 80% after review.</li>
+            <li>We respond quickly via <a href="mailto:remnantzoria@gmail.com">remnantzoria@gmail.com</a>.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="refund-section" id="deposits" aria-labelledby="deposits-heading">
+        <header class="refund-section__header">
+          <h2 id="deposits-heading">Deposits</h2>
+          <p>
+            We reserve a dedicated team and specialized equipment for every appointment. Deposits help us lock in your capture
+            window and coordinate the right archivists.
+          </p>
+        </header>
+        <div class="refund-grid">
+          <article class="refund-card" data-refund-card>
+            <h3>How deposits work</h3>
+            <ul>
+              <li>A deposit is required to secure each scan appointment.</li>
+              <li>$200 for small jobs, $400 for large jobs.</li>
+              <li>Applied toward the total cost of your capture.</li>
+            </ul>
+          </article>
+          <article class="refund-card" data-refund-card>
+            <h3>Why they matter</h3>
+            <p>
+              When you book, we block off travel time, prep your gear loadout, and stage a memory technician to your location.
+              The deposit keeps everything ready for you.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="refund-section" id="cancellations" aria-labelledby="cancellations-heading">
+        <header class="refund-section__header">
+          <h2 id="cancellations-heading">Cancellations</h2>
+          <p>
+            Plans change—we get it. Let us know as soon as possible so we can offer your slot to another family or creator and
+            get you rescheduled without stress.
+          </p>
+        </header>
+        <div class="refund-timeline" aria-label="Cancellation windows">
+          <article class="refund-timeline__item">
+            <span class="refund-timeline__label">48+ hours before</span>
+            <div class="refund-timeline__content">
+              <h3>Full refund</h3>
+              <p>Your deposit and any additional payments are fully refunded, no questions asked.</p>
+            </div>
+          </article>
+          <article class="refund-timeline__item">
+            <span class="refund-timeline__label">&lt; 48 hours before</span>
+            <div class="refund-timeline__content">
+              <h3>Deposit retained</h3>
+              <p>
+                The deposit becomes non-refundable, since our team is already en route and the gear is reserved specifically for you.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="refund-section" id="post-capture" aria-labelledby="post-capture-heading">
+        <header class="refund-section__header">
+          <h2 id="post-capture-heading">Refunds after your capture</h2>
+          <p>
+            We want you to love the finished memory. If something feels off, reach out and we’ll work through it together.
+          </p>
+        </header>
+        <div class="refund-grid refund-grid--post">
+          <article class="refund-card" data-refund-card>
+            <h3>Requesting a review</h3>
+            <p>
+              Email <a href="mailto:remnantzoria@gmail.com">remnantzoria@gmail.com</a> with your order details and what you’d like us to revisit.
+              A technician will respond quickly to set expectations.
+            </p>
+          </article>
+          <article class="refund-card" data-refund-card>
+            <h3>How we evaluate</h3>
+            <ul>
+              <li>A dedicated technician reviews the capture quality and your notes.</li>
+              <li>We determine the fairest resolution based on what can be corrected.</li>
+              <li>Refunds can reach up to 80% of the total capture price (excluding the deposit).</li>
+            </ul>
+          </article>
+          <article class="refund-card refund-card--highlight" data-refund-card>
+            <h3>Alternate options</h3>
+            <p>
+              Prefer to keep the work? You can choose to receive the raw <code>.ply</code> file of your scan in addition to, or instead of,
+              a partial refund. We’ll make sure you get the assets you need.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="refund-section" id="how-to-request" aria-labelledby="how-to-request-heading">
+        <div class="refund-request">
+          <div class="refund-request__content">
+            <h2 id="how-to-request-heading">How to request a cancellation or refund</h2>
+            <p>
+              Reach out to us at <a href="mailto:remnantzoria@gmail.com">remnantzoria@gmail.com</a> with your name, order details, and a short description of
+              the issue. You’ll hear back from a Remnant archivist who can guide you through the next steps.
+            </p>
+            <p class="refund-request__confidence">
+              We aim to respond within one business day, and faster for urgent day-of capture changes.
+            </p>
+          </div>
+          <div class="refund-request__cta">
+            <a class="btn btn--ghost" href="mailto:remnantzoria@gmail.com">Email the support studio</a>
+            <a class="btn btn--ghost" href="../../support/">Visit the Support Studio</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span data-current-year></span> Remnant Labs. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="../../scripts/main.js"></script>
+    <script>
+      document.querySelector("[data-current-year]").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
+
