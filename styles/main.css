@@ -160,7 +160,7 @@ ul {
 .auth-badge {
   position: absolute;       /* positioned relative to .shell (sticky is positioned) */
   right: 100%;              /* place the badge immediately to the left of the shell */
-  margin-right: 100px;       /* gap between badge and bubble edge */
+  margin-right: 32px;       /* gap between badge and bubble edge */
   top: 50%;
   transform: translateY(-50%);
   display: inline-flex;
@@ -191,7 +191,7 @@ ul {
     display: inline-flex;
     position: absolute;
     right: 100%;
-    margin-right: 100px;      /* your preferred spacing */
+    margin-right: 32px;      /* your preferred spacing */
     top: 50%;
     transform: translateY(-50%);
     padding: 0.35rem 0.9rem;
@@ -267,6 +267,75 @@ ul {
   color: var(--muted);
   font-size: 0.95rem;
   padding: 0.25rem 0.5rem;
+  position: relative;
+  border-radius: 999px;
+  transition: color 0.25s ease, transform 0.25s ease, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nav__link--core {
+  color: var(--muted);
+  padding: 0.35rem 0.85rem;
+}
+
+.nav__link--core:hover,
+.nav__link--core:focus {
+  color: var(--text);
+  transform: translateY(-2px);
+}
+
+.nav__link--core.nav__link--active {
+  color: var(--text);
+  background: rgba(130, 166, 255, 0.16);
+  box-shadow: 0 10px 28px rgba(50, 87, 255, 0.24);
+}
+
+.nav__link--ghost {
+  padding: 0.35rem 0.95rem;
+  border: 1px solid transparent;
+}
+
+.nav__link--ghost:hover,
+.nav__link--ghost:focus {
+  border-color: rgba(124, 242, 208, 0.6);
+  background: rgba(124, 242, 208, 0.08);
+  color: var(--text);
+}
+
+.nav__link--ghost.nav__link--active {
+  border-color: rgba(124, 242, 208, 0.85);
+  color: var(--text);
+}
+
+.nav__link--energy {
+  background: linear-gradient(120deg, var(--accent) 0%, var(--primary) 100%);
+  color: #041b18;
+  padding: 0.4rem 1rem;
+  box-shadow: 0 10px 25px rgba(124, 242, 208, 0.3);
+  background-size: 180% 180%;
+}
+
+.nav__link--energy:hover,
+.nav__link--energy:focus {
+  animation: navEnergyShimmer 2.8s linear infinite;
+  transform: translateY(-1px);
+}
+
+.nav__link--glass {
+  display: none;
+  color: var(--text);
+}
+
+.nav__link--danger {
+  background: rgba(255, 102, 128, 0.18);
+  color: #ffe3e9;
+  padding: 0.35rem 0.9rem;
+}
+
+.nav__link--danger:hover,
+.nav__link--danger:focus {
+  background: rgba(255, 102, 128, 0.28);
+  color: #ffffff;
+  transform: translateY(-1px) scale(0.98);
 }
 
 .nav__cta {
@@ -353,6 +422,63 @@ ul {
 .btn--accent {
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
   color: #052620;
+}
+
+.btn--energy {
+  background: linear-gradient(120deg, #7cf2d0 0%, #83a6ff 100%);
+  color: #041b18;
+  box-shadow: 0 18px 40px rgba(124, 242, 208, 0.4);
+  background-size: 220% 220%;
+  animation: btnEnergyFlow 6s ease-in-out infinite;
+}
+
+.btn--energy:hover,
+.btn--energy:focus {
+  animation-duration: 2.4s;
+  box-shadow: 0 22px 48px rgba(124, 242, 208, 0.45);
+}
+
+.btn--energy-strong {
+  background: linear-gradient(140deg, #9bf6ff 0%, #7cf2d0 35%, #83a6ff 100%);
+  color: #05121d;
+  box-shadow: 0 20px 50px rgba(124, 242, 208, 0.55);
+  border: 1px solid rgba(124, 242, 208, 0.55);
+  animation: btnEnergyPulse 4.8s ease-in-out infinite;
+}
+
+.btn--energy-strong:hover,
+.btn--energy-strong:focus {
+  animation-duration: 2.6s;
+  box-shadow: 0 26px 60px rgba(124, 242, 208, 0.6);
+}
+
+.btn--glass {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(124, 242, 208, 0.32);
+  color: var(--text);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 16px 36px rgba(124, 242, 208, 0.2);
+  animation: btnGlassPulse 7s ease-in-out infinite;
+}
+
+.btn--glass:hover,
+.btn--glass:focus {
+  box-shadow: 0 20px 42px rgba(124, 242, 208, 0.28);
+}
+
+.btn--soft-danger {
+  background: rgba(255, 102, 128, 0.2);
+  color: #ffe6ec;
+  border: 1px solid rgba(255, 128, 154, 0.35);
+  box-shadow: 0 14px 30px rgba(255, 102, 128, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.btn--soft-danger:hover,
+.btn--soft-danger:focus {
+  background: rgba(255, 102, 128, 0.28);
+  box-shadow: 0 18px 36px rgba(255, 102, 128, 0.4);
+  transform: translateY(-3px) scale(0.98);
 }
 
 .nav__toggle {
@@ -665,36 +791,81 @@ ul {
     display: block;
     width: 100%;
     text-align: center;
-    padding: 0.9rem 1.1rem;
+    padding: 0.95rem 1.1rem;
     border-radius: 999px;
     font-weight: 600;
-    text-decoration: none;               /* no underline for buttons */
-    box-shadow: 0 12px 30px rgba(50, 87, 255, 0.35);
+    text-decoration: none;
+    transition: transform 0.25s ease, box-shadow 0.3s ease, background 0.3s ease,
+      border-color 0.3s ease, color 0.3s ease;
   }
 
-  /* Make the text buttons (How it works / Stories / Log in) look like Schedule Scan */
   .nav__links > a.nav__link {
-    color: #fff;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+    box-shadow: 0 12px 30px rgba(50, 87, 255, 0.25);
   }
 
-  /* Optional: give each link its own color while keeping the same style */
-  .nav__links > a.nav__link:nth-of-type(1) {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%); /* Home */
-  }
-  .nav__links > a.nav__link:nth-of-type(2) {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%); /* How it works */
-  }
-  .nav__links > a.nav__link:nth-of-type(3) {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);   /* Stories */
-    color: #052620;
-  }
-  .nav__links > a.nav__link:nth-of-type(4) {
-    background: linear-gradient(135deg, #a98aff 0%, #6e53ff 100%);                      /* Sign Up (purple) */
-    color: #fff;
+  .nav__link--core {
+    background: rgba(12, 17, 36, 0.88);
+    border: 1px solid rgba(130, 164, 255, 0.28);
+    color: var(--text);
   }
 
-  /* Keep hover/focus clean (no underline) */
+  .nav__link--core.nav__link--active {
+    border-color: rgba(130, 164, 255, 0.6);
+    box-shadow: 0 16px 38px rgba(50, 87, 255, 0.35);
+  }
+
+  .nav__link--ghost {
+    background: rgba(9, 14, 30, 0.6);
+    border: 1px solid rgba(124, 242, 208, 0.25);
+    color: var(--text);
+    box-shadow: none;
+  }
+
+  .nav__link--ghost:hover,
+  .nav__link--ghost:focus {
+    border-color: rgba(124, 242, 208, 0.6);
+    box-shadow: 0 0 24px rgba(124, 242, 208, 0.28);
+  }
+
+  .nav__link--energy {
+    background: linear-gradient(120deg, #7cf2d0 0%, #83a6ff 100%);
+    color: #041b18;
+    border: none;
+    box-shadow: 0 18px 40px rgba(124, 242, 208, 0.45);
+    animation: navEnergyBreath 6s ease-in-out infinite;
+  }
+
+  .nav__link--energy:hover,
+  .nav__link--energy:focus {
+    animation-duration: 2.2s;
+  }
+
+  .nav__link--glass {
+    display: block;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(124, 242, 208, 0.32);
+    color: var(--text);
+    box-shadow: 0 12px 32px rgba(124, 242, 208, 0.22);
+  }
+
+  .nav__link--glass:hover,
+  .nav__link--glass:focus {
+    box-shadow: 0 0 26px rgba(124, 242, 208, 0.45);
+  }
+
+  .nav__link--danger {
+    background: rgba(255, 102, 128, 0.22);
+    border: 1px solid rgba(255, 128, 154, 0.35);
+    color: #ffe6ec;
+    box-shadow: 0 12px 28px rgba(255, 102, 128, 0.45);
+  }
+
+  .nav__link--danger:hover,
+  .nav__link--danger:focus {
+    background: rgba(255, 102, 128, 0.3);
+    transform: translateY(-2px) scale(0.99);
+  }
+
   .nav__links > a:hover,
   .nav__links > a:focus {
     text-decoration: none;
@@ -765,6 +936,54 @@ ul {
   }
 }
 
+@keyframes navEnergyShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes navEnergyBreath {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(124, 242, 208, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(124, 242, 208, 0.35));
+  }
+}
+
+@keyframes btnEnergyFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes btnEnergyPulse {
+  0%,
+  100% {
+    box-shadow: 0 20px 50px rgba(124, 242, 208, 0.5);
+  }
+  50% {
+    box-shadow: 0 25px 58px rgba(124, 242, 208, 0.65);
+  }
+}
+
+@keyframes btnGlassPulse {
+  0%,
+  100% {
+    box-shadow: 0 16px 36px rgba(124, 242, 208, 0.18);
+  }
+  50% {
+    box-shadow: 0 20px 40px rgba(124, 242, 208, 0.26);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -774,4 +993,8 @@ ul {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+.is-auth-hidden {
+  display: none !important;
 }
