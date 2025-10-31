@@ -24,8 +24,8 @@ const PROGRESSIVE_FIELDS = [
 
 const PRICE_DEFAULTS = Object.freeze({
   sqft: 1500,
-  environment: "indoor",
-  tier: "basic",
+  environment: null,
+  tier: null,
   rush: false
 });
 
@@ -59,6 +59,25 @@ const PRICE_DELIVERY_HINTS = Object.freeze({
   standard: "Standard: ~5–7 business days (up to 10 for very large jobs)"
 });
 
+const travelConfig = (() => {
+  const raw = window.__remnantTravelConfig ?? {};
+  const parseNumber = (value) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  };
+  return {
+    hubLat: parseNumber(raw.hubLat),
+    hubLng: parseNumber(raw.hubLng),
+    apiKey: typeof raw.apiKey === "string" ? raw.apiKey.trim() : "",
+    mode: raw.mode === "client" ? "client" : "auto"
+  };
+})();
+
+const hasClientTravelConfig =
+  Number.isFinite(travelConfig.hubLat) &&
+  Number.isFinite(travelConfig.hubLng) &&
+  Boolean(travelConfig.apiKey);
+
 const clamp = (value, min, max) => {
   if (!Number.isFinite(value)) return min;
   return Math.min(Math.max(value, min), max);
@@ -70,8 +89,31 @@ const roundCurrency = (value, precision = 2) => {
   return Math.round((value + Number.EPSILON) * factor) / factor;
 };
 
+const computeTravelFeeFromMiles = (miles) => {
+  if (!Number.isFinite(miles)) return 0;
+  let fee = 0;
+  if (miles > 10) {
+    const stepA = Math.min(miles, 30) - 10;
+    if (stepA > 0) fee += stepA * 1.25;
+  }
+  if (miles > 30) {
+    const stepB = Math.min(miles, 60) - 30;
+    if (stepB > 0) fee += stepB * 1.75;
+  }
+  if (miles > 60) {
+    const stepC = miles - 60;
+    fee += stepC * 2.25 + 50;
+  }
+  return roundCurrency(fee, 2);
+};
+
 const formatCurrency = (value) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value || 0);
+
+const toTitleCase = (value) => {
+  if (!value || typeof value !== "string") return "";
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
 
 const toNumberOrDefault = (value, fallback) => {
   if (value === "" || value === null || value === undefined) return fallback;
@@ -88,12 +130,19 @@ const defaultPriceConfig = () => ({
 
 function estimatePrice(input = {}) {
   const rawSqft = toNumberOrDefault(input.sqft, PRICE_DEFAULTS.sqft);
+  const selectedEnvironment =
+    input.environment && input.environment in PRICE_ENVIRONMENT_MODIFIERS
+      ? input.environment
+      : null;
+  const selectedTier =
+    input.tier && input.tier in PRICE_TIER_MODIFIERS ? input.tier : null;
+  const effectiveEnvironment = selectedEnvironment || "indoor";
+  const effectiveTier = selectedTier || "basic";
+
   const config = {
     sqft: clamp(rawSqft, PRICE_LIMITS.sqft.min, PRICE_LIMITS.sqft.max),
-    environment: input.environment && input.environment in PRICE_ENVIRONMENT_MODIFIERS
-      ? input.environment
-      : PRICE_DEFAULTS.environment,
-    tier: input.tier && input.tier in PRICE_TIER_MODIFIERS ? input.tier : PRICE_DEFAULTS.tier,
+    environment: selectedEnvironment,
+    tier: selectedTier,
     rush: Boolean(input.rush)
   };
 
@@ -102,8 +151,8 @@ function estimatePrice(input = {}) {
   const subtotal = baseFee + scanFee;
 
   const modifiers = {
-    environment: PRICE_ENVIRONMENT_MODIFIERS[config.environment] || 0,
-    tier: PRICE_TIER_MODIFIERS[config.tier] || 0,
+    environment: PRICE_ENVIRONMENT_MODIFIERS[effectiveEnvironment] || 0,
+    tier: PRICE_TIER_MODIFIERS[effectiveTier] || 0,
     rush: config.rush ? PRICE_RUSH_MODIFIER : 0
   };
 
@@ -231,7 +280,7 @@ const selectors = {
   reviewList: document.querySelector("[data-review-list]"),
   confirmCheckbox: document.querySelector("[data-confirm-checkbox]"),
   toastContainer: document.querySelector(".toast-container"),
-  priceEstimator: document.querySelector("[data-price-estimator]"),
+  priceSummary: document.querySelector("[data-price-summary]"),
   priceValue: document.querySelector("[data-price-value]"),
   priceAmount: document.querySelector("[data-price-amount]"),
   priceExact: document.querySelector("[data-price-exact]"),
@@ -243,7 +292,11 @@ const selectors = {
   travelMessage: document.querySelector("[data-travel-message]"),
   travelRetry: document.querySelector("[data-travel-retry]"),
   travelOverride: document.querySelector("[data-travel-override]"),
-  travelEstimate: document.querySelector("[data-travel-estimate]")
+  travelEstimate: document.querySelector("[data-travel-estimate]"),
+  selectionEnvironment: document.querySelector("[data-selection-environment]"),
+  selectionTier: document.querySelector("[data-selection-tier]"),
+  selectionRush: document.querySelector("[data-selection-rush]"),
+  selectionEdit: document.querySelector("[data-selection-edit]")
 };
 
 const defaultState = () => ({
@@ -420,13 +473,31 @@ const loadState = () => {
     state = mergeState(stored);
   }
 };
-const computeTotal = () => {
-  const addOnsTotal = state.addOns.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
-  const quoteExact = state?.priceQuote?.totalExact ?? state?.priceQuote?.totalRounded ?? 0;
-  const travelFee = Number.isFinite(state?.travel?.travelFee) ? state.travel.travelFee : 0;
-  const combined = quoteExact + addOnsTotal + travelFee;
-  return Math.round(combined);
+const getAddOnsTotal = (addOns = state.addOns) =>
+  addOns.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+
+const getTravelFeeValue = (travel = state.travel) =>
+  Number.isFinite(travel?.travelFee) ? travel.travelFee : 0;
+
+const computeQuoteRollup = (quote = state.priceQuote) => {
+  const baseExact = roundCurrency(
+    quote?.totalExact ?? quote?.totalRounded ?? 0,
+    2
+  );
+  const addOnsTotal = roundCurrency(getAddOnsTotal(), 2);
+  const travelFee = roundCurrency(getTravelFeeValue(), 2);
+  const combinedExact = roundCurrency(baseExact + addOnsTotal + travelFee, 2);
+  return {
+    baseExact,
+    baseRounded: Math.round(baseExact),
+    addOnsTotal,
+    travelFee,
+    combinedExact,
+    combinedRounded: Math.round(combinedExact)
+  };
 };
+
+const computeTotal = () => computeQuoteRollup().combinedRounded;
 
 const TRAVEL_ENDPOINT = "/api/calc-travel";
 const TRAVEL_REQUEST_DELAY_MS = 350;
@@ -521,6 +592,127 @@ const updateTravelUI = () => {
   container.hidden = !visible;
 };
 
+const canFallbackToClientTravel = (error) => {
+  if (!hasClientTravelConfig || !error) return false;
+  if (error.code === "TRAVEL_CONFIG_MISSING") return false;
+  if (error.canFallback === true) return true;
+  const status = Number(error.status);
+  if (Number.isFinite(status)) {
+    return status >= 500 || status === 404 || status === 405;
+  }
+  return true;
+};
+
+const requestTravelQuoteFromServer = async (address) => {
+  let response;
+  try {
+    response = await fetch(TRAVEL_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address }),
+      cache: "no-store"
+    });
+  } catch (error) {
+    if (error && typeof error === "object") {
+      error.canFallback = true;
+    }
+    throw error;
+  }
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message =
+      typeof data?.error === "string" && data.error
+        ? data.error
+        : "Unable to compute travel distance";
+    const err = new Error(message);
+    err.status = response.status;
+    err.canFallback =
+      response.status >= 500 ||
+      response.status === 404 ||
+      response.status === 405 ||
+      message.toLowerCase().includes("not configured");
+    throw err;
+  }
+
+  const distanceMiles = Number(data?.distanceMiles);
+  const travelFee = Number(data?.travelFee);
+  if (!Number.isFinite(distanceMiles) || !Number.isFinite(travelFee)) {
+    const err = new Error("Invalid travel response");
+    err.canFallback = true;
+    throw err;
+  }
+
+  return {
+    distanceMiles: roundCurrency(distanceMiles, 2),
+    travelFee: roundCurrency(travelFee, 2),
+    source: "server"
+  };
+};
+
+const requestTravelQuoteFromClient = async (address) => {
+  if (!hasClientTravelConfig) {
+    const err = new Error(
+      "Travel lookup is not configured. Add hub coordinates and an API key."
+    );
+    err.code = "TRAVEL_CONFIG_MISSING";
+    throw err;
+  }
+
+  const geocodeUrl = new URL("https://api.openrouteservice.org/geocode/search");
+  geocodeUrl.searchParams.set("api_key", travelConfig.apiKey);
+  geocodeUrl.searchParams.set("text", address);
+
+  const geocodeRes = await fetch(geocodeUrl.toString(), {
+    headers: { Accept: "application/json" },
+    cache: "no-store"
+  });
+  if (!geocodeRes.ok) {
+    const err = new Error(`Geocoding failed (${geocodeRes.status})`);
+    err.status = geocodeRes.status;
+    throw err;
+  }
+  const geocodeJson = await geocodeRes.json().catch(() => ({}));
+  const coords = geocodeJson?.features?.[0]?.geometry?.coordinates;
+  if (!Array.isArray(coords) || coords.length < 2) {
+    throw new Error("Unable to geocode address");
+  }
+  const [destLng, destLat] = coords;
+
+  const directionsRes = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: travelConfig.apiKey
+    },
+    body: JSON.stringify({
+      coordinates: [
+        [travelConfig.hubLng, travelConfig.hubLat],
+        [destLng, destLat]
+      ],
+      units: "mi"
+    }),
+    cache: "no-store"
+  });
+
+  if (!directionsRes.ok) {
+    const err = new Error(`Directions failed (${directionsRes.status})`);
+    err.status = directionsRes.status;
+    throw err;
+  }
+
+  const directionsJson = await directionsRes.json().catch(() => ({}));
+  const miles = directionsJson?.routes?.[0]?.summary?.distance;
+  if (typeof miles !== "number" || !Number.isFinite(miles)) {
+    throw new Error("Unable to compute driving distance");
+  }
+
+  const distanceMiles = roundCurrency(miles, 2);
+  const travelFee = computeTravelFeeFromMiles(distanceMiles);
+  return { distanceMiles, travelFee, source: "client" };
+};
+
 const performTravelQuote = async (address) => {
   const trimmedAddress = normalizeServiceAddress(address);
   if (!trimmedAddress) {
@@ -534,23 +726,26 @@ const performTravelQuote = async (address) => {
     throw new Error("Address required");
   }
   try {
-    const response = await fetch(TRAVEL_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ address: trimmedAddress }),
-      cache: "no-store"
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      const message =
-        typeof data?.error === "string" && data.error
-          ? data.error
-          : "Unable to compute travel distance";
-      throw new Error(message);
+    const preferClient = travelConfig.mode === "client" && hasClientTravelConfig;
+    let quote = null;
+    if (preferClient) {
+      quote = await requestTravelQuoteFromClient(trimmedAddress);
+    } else {
+      try {
+        quote = await requestTravelQuoteFromServer(trimmedAddress);
+      } catch (serverError) {
+        if (canFallbackToClientTravel(serverError)) {
+          console.warn(
+            "order-page: travel API unavailable, using client-side fallback",
+            serverError
+          );
+          quote = await requestTravelQuoteFromClient(trimmedAddress);
+        } else {
+          throw serverError;
+        }
+      }
     }
-    const distanceMiles = Number(data?.distanceMiles);
-    const travelFee = Number(data?.travelFee);
-    const now = Date.now();
+
     const currentAddress = normalizeServiceAddress(state.serviceAddress);
     if (
       currentAddress &&
@@ -558,13 +753,18 @@ const performTravelQuote = async (address) => {
     ) {
       return state.travel;
     }
-    if (!Number.isFinite(distanceMiles) || !Number.isFinite(travelFee)) {
+    if (
+      !quote ||
+      !Number.isFinite(quote.distanceMiles) ||
+      !Number.isFinite(quote.travelFee)
+    ) {
       throw new Error("Unexpected travel response");
     }
+    const now = Date.now();
     state.travel = {
       status: "ready",
-      distanceMiles: roundCurrency(distanceMiles, 2),
-      travelFee: roundCurrency(travelFee, 2),
+      distanceMiles: roundCurrency(quote.distanceMiles, 2),
+      travelFee: roundCurrency(quote.travelFee, 2),
       address: trimmedAddress,
       error: "",
       override: false,
@@ -574,11 +774,9 @@ const performTravelQuote = async (address) => {
     updateTravelUI();
     updateTotal();
     updateReview();
+    updatePriceUI(state.priceQuote);
     return state.travel;
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : String(error || "Unable to compute travel fee");
-    const trimmedAddress = normalizeServiceAddress(address);
     const currentAddress = normalizeServiceAddress(state.serviceAddress);
     if (
       currentAddress &&
@@ -586,6 +784,20 @@ const performTravelQuote = async (address) => {
       currentAddress.toLowerCase() !== trimmedAddress.toLowerCase()
     ) {
       return state.travel;
+    }
+    let errorMessage =
+      error instanceof Error ? error.message : String(error || "Unable to compute travel fee");
+    if (error?.code === "TRAVEL_CONFIG_MISSING") {
+      errorMessage = "Travel lookup isn’t configured yet. Add hub coordinates and an API key.";
+    } else if (errorMessage === "Failed to fetch") {
+      errorMessage = "Network error while contacting the travel service.";
+    }
+    if (error?.code === "TRAVEL_CONFIG_MISSING") {
+      console.warn(
+        "order-page: travel fallback not configured. Update window.__remnantTravelConfig in scripts/main.js."
+      );
+    } else {
+      console.warn("order-page: travel lookup failed", error);
     }
     state.travel = {
       ...state.travel,
@@ -601,6 +813,7 @@ const performTravelQuote = async (address) => {
     updateTravelUI();
     updateTotal();
     updateReview();
+    updatePriceUI(state.priceQuote);
     throw error;
   } finally {
     updateNavButtons();
@@ -688,6 +901,7 @@ const handleTravelOverride = () => {
   updateTravelUI();
   updateTotal();
   updateReview();
+  updatePriceUI(state.priceQuote);
   updateNavButtons();
 };
 
@@ -793,7 +1007,7 @@ const renderOdometer = (amount) => {
 };
 
 const getPriceErrorElement = (field) =>
-  selectors.priceEstimator?.querySelector(`[data-price-error="${field}"]`) ?? null;
+  document.querySelector(`[data-price-error="${field}"]`);
 
 const setPriceFieldValidity = (field, isValid, message = "") => {
   if (!field) return;
@@ -808,15 +1022,54 @@ const setPriceFieldValidity = (field, isValid, message = "") => {
   }
 };
 
-const renderPriceBreakdown = (quote) => {
+const refreshSelectionStates = () => {
+  const environmentLabels = document.querySelectorAll(".step-pill");
+  environmentLabels.forEach((label) => {
+    const input = label.querySelector('input[data-price-input="environment"]');
+    const checked = Boolean(input?.checked);
+    label.classList.toggle("is-selected", checked);
+    label.setAttribute("role", "radio");
+    label.setAttribute("aria-checked", String(checked));
+  });
+
+  const tierLabels = document.querySelectorAll(".tier-card");
+  tierLabels.forEach((label) => {
+    const input = label.querySelector('input[data-price-input="tier"]');
+    const checked = Boolean(input?.checked);
+    label.classList.toggle("is-selected", checked);
+    label.setAttribute("role", "radio");
+    label.setAttribute("aria-checked", String(checked));
+  });
+
+  const rushLabel = document.querySelector(".rush-option");
+  if (rushLabel) {
+    const input = rushLabel.querySelector('input[data-price-input="rush"]');
+    rushLabel.classList.toggle("is-selected", Boolean(input?.checked));
+    rushLabel.setAttribute("role", "checkbox");
+    rushLabel.setAttribute(
+      "aria-checked",
+      String(Boolean(input?.checked))
+    );
+  }
+};
+
+const renderPriceBreakdown = (quote, totals) => {
   if (!selectors.priceBreakdown) return;
+  const extras = totals || computeQuoteRollup(quote);
   const entries = [
     ["Base fee", formatCurrency(quote.baseFee)],
     ["Scan", formatCurrency(roundCurrency(quote.scanFee, 2))],
     ["Subtotal", formatCurrency(roundCurrency(quote.subtotal, 2))],
     ["Multiplier", `×${quote.multiplier.toFixed(2)}`],
-    ["Quote total", formatCurrency(quote.totalRounded)]
+    ["Capture quote", formatCurrency(quote.totalRounded)]
   ];
+  if (extras.addOnsTotal > 0) {
+    entries.push(["Add-ons", formatCurrency(extras.addOnsTotal)]);
+  }
+  if (extras.travelFee > 0) {
+    entries.push(["Travel fee", formatCurrency(extras.travelFee)]);
+  }
+  entries.push(["Estimated total", formatCurrency(extras.combinedRounded)]);
   selectors.priceBreakdown.innerHTML = "";
   entries.forEach(([label, value]) => {
     const dt = document.createElement("dt");
@@ -910,22 +1163,28 @@ const animatePriceTo = (targetValue) => {
 
 const updatePriceUI = (quote, { animate = true } = {}) => {
   if (!quote) return;
+  const totals = computeQuoteRollup(quote);
   if (selectors.priceAmount) {
-    selectors.priceAmount.setAttribute("aria-label", `Estimated total ${formatCurrency(quote.totalRounded)}`);
+    selectors.priceAmount.setAttribute(
+      "aria-label",
+      `Estimated total ${formatCurrency(totals.combinedRounded)}`
+    );
   }
   if (selectors.priceExact) {
-    selectors.priceExact.textContent = `Quote exact (before rounding): ${formatCurrency(quote.totalExact)}`;
+    selectors.priceExact.textContent = `Quote exact (before rounding): ${formatCurrency(
+      totals.combinedExact
+    )}`;
   }
-  renderPriceBreakdown(quote);
+  renderPriceBreakdown(quote, totals);
   renderPriceModifiers(quote);
   renderPriceTimeline(quote);
   if (animate) {
-    animatePriceTo(quote.totalRounded);
+    animatePriceTo(totals.combinedRounded);
   } else if (selectors.priceValue) {
-    selectors.priceValue.textContent = formatCurrency(quote.totalRounded);
+    selectors.priceValue.textContent = formatCurrency(totals.combinedRounded);
     priceAnimationState = {
-      from: quote.totalRounded,
-      to: quote.totalRounded,
+      from: totals.combinedRounded,
+      to: totals.combinedRounded,
       startTime: performance.now()
     };
   }
@@ -936,6 +1195,7 @@ const commitPriceEstimate = (partialConfig = {}, { animate = true } = {}) => {
   state.priceConfig = { ...nextEstimate.config };
   state.priceQuote = nextEstimate;
   saveState();
+  refreshSelectionStates();
   updatePriceUI(nextEstimate, { animate });
   updateTotal();
   updateReview();
@@ -984,9 +1244,8 @@ const handlePriceChoiceInput = (input) => {
 };
 
 const initPriceEstimator = () => {
-  if (!selectors.priceEstimator) return;
   resetPriceInputs();
-  const allInputs = selectors.priceEstimator.querySelectorAll("[data-price-input]");
+  const allInputs = document.querySelectorAll("[data-price-input]");
   allInputs.forEach((input) => {
     if (!(input instanceof HTMLInputElement)) return;
     const field = input.dataset.priceInput;
@@ -1005,7 +1264,9 @@ const initPriceEstimator = () => {
       input.addEventListener("change", () => handlePriceChoiceInput(input));
     }
   });
+  refreshSelectionStates();
   updatePriceUI(state.priceQuote, { animate: false });
+  updateSelectionsRecap();
 };
 
 const updateTotal = () => {
@@ -1028,6 +1289,7 @@ const setServiceAddress = (value) => {
       address: trimmed
     };
     updateTotal();
+    updatePriceUI(state.priceQuote);
   }
   saveState();
   updateTravelUI();
@@ -1058,6 +1320,7 @@ const toggleAddon = (name, price, checked) => {
   }
   saveState();
   updateTotal();
+  updatePriceUI(state.priceQuote);
   updateReview();
   updateNavButtons();
 };
@@ -1170,12 +1433,34 @@ const updateReview = () => {
     addItem("Quote modifiers", modifierSummary.length ? modifierSummary.join(" · ") : "None");
   }
   addItem("Estimated total", formatCurrency(computeTotal()));
+  updateSelectionsRecap();
+};
+
+const updateSelectionsRecap = () => {
+  if (
+    !selectors.selectionEnvironment ||
+    !selectors.selectionTier ||
+    !selectors.selectionRush
+  ) {
+    return;
+  }
+  const config = state.priceConfig || defaultPriceConfig();
+  const envLabel = config?.environment ? toTitleCase(config.environment) : "Not selected";
+  const tierLabel = config?.tier ? toTitleCase(config.tier) : "Not selected";
+  const rushLabel = config?.rush ? "Yes" : "No";
+
+  selectors.selectionEnvironment.textContent = `Environment: ${envLabel}`;
+  selectors.selectionTier.textContent = `Immersion tier: ${tierLabel}`;
+  selectors.selectionRush.textContent = `Rush delivery: ${rushLabel}`;
 };
 
 const getStepValidity = (index) => {
   switch (index) {
-    case 0:
-      return priceInvalidFields.size === 0;
+    case 0: {
+      const hasEnvironment = Boolean(state.priceConfig?.environment);
+      const hasTier = Boolean(state.priceConfig?.tier);
+      return priceInvalidFields.size === 0 && hasEnvironment && hasTier;
+    }
     case 1:
       return Boolean(state.serviceAddress) && Boolean(state.date) && Boolean(state.time);
     case 4:
@@ -1226,6 +1511,8 @@ const updateNavButtons = () => {
     selectors.nextBtn.textContent = "Confirm details";
   } else if (currentStep === 1 && isTravelComputing) {
     selectors.nextBtn.textContent = "Calculating...";
+  } else if (currentStep === 0) {
+    selectors.nextBtn.textContent = "Continue";
   } else {
     selectors.nextBtn.textContent = "Next step";
   }
@@ -1305,13 +1592,7 @@ const submitOrder = async () => {
   updateNavButtons();
 
   const quote = state.priceQuote || estimatePrice(state.priceConfig);
-  const addOnsTotal = state.addOns.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
-  const travelFee = Number.isFinite(state.travel.travelFee) ? state.travel.travelFee : 0;
-  const combinedExact = roundCurrency(
-    (quote.totalExact ?? quote.totalRounded) + addOnsTotal + travelFee,
-    2
-  );
-  const combinedRounded = Math.round(combinedExact);
+  const totals = computeQuoteRollup(quote);
   const captureSummaryParts = [
     `${quote.config.sqft} sq ft`,
     quote.config.environment,
@@ -1339,20 +1620,14 @@ const submitOrder = async () => {
     subtotal: roundCurrency(quote.subtotal, 2),
     multiplier: quote.multiplier,
     quote_total: quote.totalRounded,
-    addons_total: roundCurrency(addOnsTotal, 2),
-    total_rounded: combinedRounded,
-    total_exact: combinedExact,
+    addons_total: totals.addOnsTotal,
+    total_rounded: totals.combinedRounded,
+    total_exact: totals.combinedExact,
     travel_fee: Number.isFinite(state.travel.travelFee)
       ? roundCurrency(state.travel.travelFee, 2)
       : null,
     distance_miles: Number.isFinite(state.travel.distanceMiles)
-      ? roundCurrency(state.travel.distanceMiles, 2)
-      : null,
-    travel_status: state.travel.status,
-    travel_override: state.travel.override,
-    travel_pending: state.travel.status !== "ready",
-    travel_last_checked: state.travel.lastRequestedAt
-      ? new Date(state.travel.lastRequestedAt).toISOString()
+      ? Math.round(state.travel.distanceMiles)
       : null,
     user_email: currentUser.email ?? null,
     notes: state.scope || null
@@ -1471,8 +1746,8 @@ const applyStateToInputs = () => {
   if (selectors.confirmCheckbox) {
     selectors.confirmCheckbox.checked = Boolean(state.confirmAcknowledged);
   }
-  if (selectors.priceEstimator) {
-    const priceInputs = selectors.priceEstimator.querySelectorAll("[data-price-input]");
+  const priceInputs = document.querySelectorAll("[data-price-input]");
+  if (priceInputs.length) {
     priceInputs.forEach((input) => {
       if (!(input instanceof HTMLInputElement)) return;
       const field = input.dataset.priceInput;
@@ -1485,9 +1760,11 @@ const applyStateToInputs = () => {
         input.checked = Boolean(state.priceConfig[field]);
       }
     });
+    refreshSelectionStates();
     updatePriceUI(state.priceQuote, { animate: false });
     resetPriceInputs();
     updateNavButtons();
+    updateSelectionsRecap();
   }
   updateTravelUI();
 };
@@ -1700,6 +1977,11 @@ const initEventListeners = () => {
     if (target instanceof HTMLInputElement) {
       setConfirmAcknowledged(target.checked);
     }
+  });
+
+  selectors.selectionEdit?.addEventListener("click", () => {
+    showStep(0);
+    focusFirstElement(0);
   });
 
   selectors.nextBtn?.addEventListener("click", () => goToNextStep());

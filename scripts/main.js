@@ -1,3 +1,11 @@
+// Optional travel lookup configuration; update with your hub coordinates and ORS API key.
+window.__remnantTravelConfig = window.__remnantTravelConfig || {
+  hubLat: 33.498225,
+  hubLng: -117.103128,
+  apiKey: "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImRlM2QwNjUzZWI1ZDQ5Zjg5YTE4ZDE1MTIyZDkyN2NiIiwiaCI6Im11cm11cjY0In0=",
+  mode: "client" // set to "client" to use browser fallback only, or "auto" to try the API route first
+};
+
 // ----- COMING SOON MODAL -----
 const COMING_SOON_STORAGE_KEY = "remnantComingSoonDismissed";
 const comingSoonModal = document.querySelector("[data-coming-soon-modal]");
