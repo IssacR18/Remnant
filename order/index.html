@@ -306,9 +306,20 @@
                   />
                 </label>
                 <p class="travel-hint">
-                  We&apos;ll calculate the travel distance privately once you continue. The hub address
-                  stays confidential.
+                  We&apos;ll calculate the travel distance automatically when you continue, or get an
+                  instant estimate now. The hub address stays confidential.
                 </p>
+                <div class="travel-actions">
+                  <button
+                    type="button"
+                    class="btn btn--glass travel-actions__estimate"
+                    data-travel-estimate
+                    data-default-text="Estimate travel fee"
+                    data-loading-text="Estimating..."
+                  >
+                    Estimate travel fee
+                  </button>
+                </div>
                 <div class="travel-feedback" data-travel-feedback hidden>
                   <p class="travel-feedback__message" data-travel-message role="status"></p>
                   <div class="travel-feedback__actions">

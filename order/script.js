@@ -242,7 +242,8 @@ const selectors = {
   travelFeedback: document.querySelector("[data-travel-feedback]"),
   travelMessage: document.querySelector("[data-travel-message]"),
   travelRetry: document.querySelector("[data-travel-retry]"),
-  travelOverride: document.querySelector("[data-travel-override]")
+  travelOverride: document.querySelector("[data-travel-override]"),
+  travelEstimate: document.querySelector("[data-travel-estimate]")
 };
 
 const defaultState = () => ({
@@ -446,6 +447,7 @@ const updateTravelUI = () => {
   const messageEl = selectors.travelMessage;
   const retryBtn = selectors.travelRetry;
   const overrideBtn = selectors.travelOverride;
+  const estimateBtn = selectors.travelEstimate;
   const status = state.travel.status;
 
   let visible = false;
@@ -508,6 +510,12 @@ const updateTravelUI = () => {
   if (overrideBtn) {
     overrideBtn.hidden = !showOverride;
     overrideBtn.disabled = status === "fetching";
+  }
+  if (estimateBtn) {
+    const defaultLabel = estimateBtn.dataset.defaultText || "Estimate travel fee";
+    const loadingLabel = estimateBtn.dataset.loadingText || "Estimating...";
+    estimateBtn.disabled = status === "fetching";
+    estimateBtn.textContent = status === "fetching" ? loadingLabel : defaultLabel;
   }
 
   container.hidden = !visible;
@@ -1659,6 +1667,21 @@ const initEventListeners = () => {
 
   selectors.travelOverride?.addEventListener("click", () => {
     handleTravelOverride();
+  });
+
+  selectors.travelEstimate?.addEventListener("click", async () => {
+    if (state.travel.status === "fetching") return;
+    const address = normalizeServiceAddress(state.serviceAddress);
+    if (!address) {
+      selectors.addressInput?.focus();
+      selectors.addressInput?.reportValidity?.();
+      return;
+    }
+    try {
+      await scheduleTravelQuote(address, { immediate: true });
+    } catch (error) {
+      console.warn("order-page: travel estimate failed", error);
+    }
   });
 
   document

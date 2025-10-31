@@ -5,15 +5,10 @@ const HUB_LNG = Number(process.env.HUB_LNG);
 const ORS_KEY = process.env.ORS_API_KEY!;
 
 type ORSGeocode = {
-  features?: Array<{
-    geometry?: { coordinates?: [number, number] };
-  }>;
+  features?: Array<{ geometry?: { coordinates?: [number, number] } }>;
 };
-
 type ORSDirections = {
-  routes?: Array<{
-    summary?: { distance?: number };
-  }>;
+  routes?: Array<{ summary?: { distance?: number } }>;
 };
 
 function dollars(n: number) {
@@ -39,36 +34,44 @@ function computeTravelFee(miles: number) {
 
 export async function POST(req: Request) {
   try {
-    const { address } = await req.json();
-    if (!address || typeof address !== "string") {
+    const { address } = await req.json().catch(() => ({} as any));
+    if (!address || typeof address !== "string" || !address.trim()) {
       return NextResponse.json({ error: "Missing address" }, { status: 400 });
     }
     if (!ORS_KEY || Number.isNaN(HUB_LAT) || Number.isNaN(HUB_LNG)) {
       return NextResponse.json({ error: "Server is not configured" }, { status: 500 });
     }
 
+    // Geocode
     const geocodeUrl = new URL("https://api.openrouteservice.org/geocode/search");
     geocodeUrl.searchParams.set("api_key", ORS_KEY);
-    geocodeUrl.searchParams.set("text", address);
+    geocodeUrl.searchParams.set("text", address.trim());
 
     const gRes = await fetch(geocodeUrl.toString(), {
       headers: { Accept: "application/json" },
       cache: "no-store",
     });
+    if (!gRes.ok) {
+      const txt = await gRes.text();
+      return NextResponse.json(
+        { error: "Geocoding failed", status: gRes.status, detail: txt.slice(0, 500) },
+        { status: 422 }
+      );
+    }
     const gJson = (await gRes.json()) as ORSGeocode;
-
     const coords = gJson?.features?.[0]?.geometry?.coordinates;
-    if (!coords) {
+    if (!Array.isArray(coords) || coords.length < 2) {
       return NextResponse.json({ error: "Unable to geocode address" }, { status: 422 });
     }
     const [destLng, destLat] = coords;
 
+    // Directions in miles
     const dRes = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: ORS_KEY,
         Accept: "application/json",
+        Authorization: ORS_KEY,
       },
       body: JSON.stringify({
         coordinates: [
@@ -79,19 +82,22 @@ export async function POST(req: Request) {
       }),
       cache: "no-store",
     });
-
-    const dJson = (await dRes.json()) as ORSDirections;
-    const miles = dJson?.routes?.[0]?.summary?.distance;
-    if (typeof miles !== "number" || !isFinite(miles)) {
+    if (!dRes.ok) {
+      const txt = await dRes.text();
       return NextResponse.json(
-        { error: "Unable to compute driving distance" },
+        { error: "Directions failed", status: dRes.status, detail: txt.slice(0, 500) },
         { status: 422 }
       );
     }
 
-    const distanceMiles = Math.round(miles * 100) / 100;
-    const travelFee = computeTravelFee(distanceMiles);
+    const dJson = (await dRes.json()) as ORSDirections;
+    const miles = dJson?.routes?.[0]?.summary?.distance;
+    if (typeof miles !== "number" || !Number.isFinite(miles)) {
+      return NextResponse.json({ error: "Unable to compute driving distance" }, { status: 422 });
+    }
 
+    const distanceMiles = dollars(miles);
+    const travelFee = computeTravelFee(distanceMiles);
     return NextResponse.json({ distanceMiles, travelFee });
   } catch (err: any) {
     return NextResponse.json(
