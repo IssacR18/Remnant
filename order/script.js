@@ -11,7 +11,8 @@ const TOAST_DURATION_MS = 5200;
 const AUTH_EVENT_NAME = "remnant:auth-state";
 const PROGRESSIVE_FIELDS = [
   "priceConfig",
-  "address",
+  "serviceAddress",
+  "travel",
   "gateCodes",
   "scope",
   "date",
@@ -23,15 +24,13 @@ const PROGRESSIVE_FIELDS = [
 
 const PRICE_DEFAULTS = Object.freeze({
   sqft: 1500,
-  distance: 10,
   environment: "indoor",
   tier: "basic",
   rush: false
 });
 
 const PRICE_LIMITS = Object.freeze({
-  sqft: { min: 100, max: 10000 },
-  distance: { min: 0, max: 150 }
+  sqft: { min: 100, max: 10000 }
 });
 
 const PRICE_ENVIRONMENT_MODIFIERS = Object.freeze({
@@ -48,14 +47,11 @@ const PRICE_TIER_MODIFIERS = Object.freeze({
 
 const PRICE_RUSH_MODIFIER = 0.2;
 const PRICE_BASE_FEE = 150;
-const PRICE_TRAVEL_RATE = 1.25;
-const PRICE_TRAVEL_THRESHOLD = 20;
 const PRICE_SCAN_RATE = 0.5;
 const PRICE_ANIMATION_DURATION_MS = 280;
 
 const PRICE_ERROR_MESSAGES = Object.freeze({
-  sqft: "Enter between 100 and 10,000 square feet.",
-  distance: "Distance must be between 0 and 150 miles."
+  sqft: "Enter between 100 and 10,000 square feet."
 });
 
 const PRICE_DELIVERY_HINTS = Object.freeze({
@@ -85,7 +81,6 @@ const toNumberOrDefault = (value, fallback) => {
 
 const defaultPriceConfig = () => ({
   sqft: PRICE_DEFAULTS.sqft,
-  distance: PRICE_DEFAULTS.distance,
   environment: PRICE_DEFAULTS.environment,
   tier: PRICE_DEFAULTS.tier,
   rush: PRICE_DEFAULTS.rush
@@ -93,10 +88,8 @@ const defaultPriceConfig = () => ({
 
 function estimatePrice(input = {}) {
   const rawSqft = toNumberOrDefault(input.sqft, PRICE_DEFAULTS.sqft);
-  const rawDistance = toNumberOrDefault(input.distance, PRICE_DEFAULTS.distance);
   const config = {
     sqft: clamp(rawSqft, PRICE_LIMITS.sqft.min, PRICE_LIMITS.sqft.max),
-    distance: clamp(rawDistance, PRICE_LIMITS.distance.min, PRICE_LIMITS.distance.max),
     environment: input.environment && input.environment in PRICE_ENVIRONMENT_MODIFIERS
       ? input.environment
       : PRICE_DEFAULTS.environment,
@@ -105,9 +98,8 @@ function estimatePrice(input = {}) {
   };
 
   const baseFee = PRICE_BASE_FEE;
-  const travelFee = Math.max(0, config.distance - PRICE_TRAVEL_THRESHOLD) * PRICE_TRAVEL_RATE;
   const scanFee = config.sqft * PRICE_SCAN_RATE;
-  const subtotal = baseFee + travelFee + scanFee;
+  const subtotal = baseFee + scanFee;
 
   const modifiers = {
     environment: PRICE_ENVIRONMENT_MODIFIERS[config.environment] || 0,
@@ -125,7 +117,6 @@ function estimatePrice(input = {}) {
   return {
     config,
     baseFee,
-    travelFee,
     scanFee,
     subtotal,
     modifiers,
@@ -139,17 +130,15 @@ const easeOutCubic = (t) => 1 - (1 - t) ** 3;
 
 const ESTIMATE_TEST_CASES = [
   {
-    name: "3500 sq ft · 3 miles · indoor · immersive · standard",
+    name: "3500 sq ft · indoor · immersive · standard",
     input: {
       sqft: 3500,
-      distance: 3,
       environment: "indoor",
       tier: "immersive",
       rush: false
     },
     expected: {
       baseFee: 150,
-      travelFee: 0,
       scanFee: 1750,
       subtotal: 1900,
       multiplier: 1.3,
@@ -158,63 +147,54 @@ const ESTIMATE_TEST_CASES = [
     }
   },
   {
-    name: "2000 sq ft · 30 miles · both · realistic · standard",
+    name: "2000 sq ft · both · realistic · standard",
     input: {
       sqft: 2000,
-      distance: 30,
       environment: "both",
       tier: "realistic",
       rush: false
     },
     expected: {
       baseFee: 150,
-      travelFee: 12.5,
       scanFee: 1000,
-      subtotal: 1162.5,
+      subtotal: 1150,
       multiplier: 1.3,
-      totalExact: 1511.25,
-      totalRounded: 1511
+      totalExact: 1495,
+      totalRounded: 1495
     }
   },
   {
-    name: "4000 sq ft · 45 miles · outdoor · basic · rush",
+    name: "4000 sq ft · outdoor · basic · rush",
     input: {
       sqft: 4000,
-      distance: 45,
       environment: "outdoor",
       tier: "basic",
       rush: true
     },
     expected: {
       baseFee: 150,
-      travelFee: 31.25,
       scanFee: 2000,
-      subtotal: 2181.25,
+      subtotal: 2150,
       multiplier: 1.2,
-      totalExact: 2617.5,
-      totalRounded: 2618
+      totalExact: 2580,
+      totalRounded: 2580
     }
   },
   {
-    name: "800 sq ft · 0 miles · indoor · basic · standard",
+    name: "800 sq ft · indoor · basic · standard",
     input: {
       sqft: 800,
-      distance: 0,
       environment: "indoor",
       tier: "basic",
       rush: false
     },
     expected: {
       baseFee: 150,
-      travelFee: 0,
       scanFee: 400,
       subtotal: 550,
       multiplier: 1,
       totalExact: 550,
       totalRounded: 550
-    },
-    expectedConfig: {
-      distance: 0
     }
   }
 ];
@@ -225,15 +205,9 @@ const runEstimateTests = () => {
   ESTIMATE_TEST_CASES.forEach((test) => {
     const result = estimatePrice(test.input);
     const expected = test.expected;
-    const expectedConfig = test.expectedConfig || null;
     const almostEqual = (a, b, tolerance = 0.01) => Math.abs(a - b) <= tolerance;
-    const configMatches = expectedConfig
-      ? Object.entries(expectedConfig).every(([key, value]) => result.config?.[key] === value)
-      : true;
     const pass =
-      configMatches &&
       almostEqual(result.baseFee, expected.baseFee) &&
-      almostEqual(result.travelFee, expected.travelFee) &&
       almostEqual(result.scanFee, expected.scanFee) &&
       almostEqual(result.subtotal, expected.subtotal) &&
       almostEqual(result.totalExact, expected.totalExact) &&
@@ -263,18 +237,26 @@ const selectors = {
   priceExact: document.querySelector("[data-price-exact]"),
   priceBreakdown: document.querySelector("[data-price-breakdown]"),
   priceModifiers: document.querySelector("[data-price-modifiers]"),
-  priceTimeline: document.querySelector("[data-price-timeline]")
+  priceTimeline: document.querySelector("[data-price-timeline]"),
+  addressInput: document.querySelector("[data-address-input]"),
+  travelFeedback: document.querySelector("[data-travel-feedback]"),
+  travelMessage: document.querySelector("[data-travel-message]"),
+  travelRetry: document.querySelector("[data-travel-retry]"),
+  travelOverride: document.querySelector("[data-travel-override]")
 };
 
 const defaultState = () => ({
   priceConfig: defaultPriceConfig(),
   priceQuote: estimatePrice(defaultPriceConfig()),
-  address: {
-    line1: "",
-    line2: "",
-    city: "",
-    state: "",
-    postal: ""
+  serviceAddress: "",
+  travel: {
+    status: "idle",
+    distanceMiles: null,
+    travelFee: null,
+    address: "",
+    error: "",
+    override: false,
+    lastRequestedAt: 0
   },
   gateCodes: "",
   scope: "",
@@ -284,6 +266,66 @@ const defaultState = () => ({
   confirmAcknowledged: false,
   stepIndex: 0
 });
+
+const normalizeAddressObject = (address) => {
+  if (!address || typeof address !== "object") return "";
+  const parts = [];
+  if (address.line1) parts.push(String(address.line1));
+  if (address.line2) parts.push(String(address.line2));
+  const cityState = [address.city, address.state]
+    .map((part) => (part ? String(part) : ""))
+    .filter(Boolean)
+    .join(", ");
+  const postal = address.postal ? String(address.postal) : "";
+  if (cityState) parts.push(cityState);
+  if (postal) parts.push(postal);
+  return parts.join(", ").trim();
+};
+
+const normalizeServiceAddress = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value.trim();
+  return normalizeAddressObject(value);
+};
+
+const normalizeTravelState = (incomingTravel, serviceAddress) => {
+  const base = defaultState().travel;
+  const normalizedServiceAddress = normalizeServiceAddress(serviceAddress);
+  if (!incomingTravel || typeof incomingTravel !== "object") {
+    return { ...base, address: normalizedServiceAddress };
+  }
+  const allowedStatuses = new Set(["idle", "fetching", "ready", "error", "pending"]);
+  const status = allowedStatuses.has(incomingTravel.status)
+    ? incomingTravel.status
+    : base.status;
+  const distanceMiles = Number(incomingTravel.distanceMiles);
+  const travelFee = Number(incomingTravel.travelFee);
+  const lastRequestedAt = Number(incomingTravel.lastRequestedAt);
+  const addressUsed = normalizeServiceAddress(incomingTravel.address);
+  const normalized = {
+    status,
+    distanceMiles: Number.isFinite(distanceMiles) ? roundCurrency(distanceMiles, 2) : null,
+    travelFee: Number.isFinite(travelFee) ? roundCurrency(travelFee, 2) : null,
+    address: addressUsed,
+    error: typeof incomingTravel.error === "string" ? incomingTravel.error : "",
+    override: Boolean(incomingTravel.override),
+    lastRequestedAt: Number.isFinite(lastRequestedAt) ? lastRequestedAt : 0
+  };
+  if (
+    normalizedServiceAddress &&
+    normalized.address &&
+    normalized.address.trim().toLowerCase() !== normalizedServiceAddress.toLowerCase()
+  ) {
+    return { ...base, address: normalizedServiceAddress };
+  }
+  if (!normalizedServiceAddress) {
+    return { ...base, address: "" };
+  }
+  return {
+    ...normalized,
+    address: normalizedServiceAddress || normalized.address || ""
+  };
+};
 
 let state = defaultState();
 let currentStep = 0;
@@ -335,8 +377,12 @@ const showToast = (message, variant = "info", { duration = TOAST_DURATION_MS } =
 const mergeState = (incoming = {}) => {
   const next = defaultState();
   for (const key of PROGRESSIVE_FIELDS) {
-    if (key === "address") {
-      Object.assign(next.address, incoming.address || {});
+    if (key === "serviceAddress") {
+      const legacyAddress =
+        incoming.serviceAddress !== undefined ? incoming.serviceAddress : incoming.address;
+      next.serviceAddress = normalizeServiceAddress(legacyAddress);
+    } else if (key === "travel") {
+      next.travel = normalizeTravelState(incoming.travel, next.serviceAddress);
     } else if (key === "addOns" && Array.isArray(incoming.addOns)) {
       next.addOns = incoming.addOns.map((addon) => ({ ...addon }));
     } else if (key === "priceConfig") {
@@ -359,6 +405,7 @@ const mergeState = (incoming = {}) => {
   } else {
     next.priceQuote = estimatePrice(next.priceConfig);
   }
+  next.travel = normalizeTravelState(next.travel, next.serviceAddress);
   return next;
 };
 
@@ -375,8 +422,305 @@ const loadState = () => {
 const computeTotal = () => {
   const addOnsTotal = state.addOns.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
   const quoteExact = state?.priceQuote?.totalExact ?? state?.priceQuote?.totalRounded ?? 0;
-  const combined = quoteExact + addOnsTotal;
+  const travelFee = Number.isFinite(state?.travel?.travelFee) ? state.travel.travelFee : 0;
+  const combined = quoteExact + addOnsTotal + travelFee;
   return Math.round(combined);
+};
+
+const TRAVEL_ENDPOINT = "/api/calc-travel";
+const TRAVEL_REQUEST_DELAY_MS = 350;
+
+let travelRequestPromise = null;
+let travelRequestTimer = null;
+
+const clearTravelTimer = () => {
+  if (travelRequestTimer) {
+    window.clearTimeout(travelRequestTimer);
+    travelRequestTimer = null;
+  }
+};
+
+const updateTravelUI = () => {
+  if (!selectors.travelFeedback || !selectors.travelMessage) return;
+  const container = selectors.travelFeedback;
+  const messageEl = selectors.travelMessage;
+  const retryBtn = selectors.travelRetry;
+  const overrideBtn = selectors.travelOverride;
+  const status = state.travel.status;
+
+  let visible = false;
+  let message = "";
+  let statusTone = "";
+  let showRetry = false;
+  let showOverride = false;
+
+  const travelFeeReady = Number.isFinite(state.travel.travelFee);
+  const travelDistanceReady = Number.isFinite(state.travel.distanceMiles);
+
+  switch (status) {
+    case "fetching":
+      visible = true;
+      statusTone = "info";
+      message = "Calculating travel distance…";
+      break;
+    case "ready":
+      if (travelFeeReady && travelDistanceReady) {
+        visible = true;
+        statusTone = "success";
+        const miles = state.travel.distanceMiles?.toFixed(2) ?? "0.00";
+        message = `Travel distance: ${miles} miles · Travel fee ${formatCurrency(state.travel.travelFee || 0)}`;
+      }
+      break;
+    case "error":
+      visible = true;
+      message =
+        state.travel.error ||
+        "We couldn’t verify the address. Try again or continue without a travel fee for now.";
+      showRetry = true;
+      showOverride = true;
+      break;
+    case "pending":
+      visible = true;
+      statusTone = "info";
+      message =
+        "We’ll confirm the travel fee after verifying the address with you directly.";
+      showRetry = true;
+      showOverride = false;
+      break;
+    default:
+      visible = false;
+      break;
+  }
+
+  if (messageEl) {
+    messageEl.textContent = message;
+    if (statusTone) {
+      messageEl.dataset.status = statusTone;
+    } else {
+      delete messageEl.dataset.status;
+    }
+  }
+
+  if (retryBtn) {
+    retryBtn.hidden = !showRetry;
+    retryBtn.disabled = status === "fetching";
+  }
+  if (overrideBtn) {
+    overrideBtn.hidden = !showOverride;
+    overrideBtn.disabled = status === "fetching";
+  }
+
+  container.hidden = !visible;
+};
+
+const performTravelQuote = async (address) => {
+  const trimmedAddress = normalizeServiceAddress(address);
+  if (!trimmedAddress) {
+    state.travel = {
+      ...defaultState().travel,
+      address: "",
+      status: "idle"
+    };
+    updateTravelUI();
+    saveState();
+    throw new Error("Address required");
+  }
+  try {
+    const response = await fetch(TRAVEL_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address: trimmedAddress }),
+      cache: "no-store"
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const message =
+        typeof data?.error === "string" && data.error
+          ? data.error
+          : "Unable to compute travel distance";
+      throw new Error(message);
+    }
+    const distanceMiles = Number(data?.distanceMiles);
+    const travelFee = Number(data?.travelFee);
+    const now = Date.now();
+    const currentAddress = normalizeServiceAddress(state.serviceAddress);
+    if (
+      currentAddress &&
+      currentAddress.toLowerCase() !== trimmedAddress.toLowerCase()
+    ) {
+      return state.travel;
+    }
+    if (!Number.isFinite(distanceMiles) || !Number.isFinite(travelFee)) {
+      throw new Error("Unexpected travel response");
+    }
+    state.travel = {
+      status: "ready",
+      distanceMiles: roundCurrency(distanceMiles, 2),
+      travelFee: roundCurrency(travelFee, 2),
+      address: trimmedAddress,
+      error: "",
+      override: false,
+      lastRequestedAt: now
+    };
+    saveState();
+    updateTravelUI();
+    updateTotal();
+    updateReview();
+    return state.travel;
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : String(error || "Unable to compute travel fee");
+    const trimmedAddress = normalizeServiceAddress(address);
+    const currentAddress = normalizeServiceAddress(state.serviceAddress);
+    if (
+      currentAddress &&
+      trimmedAddress &&
+      currentAddress.toLowerCase() !== trimmedAddress.toLowerCase()
+    ) {
+      return state.travel;
+    }
+    state.travel = {
+      ...state.travel,
+      status: "error",
+      distanceMiles: null,
+      travelFee: null,
+      address: trimmedAddress,
+      error: errorMessage,
+      override: false,
+      lastRequestedAt: Date.now()
+    };
+    saveState();
+    updateTravelUI();
+    updateTotal();
+    updateReview();
+    throw error;
+  } finally {
+    updateNavButtons();
+  }
+};
+
+const scheduleTravelQuote = (address, { immediate = false } = {}) => {
+  const trimmedAddress = normalizeServiceAddress(address);
+  if (!trimmedAddress) {
+    state.travel = {
+      ...defaultState().travel,
+      address: "",
+      status: "idle"
+    };
+    updateTravelUI();
+    saveState();
+    return Promise.reject(new Error("Address required"));
+  }
+  if (travelRequestPromise) {
+    return travelRequestPromise;
+  }
+  clearTravelTimer();
+  state.travel = {
+    ...state.travel,
+    status: "fetching",
+    error: "",
+    override: false,
+    address: trimmedAddress
+  };
+  saveState();
+  updateTravelUI();
+  updateNavButtons();
+
+  const execute = () =>
+    performTravelQuote(trimmedAddress).finally(() => {
+      travelRequestPromise = null;
+    });
+
+  if (immediate) {
+    travelRequestPromise = execute();
+    return travelRequestPromise;
+  }
+
+  travelRequestPromise = new Promise((resolve, reject) => {
+    travelRequestTimer = window.setTimeout(() => {
+      travelRequestTimer = null;
+      execute().then(resolve).catch(reject);
+    }, TRAVEL_REQUEST_DELAY_MS);
+  });
+  return travelRequestPromise;
+};
+
+const travelAddressMatchesService = () => {
+  const current = normalizeServiceAddress(state.serviceAddress);
+  const travelAddress = normalizeServiceAddress(state.travel.address);
+  return (
+    Boolean(current) &&
+    Boolean(travelAddress) &&
+    current.toLowerCase() === travelAddress.toLowerCase()
+  );
+};
+
+const canAdvanceWithCurrentTravel = () =>
+  (state.travel.status === "ready" && travelAddressMatchesService()) ||
+  (state.travel.status === "pending" && state.travel.override);
+
+const handleTravelOverride = () => {
+  if (!getStepValidity(1)) {
+    selectors.addressInput?.focus();
+    selectors.addressInput?.reportValidity?.();
+    return;
+  }
+  clearTravelTimer();
+  travelRequestPromise = null;
+  state.travel = {
+    status: "pending",
+    distanceMiles: null,
+    travelFee: null,
+    address: normalizeServiceAddress(state.serviceAddress),
+    error: "",
+    override: true,
+    lastRequestedAt: Date.now()
+  };
+  saveState();
+  updateTravelUI();
+  updateTotal();
+  updateReview();
+  updateNavButtons();
+};
+
+const handleTravelRetry = async () => {
+  if (state.travel.status === "fetching") return;
+  const address = normalizeServiceAddress(state.serviceAddress);
+  if (!address) {
+    selectors.addressInput?.focus();
+    selectors.addressInput?.reportValidity?.();
+    return;
+  }
+  try {
+    await scheduleTravelQuote(address, { immediate: true });
+  } catch (error) {
+    console.warn("order-page: travel retry failed", error);
+  }
+};
+
+const ensureAddressReady = async () => {
+  const address = normalizeServiceAddress(state.serviceAddress);
+  if (!address) {
+    selectors.addressInput?.focus();
+    selectors.addressInput?.reportValidity?.();
+    updateNavButtons();
+    return false;
+  }
+  if (canAdvanceWithCurrentTravel()) {
+    return true;
+  }
+  try {
+    await scheduleTravelQuote(address);
+  } catch (error) {
+    console.warn("order-page: travel lookup failed", error);
+    updateNavButtons();
+    return false;
+  }
+  if (canAdvanceWithCurrentTravel()) {
+    return true;
+  }
+  updateNavButtons();
+  return false;
 };
 
 const formatDateDisplay = (value) => {
@@ -460,7 +804,6 @@ const renderPriceBreakdown = (quote) => {
   if (!selectors.priceBreakdown) return;
   const entries = [
     ["Base fee", formatCurrency(quote.baseFee)],
-    ["Travel", formatCurrency(roundCurrency(quote.travelFee, 2))],
     ["Scan", formatCurrency(roundCurrency(quote.scanFee, 2))],
     ["Subtotal", formatCurrency(roundCurrency(quote.subtotal, 2))],
     ["Multiplier", `×${quote.multiplier.toFixed(2)}`],
@@ -594,7 +937,6 @@ const commitPriceEstimate = (partialConfig = {}, { animate = true } = {}) => {
 const resetPriceInputs = () => {
   priceInvalidFields = new Set();
   setPriceFieldValidity("sqft", true);
-  setPriceFieldValidity("distance", true);
 };
 
 const handlePriceNumericInput = (input) => {
@@ -663,10 +1005,24 @@ const updateTotal = () => {
   renderOdometer(total);
 };
 
-const setAddressField = (key, value) => {
-  if (!(key in state.address)) return;
-  state.address[key] = value.trim();
+const setServiceAddress = (value) => {
+  const trimmed = normalizeServiceAddress(value);
+  const previous = normalizeServiceAddress(state.serviceAddress);
+  const normalizedTrimmed = trimmed.toLowerCase();
+  const normalizedPrevious = previous.toLowerCase();
+  const hasChanged = normalizedTrimmed !== normalizedPrevious;
+  state.serviceAddress = trimmed;
+  if (hasChanged) {
+    clearTravelTimer();
+    travelRequestPromise = null;
+    state.travel = {
+      ...defaultState().travel,
+      address: trimmed
+    };
+    updateTotal();
+  }
   saveState();
+  updateTravelUI();
   updateProgressState();
   updateReview();
   updateNavButtons();
@@ -714,10 +1070,23 @@ const updateReview = () => {
   const list = selectors.reviewList;
   list.innerHTML = "";
 
-  const addItem = (label, value) => {
+  const addItem = (label, value, options = {}) => {
     if (!value) return;
     const dt = document.createElement("dt");
-    dt.textContent = label;
+    if (options.tooltip) {
+      const span = document.createElement("span");
+      span.textContent = label;
+      const badge = document.createElement("span");
+      badge.className = "info-badge";
+      badge.tabIndex = 0;
+      badge.setAttribute("role", "img");
+      badge.setAttribute("aria-label", options.tooltip);
+      badge.dataset.tooltip = options.tooltip;
+      badge.textContent = "i";
+      dt.append(span, badge);
+    } else {
+      dt.textContent = label;
+    }
     const dd = document.createElement("dd");
     dd.textContent = value;
     list.append(dt, dd);
@@ -726,9 +1095,6 @@ const updateReview = () => {
   const config = state.priceConfig || defaultPriceConfig();
   if (config?.sqft) {
     addItem("Square footage", `${Number(config.sqft).toLocaleString()} sq ft`);
-  }
-  if (config?.distance !== undefined) {
-    addItem("Distance", `${Number(config.distance).toLocaleString()} miles from Temecula hub`);
   }
   if (config?.environment) {
     const envLabel = `${config.environment.charAt(0).toUpperCase()}${config.environment.slice(1)}`;
@@ -739,13 +1105,7 @@ const updateReview = () => {
     addItem("Immersion tier", tierLabel);
   }
   addItem("Rush delivery", config?.rush ? "Yes" : "No");
-  const addressParts = [];
-  if (state.address.line1) addressParts.push(state.address.line1);
-  if (state.address.line2) addressParts.push(state.address.line2);
-  const cityState = [state.address.city, state.address.state].filter(Boolean).join(", ");
-  if (cityState) addressParts.push(cityState);
-  if (state.address.postal) addressParts.push(state.address.postal);
-  addItem("Location", addressParts.join(" · "));
+  addItem("Location", state.serviceAddress || "Not provided");
   if (state.gateCodes) addItem("Access details", state.gateCodes);
   if (state.scope) addItem("Focus notes", state.scope);
   if (state.date) addItem("Preferred date", formatDateDisplay(state.date));
@@ -754,6 +1114,37 @@ const updateReview = () => {
     ? state.addOns.map((item) => `${item.name} (${formatCurrency(item.price)})`).join(" \u2022 ")
     : "None";
   addItem("Add-ons", addonsLabel);
+  const travelTooltip =
+    "Calculated by driving distance from our service hub. We never share our hub address.";
+  switch (state.travel.status) {
+    case "ready":
+      if (Number.isFinite(state.travel.distanceMiles)) {
+        addItem(
+          "Travel distance",
+          `${Number(state.travel.distanceMiles).toFixed(2)} miles`
+        );
+      }
+      addItem(
+        "Travel fee",
+        formatCurrency(state.travel.travelFee || 0),
+        { tooltip: travelTooltip }
+      );
+      break;
+    case "pending":
+      addItem("Travel fee", "Pending verification", { tooltip: travelTooltip });
+      break;
+    case "fetching":
+      addItem("Travel fee", "Calculating…", { tooltip: travelTooltip });
+      break;
+    case "error":
+      addItem("Travel fee", "Needs manual review", { tooltip: travelTooltip });
+      break;
+    default:
+      if (state.serviceAddress) {
+        addItem("Travel fee", "Awaiting calculation", { tooltip: travelTooltip });
+      }
+      break;
+  }
   if (state.priceQuote) {
     addItem("Capture quote", formatCurrency(state.priceQuote.totalRounded));
     const modifierSummary = [];
@@ -778,14 +1169,7 @@ const getStepValidity = (index) => {
     case 0:
       return priceInvalidFields.size === 0;
     case 1:
-      return (
-        Boolean(state.address.line1) &&
-        Boolean(state.address.city) &&
-        Boolean(state.address.state) &&
-        Boolean(state.address.postal) &&
-        Boolean(state.date) &&
-        Boolean(state.time)
-      );
+      return Boolean(state.serviceAddress) && Boolean(state.date) && Boolean(state.time);
     case 4:
       return Boolean(state.confirmAcknowledged) && !isSubmitting;
     default:
@@ -825,12 +1209,15 @@ const updateNavButtons = () => {
   selectors.prevBtn.disabled = currentStep === 0;
   const shouldDisable =
     !getStepValidity(currentStep) || submitCooldownActive || priceInvalidFields.size > 0;
-  selectors.nextBtn.disabled = shouldDisable;
+  const isTravelComputing = currentStep === 1 && state.travel.status === "fetching";
+  selectors.nextBtn.disabled = shouldDisable || isTravelComputing;
 
   if (currentStep === selectors.steps.length - 1) {
     selectors.nextBtn.textContent = isSubmitting ? "Submitting..." : "Place order";
   } else if (currentStep === selectors.steps.length - 2) {
     selectors.nextBtn.textContent = "Confirm details";
+  } else if (currentStep === 1 && isTravelComputing) {
+    selectors.nextBtn.textContent = "Calculating...";
   } else {
     selectors.nextBtn.textContent = "Next step";
   }
@@ -872,15 +1259,7 @@ const serializeAddOns = (addOns) => {
   }
 };
 
-const formatAddress = (address) => {
-  const parts = [];
-  if (address.line1) parts.push(address.line1);
-  if (address.line2) parts.push(address.line2);
-  const cityState = [address.city, address.state].filter(Boolean).join(", ");
-  const finalLine = [cityState, address.postal].filter(Boolean).join(" ");
-  if (finalLine) parts.push(finalLine);
-  return parts.join(", ");
-};
+const formatAddress = (address) => normalizeServiceAddress(address);
 
 const setConfirmAcknowledged = (value) => {
   state.confirmAcknowledged = value;
@@ -919,7 +1298,11 @@ const submitOrder = async () => {
 
   const quote = state.priceQuote || estimatePrice(state.priceConfig);
   const addOnsTotal = state.addOns.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
-  const combinedExact = roundCurrency((quote.totalExact ?? quote.totalRounded) + addOnsTotal, 2);
+  const travelFee = Number.isFinite(state.travel.travelFee) ? state.travel.travelFee : 0;
+  const combinedExact = roundCurrency(
+    (quote.totalExact ?? quote.totalRounded) + addOnsTotal + travelFee,
+    2
+  );
   const combinedRounded = Math.round(combinedExact);
   const captureSummaryParts = [
     `${quote.config.sqft} sq ft`,
@@ -932,19 +1315,17 @@ const submitOrder = async () => {
   const payload = {
     account_email_attached: currentUser.email,
     capturing: captureSummary,
-    address: formatAddress(state.address),
+    address: formatAddress(state.serviceAddress),
     gate_codes: state.gateCodes || "",
     scope: state.scope || "",
     date: state.date,
     capture_time: state.time,
     addons: serializeAddOns(state.addOns),
     sqft: quote.config.sqft,
-    distance_miles: quote.config.distance,
     environment: quote.config.environment,
     tier: quote.config.tier,
     rush: quote.config.rush,
     base_fee: roundCurrency(quote.baseFee, 2),
-    travel_fee: roundCurrency(quote.travelFee, 2),
     scan_fee: roundCurrency(quote.scanFee, 2),
     modifiers: quote.modifiers,
     subtotal: roundCurrency(quote.subtotal, 2),
@@ -953,6 +1334,18 @@ const submitOrder = async () => {
     addons_total: roundCurrency(addOnsTotal, 2),
     total_rounded: combinedRounded,
     total_exact: combinedExact,
+    travel_fee: Number.isFinite(state.travel.travelFee)
+      ? roundCurrency(state.travel.travelFee, 2)
+      : null,
+    distance_miles: Number.isFinite(state.travel.distanceMiles)
+      ? roundCurrency(state.travel.distanceMiles, 2)
+      : null,
+    travel_status: state.travel.status,
+    travel_override: state.travel.override,
+    travel_pending: state.travel.status !== "ready",
+    travel_last_checked: state.travel.lastRequestedAt
+      ? new Date(state.travel.lastRequestedAt).toISOString()
+      : null,
     user_email: currentUser.email ?? null,
     notes: state.scope || null
   };
@@ -992,7 +1385,7 @@ const submitOrder = async () => {
   }
 };
 
-const goToNextStep = () => {
+const goToNextStep = async () => {
   if (!getStepValidity(currentStep)) {
     const stepEl = selectors.steps[currentStep];
     if (stepEl) {
@@ -1006,6 +1399,13 @@ const goToNextStep = () => {
   }
   if (currentStep === selectors.steps.length - 1) {
     submitOrder();
+    return;
+  }
+  if (currentStep === 1) {
+    const ready = await ensureAddressReady();
+    if (ready) {
+      showStep(currentStep + 1);
+    }
     return;
   }
   showStep(currentStep + 1);
@@ -1050,13 +1450,9 @@ const handleSharedAuthEvent = (event) => {
 window.addEventListener(AUTH_EVENT_NAME, handleSharedAuthEvent);
 
 const applyStateToInputs = () => {
-  const addressInputs = document.querySelectorAll("[data-address-field]");
-  addressInputs.forEach((input) => {
-    const key = input.getAttribute("data-address-field");
-    if (key && key in state.address) {
-      input.value = state.address[key] || "";
-    }
-  });
+  if (selectors.addressInput) {
+    selectors.addressInput.value = state.serviceAddress || "";
+  }
   const fieldInputs = document.querySelectorAll("[data-field]");
   fieldInputs.forEach((input) => {
     const key = input.getAttribute("data-field");
@@ -1085,6 +1481,7 @@ const applyStateToInputs = () => {
     resetPriceInputs();
     updateNavButtons();
   }
+  updateTravelUI();
 };
 
 const initMemoryOrb = () => {
@@ -1238,16 +1635,10 @@ const initMemoryOrb = () => {
 };
 
 const initEventListeners = () => {
-  document.querySelectorAll("[data-address-field]").forEach((input) => {
-    input.addEventListener("input", (event) => {
-      const target = event.currentTarget;
-      if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) {
-        return;
-      }
-      const key = target.getAttribute("data-address-field");
-      if (!key) return;
-      setAddressField(key, target.value);
-    });
+  selectors.addressInput?.addEventListener("input", (event) => {
+    const target = event.currentTarget;
+    if (!(target instanceof HTMLInputElement)) return;
+    setServiceAddress(target.value);
   });
 
   document.querySelectorAll("[data-field]").forEach((input) => {
@@ -1260,6 +1651,14 @@ const initEventListeners = () => {
       if (!key) return;
       setField(key, target.value);
     });
+  });
+
+  selectors.travelRetry?.addEventListener("click", () => {
+    handleTravelRetry();
+  });
+
+  selectors.travelOverride?.addEventListener("click", () => {
+    handleTravelOverride();
   });
 
   document
@@ -1324,7 +1723,7 @@ const initSupabase = async () => {
   });
 };
 
-const formatAddressForSubmission = () => formatAddress(state.address);
+const formatAddressForSubmission = () => formatAddress(state.serviceAddress);
 
 const init = () => {
   loadState();

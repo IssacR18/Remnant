@@ -204,26 +204,10 @@
                       </div>
                       <p class="price-field__hint" data-price-error="sqft" aria-live="polite"></p>
                     </div>
-                    <div class="price-field">
-                      <label for="price-distance" class="price-field__label">
-                        Distance from Temecula hub (miles)
-                      </label>
-                      <div class="price-field__control">
-                        <input
-                          type="number"
-                          id="price-distance"
-                          name="distance"
-                          inputmode="numeric"
-                          min="0"
-                          max="150"
-                          step="1"
-                          value="10"
-                          data-price-input="distance"
-                          required
-                        />
-                      </div>
-                      <p class="price-field__hint" data-price-error="distance" aria-live="polite"></p>
-                    </div>
+                    <p class="price-field__note" role="note">
+                      Travel pricing is handled automatically after you share the service address in
+                      Step 2.
+                    </p>
                     <fieldset class="price-fieldset" data-price-input="environment">
                       <legend class="price-fieldset__legend">Environment</legend>
                       <div class="price-options">
@@ -310,26 +294,36 @@
                 </p>
               </div>
               <div class="form-grid">
-                <label class="field">
-                  <span class="field__label">Address line 1 <span aria-hidden="true">*</span></span>
-                  <input type="text" name="address1" data-address-field="line1" required autocomplete="address-line1" />
+                <label class="field field--full">
+                  <span class="field__label">Service address <span aria-hidden="true">*</span></span>
+                  <input
+                    type="text"
+                    name="serviceAddress"
+                    data-address-input
+                    required
+                    autocomplete="street-address"
+                    placeholder="123 Main St, Temecula, CA 92592"
+                  />
                 </label>
-                <label class="field">
-                  <span class="field__label">Address line 2</span>
-                  <input type="text" name="address2" data-address-field="line2" autocomplete="address-line2" />
-                </label>
-                <label class="field">
-                  <span class="field__label">City <span aria-hidden="true">*</span></span>
-                  <input type="text" name="city" data-address-field="city" required autocomplete="address-level2" />
-                </label>
-                <label class="field">
-                  <span class="field__label">State / Region <span aria-hidden="true">*</span></span>
-                  <input type="text" name="state" data-address-field="state" required autocomplete="address-level1" />
-                </label>
-                <label class="field">
-                  <span class="field__label">Postal code <span aria-hidden="true">*</span></span>
-                  <input type="text" name="postal" data-address-field="postal" required autocomplete="postal-code" />
-                </label>
+                <p class="travel-hint">
+                  We&apos;ll calculate the travel distance privately once you continue. The hub address
+                  stays confidential.
+                </p>
+                <div class="travel-feedback" data-travel-feedback hidden>
+                  <p class="travel-feedback__message" data-travel-message role="status"></p>
+                  <div class="travel-feedback__actions">
+                    <button type="button" class="travel-feedback__action" data-travel-retry>
+                      Try lookup again
+                    </button>
+                    <button
+                      type="button"
+                      class="travel-feedback__action travel-feedback__action--quiet"
+                      data-travel-override
+                    >
+                      Continue without travel fee
+                    </button>
+                  </div>
+                </div>
                 <label class="field">
                   <span class="field__label">Gate / access codes</span>
                   <input type="text" name="gate" data-field="gateCodes" autocomplete="off" placeholder="Optional" />
