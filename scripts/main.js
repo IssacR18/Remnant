@@ -319,13 +319,24 @@ if (window?.supabase && (authStatusEl || authVisibilityEls.length > 0)) {
     });
   };
 
+  const setAuthVisibilityForNode = (node, shouldShow) => {
+    if (!(node instanceof HTMLElement)) return;
+    node.classList.toggle("is-auth-hidden", !shouldShow);
+    node.toggleAttribute("hidden", !shouldShow);
+    if (!shouldShow) {
+      node.setAttribute("aria-hidden", "true");
+    } else if (node.getAttribute("aria-hidden") === "true") {
+      node.removeAttribute("aria-hidden");
+    }
+  };
+
   const applyAuthVisibility = (isAuthenticated) => {
     authVisibilityEls.forEach((node) => {
       const visibility = (node.getAttribute("data-auth-visible") || "").toLowerCase();
       if (visibility === "signed-in" || visibility === "authenticated") {
-        node.toggleAttribute("hidden", !isAuthenticated);
+        setAuthVisibilityForNode(node, isAuthenticated);
       } else if (visibility === "signed-out" || visibility === "unauthenticated") {
-        node.toggleAttribute("hidden", isAuthenticated);
+        setAuthVisibilityForNode(node, !isAuthenticated);
       }
     });
   };

@@ -149,8 +149,8 @@ ul {
   border: 1px solid var(--border);
   border-radius: 20px;
   margin: 1rem auto;
-  max-width: 1100px;
-  padding: 0.5rem 1.5rem;
+  max-width: 1350px;
+  padding: 0.5rem 2.75rem 0.5rem 2.25rem;
   position: sticky;
   top: 1rem;
   z-index: 50;
@@ -321,7 +321,25 @@ ul {
 }
 
 .nav__link--glass {
-  display: none;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(124, 242, 208, 0.28);
+  border-radius: 999px;
+  box-shadow: 0 12px 28px rgba(124, 242, 208, 0.18);
+  color: var(--text);
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.35rem 0.95rem;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease,
+    transform 0.25s ease;
+}
+
+.nav__link--glass:hover,
+.nav__link--glass:focus {
+  background: rgba(124, 242, 208, 0.1);
+  border-color: rgba(124, 242, 208, 0.58);
+  box-shadow: 0 16px 34px rgba(124, 242, 208, 0.26);
+  transform: translateY(-1px);
   color: var(--text);
 }
 
@@ -499,7 +517,7 @@ ul {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
   margin: 4rem auto;
-  max-width: 1100px;
+  max-width: 1350px;
   padding: 0 1.5rem;
 }
 
@@ -838,19 +856,6 @@ ul {
   .nav__link--energy:hover,
   .nav__link--energy:focus {
     animation-duration: 2.2s;
-  }
-
-  .nav__link--glass {
-    display: block;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(124, 242, 208, 0.32);
-    color: var(--text);
-    box-shadow: 0 12px 32px rgba(124, 242, 208, 0.22);
-  }
-
-  .nav__link--glass:hover,
-  .nav__link--glass:focus {
-    box-shadow: 0 0 26px rgba(124, 242, 208, 0.45);
   }
 
   .nav__link--danger {

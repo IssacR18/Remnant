@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capture Session Prep Guide | Remnant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="../images/logo-mark.png" type="image/png" />
+  </head>
+  <body class="prep-guide-page">
+    <a class="skip-link" href="#prep-overview">Skip to guide</a>
+    <header class="shell">
+      <nav class="nav" aria-label="Primary navigation">
+        <div class="auth-badge" data-auth-status hidden aria-live="polite">
+          <span class="auth-badge__label">Logged in as</span>
+          <span class="auth-badge__email" data-auth-email></span>
+        </div>
+        <a class="nav__brand" href="../#top" aria-label="Remnant home">
+          <img
+            src="../images/logo-mark.png"
+            alt="Remnant"
+            class="nav__logo"
+            width="40"
+            height="40"
+          />
+          <span class="nav__wordmark">emnant</span>
+        </a>
+        <button
+          class="nav__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-menu"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <svg
+            class="nav__toggle-icon"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-hidden="true"
+          >
+            <path
+              class="nav__toggle-icon-bars"
+              d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="nav__cluster">
+          <div class="nav__links" id="primary-menu">
+            <a href="../#top" class="nav__link nav__link--core">Home</a>
+            <a href="../how-it-works/" class="nav__link nav__link--core">How it works</a>
+            <a href="../stories/" class="nav__link nav__link--ghost">Stories</a>
+            <a href="./" class="nav__link nav__link--core nav__link--active" aria-current="page" data-auth-visible="signed-in">Prep Guide</a>
+            <a href="../signup/" class="nav__link nav__link--energy" data-auth-visible="signed-out">Sign Up</a>
+            <a href="../signin/" class="nav__link nav__link--glass" data-auth-visible="signed-out">Log In</a>
+            <a
+              href="#"
+              class="nav__link nav__link--danger nav__link--logout"
+              data-auth-visible="signed-in"
+              data-logout
+              data-logout-redirect="/signin/"
+              hidden
+            >
+              Log Out
+            </a>
+            <div class="nav__cta">
+              <a class="btn btn--energy" href="../order/">Schedule Scan</a>
+              <a class="btn btn--energy-strong" href="../vault/">Enter Vault</a>
+              <a class="btn btn--glass" href="../support/">Support</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="prep-hero" id="prep-overview">
+        <div class="prep-hero__intro">
+          <p class="eyebrow">Capture Session Preparation</p>
+          <h1>Set the stage for a flawless 3D memory.</h1>
+          <p>
+            To make sure your memory is preserved in full detail, it’s best to prepare your space before we arrive.
+            The cleaner and more open the area, the more realistic and beautiful your 3D result will look.
+          </p>
+          <div class="prep-hero__actions">
+            <a class="btn btn--primary" href="../order/">Schedule your capture</a>
+            <a class="btn btn--ghost" href="../support/">Talk to an archivist</a>
+          </div>
+        </div>
+        <div class="prep-hero__card">
+          <h2>Your capture at a glance</h2>
+          <ul class="prep-hero__highlights">
+            <li>
+              <span class="prep-hero__label">Session length</span>
+              <span class="prep-hero__value">20–60 minutes per space</span>
+            </li>
+            <li>
+              <span class="prep-hero__label">Processing window</span>
+              <span class="prep-hero__value">2–5 days</span>
+            </li>
+            <li>
+              <span class="prep-hero__label">Delivery</span>
+              <span class="prep-hero__value">Secure Remnant Vault</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="prep-section" aria-labelledby="space-prep-heading">
+        <div class="prep-section__header">
+          <span class="prep-section__badge">01</span>
+          <div>
+            <p class="prep-section__eyebrow">Space Preparation</p>
+            <h2 id="space-prep-heading">Shape the scene before we arrive</h2>
+          </div>
+        </div>
+        <p class="prep-section__intro">
+          If you want to leave everything exactly as it is, go for it — we’ll scan it as-is. Otherwise a few quick updates make the capture shine:
+        </p>
+        <ul class="prep-list">
+          <li>
+            Clear clutter from tables, floors, and countertops.
+          </li>
+          <li>
+            Hide personal or private items you don’t want captured.
+          </li>
+          <li>
+            Turn on all lights to give the LiDAR consistent brightness.
+          </li>
+          <li>
+            Close blinds halfway to minimize harsh sunlight or glare.
+          </li>
+          <li>
+            Keep pets in another room while we’re capturing the space.
+          </li>
+        </ul>
+      </section>
+
+      <section class="prep-section" aria-labelledby="day-of-heading">
+        <div class="prep-section__header">
+          <span class="prep-section__badge">02</span>
+          <div>
+            <p class="prep-section__eyebrow">Day-of-Capture Checklist</p>
+            <h2 id="day-of-heading">Quick reminders before we knock</h2>
+          </div>
+        </div>
+        <ul class="prep-list prep-list--cards">
+          <li class="prep-card">
+            <h3>Ready the space</h3>
+            <p>Make sure the area is ready 10–15 minutes before your session.</p>
+          </li>
+          <li class="prep-card">
+            <h3>Flag fragile items</h3>
+            <p>Tell us about any fragile or valuable items we should avoid touching.</p>
+          </li>
+          <li class="prep-card">
+            <h3>Define boundaries</h3>
+            <p>Review which spaces you do or don’t want included in the capture.</p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="prep-section" aria-labelledby="client-heading">
+        <div class="prep-section__header">
+          <span class="prep-section__badge">03</span>
+          <div>
+            <p class="prep-section__eyebrow">For the Client</p>
+            <h2 id="client-heading">How to participate in the session</h2>
+          </div>
+        </div>
+        <ul class="prep-list">
+          <li>You don’t need to be in the room unless you’d like to guide the shot.</li>
+          <li>If you want to appear in the scan, wear neutral clothing without reflective materials and be ready to hold still for up to 3 minutes.</li>
+          <li>You’re welcome to observe — captures usually take 20–60 minutes per space.</li>
+          <li>We’ll confirm on-site once the data looks complete.</li>
+        </ul>
+      </section>
+
+      <section class="prep-section" aria-labelledby="after-heading">
+        <div class="prep-section__header">
+          <span class="prep-section__badge">04</span>
+          <div>
+            <p class="prep-section__eyebrow">After the Capture</p>
+            <h2 id="after-heading">What happens once we pack up</h2>
+          </div>
+        </div>
+        <ul class="prep-list prep-list--timeline">
+          <li>
+            <span class="prep-list__title">Enhancements</span>
+            <p>Optional add-ons include audio hotspots, narration, or walk-through integration.</p>
+          </li>
+          <li>
+            <span class="prep-list__title">Processing window</span>
+            <p>Typical processing takes 2–5 days depending on your plan.</p>
+          </li>
+          <li>
+            <span class="prep-list__title">Delivery to your vault</span>
+            <p>You’ll receive an email once your scan is processed and uploaded to your Remnant Vault.</p>
+          </li>
+          <li>
+            <span class="prep-list__title">Follow-up options</span>
+            <p>Request edits, trims, or even a re-capture if something wasn’t right.</p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="prep-section prep-section--notice" aria-labelledby="legal-heading">
+        <div class="prep-section__header">
+
+          <div>
+            <p class="prep-section__eyebrow">Legal & Safety</p>
+            <h2 id="legal-heading">A quick privacy reminder</h2>
+          </div>
+        </div>
+        <blockquote class="prep-quote">
+          By preparing your space and removing personal items, you agree that any visible items in the scene may appear in the final capture. Remnant respects all privacy and property rights. Please notify your technician if any area is off-limits.
+        </blockquote>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span data-current-year></span> Remnant Labs. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="../scripts/main.js"></script>
+    <script>
+      document.querySelector("[data-current-year]").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

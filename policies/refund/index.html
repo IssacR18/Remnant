@@ -61,13 +61,15 @@
 
         <div class="nav__cluster">
           <div class="nav__links" id="primary-menu">
-            <a href="../../#top" class="nav__link">Home</a>
-            <a href="../../how-it-works/" class="nav__link">How it works</a>
-            <a href="../../stories/" class="nav__link">Stories</a>
-            <a href="../../signup/" class="nav__link" data-auth-visible="signed-out">Sign Up</a>
+            <a href="../../#top" class="nav__link nav__link--core">Home</a>
+            <a href="../../how-it-works/" class="nav__link nav__link--core">How it works</a>
+            <a href="../../stories/" class="nav__link nav__link--ghost">Stories</a>
+            <a href="../../prep-guide/" class="nav__link nav__link--core" data-auth-visible="signed-in">Prep Guide</a>
+            <a href="../../signup/" class="nav__link nav__link--energy" data-auth-visible="signed-out">Sign Up</a>
+            <a href="../../signin/" class="nav__link nav__link--glass" data-auth-visible="signed-out">Log In</a>
             <a
               href="#"
-              class="nav__link nav__link--logout"
+              class="nav__link nav__link--danger nav__link--logout"
               data-auth-visible="signed-in"
               data-logout
               data-logout-redirect="/signin/"
@@ -76,9 +78,9 @@
               Log Out
             </a>
             <div class="nav__cta">
-              <a class="btn btn--primary" href="../../order/">Schedule Scan</a>
-              <a class="btn btn--accent" href="../../vault/">Enter Vault</a>
-              <a class="btn btn--ghost" href="../../support/">Support</a>
+              <a class="btn btn--energy" href="../../order/">Schedule Scan</a>
+              <a class="btn btn--energy-strong" href="../../vault/">Enter Vault</a>
+              <a class="btn btn--glass" href="../../support/">Support</a>
             </div>
           </div>
         </div>
@@ -234,4 +236,3 @@
     </script>
   </body>
 </html>
-

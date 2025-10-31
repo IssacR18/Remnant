@@ -82,6 +82,7 @@
 }
 
 .section-heading {
+  
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -95,6 +96,7 @@
 }
 
 .story-grid {
+  place-items: center;
   margin-bottom: 3.5rem;
 }
 
