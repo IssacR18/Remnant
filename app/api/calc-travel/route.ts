@@ -1,19 +1,24 @@
 import { NextResponse } from "next/server";
 
-const HUB_LAT = Number(process.env.HUB_LAT);
-const HUB_LNG = Number(process.env.HUB_LNG);
-const ORS_KEY = process.env.ORS_API_KEY!;
-
-type ORSGeocode = {
-  features?: Array<{ geometry?: { coordinates?: [number, number] } }>;
-};
-type ORSDirections = {
-  routes?: Array<{ summary?: { distance?: number } }>;
-};
-
-function dollars(n: number) {
-  return Math.round(n * 100) / 100;
+// ---- TEMP DEBUG START ----
+function parseNumEnv(v?: string | null) {
+  if (v == null) return NaN;
+  const n = Number(String(v).trim());
+  return Number.isFinite(n) ? n : NaN;
 }
+
+const HUB_LAT_RAW = process.env.HUB_LAT ?? null;
+const HUB_LNG_RAW = process.env.HUB_LNG ?? null;
+const ORS_KEY = process.env.ORS_API_KEY ?? "";
+
+const HUB_LAT = parseNumEnv(HUB_LAT_RAW);
+const HUB_LNG = parseNumEnv(HUB_LNG_RAW);
+// ---- TEMP DEBUG END ----
+
+type ORSGeocode = { features?: Array<{ geometry?: { coordinates?: [number, number] } }> };
+type ORSDirections = { routes?: Array<{ summary?: { distance?: number } }> };
+
+function dollars(n: number) { return Math.round(n * 100) / 100; }
 
 function computeTravelFee(miles: number) {
   let fee = 0;
@@ -34,38 +39,55 @@ function computeTravelFee(miles: number) {
 
 export async function POST(req: Request) {
   try {
-    const { address } = await req.json().catch(() => ({} as any));
-    if (!address || typeof address !== "string" || !address.trim()) {
-      return NextResponse.json({ error: "Missing address" }, { status: 400 });
-    }
+    // 1) Immediate config probe
     if (!ORS_KEY || Number.isNaN(HUB_LAT) || Number.isNaN(HUB_LNG)) {
-      return NextResponse.json({ error: "Server is not configured" }, { status: 500 });
+      return NextResponse.json({
+        error: "Server is not configured",
+        missing: {
+          HUB_LAT_isNaN: Number.isNaN(HUB_LAT),
+          HUB_LNG_isNaN: Number.isNaN(HUB_LNG),
+          ORS_API_KEY_empty: !ORS_KEY || ORS_KEY.trim() === "",
+        },
+        raw_examples: {
+          HUB_LAT_RAW,
+          HUB_LNG_RAW,
+          ORS_KEY_present: Boolean(ORS_KEY),
+        }
+      }, { status: 500 });
     }
 
-    // Geocode
+    // 2) Parse body
+    const payload = await req.json().catch(() => ({} as any));
+    const address = (payload?.address ?? "").trim();
+    if (!address) {
+      return NextResponse.json({ error: "Missing address" }, { status: 400 });
+    }
+
+    // 3) Geocode (with error detail)
     const geocodeUrl = new URL("https://api.openrouteservice.org/geocode/search");
     geocodeUrl.searchParams.set("api_key", ORS_KEY);
-    geocodeUrl.searchParams.set("text", address.trim());
+    geocodeUrl.searchParams.set("text", address);
 
     const gRes = await fetch(geocodeUrl.toString(), {
       headers: { Accept: "application/json" },
       cache: "no-store",
     });
+    const gText = await gRes.text();
     if (!gRes.ok) {
-      const txt = await gRes.text();
-      return NextResponse.json(
-        { error: "Geocoding failed", status: gRes.status, detail: txt.slice(0, 500) },
-        { status: 422 }
-      );
+      return NextResponse.json({
+        error: "Geocoding failed",
+        status: gRes.status,
+        detail: gText.slice(0, 1000),
+      }, { status: 422 });
     }
-    const gJson = (await gRes.json()) as ORSGeocode;
+    const gJson = JSON.parse(gText) as ORSGeocode;
     const coords = gJson?.features?.[0]?.geometry?.coordinates;
     if (!Array.isArray(coords) || coords.length < 2) {
       return NextResponse.json({ error: "Unable to geocode address" }, { status: 422 });
     }
     const [destLng, destLat] = coords;
 
-    // Directions in miles
+    // 4) Directions (with error detail)
     const dRes = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
       method: "POST",
       headers: {
@@ -82,27 +104,25 @@ export async function POST(req: Request) {
       }),
       cache: "no-store",
     });
+    const dText = await dRes.text();
     if (!dRes.ok) {
-      const txt = await dRes.text();
-      return NextResponse.json(
-        { error: "Directions failed", status: dRes.status, detail: txt.slice(0, 500) },
-        { status: 422 }
-      );
+      return NextResponse.json({
+        error: "Directions failed",
+        status: dRes.status,
+        detail: dText.slice(0, 1000),
+      }, { status: 422 });
     }
-
-    const dJson = (await dRes.json()) as ORSDirections;
+    const dJson = JSON.parse(dText) as ORSDirections;
     const miles = dJson?.routes?.[0]?.summary?.distance;
+
     if (typeof miles !== "number" || !Number.isFinite(miles)) {
-      return NextResponse.json({ error: "Unable to compute driving distance" }, { status: 422 });
+      return NextResponse.json({ error: "Unable to compute driving distance", raw: dJson }, { status: 422 });
     }
 
     const distanceMiles = dollars(miles);
     const travelFee = computeTravelFee(distanceMiles);
     return NextResponse.json({ distanceMiles, travelFee });
   } catch (err: any) {
-    return NextResponse.json(
-      { error: "Server error", detail: String(err?.message || err) },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Server error", detail: String(err?.message || err) }, { status: 500 });
   }
 }
