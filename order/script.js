@@ -30,7 +30,7 @@ const PRICE_DEFAULTS = Object.freeze({
 });
 
 const PRICE_LIMITS = Object.freeze({
-  sqft: { min: 100, max: 10000 }
+  sqft: { min: 100, max: 6000 }
 });
 
 const PRICE_ENVIRONMENT_MODIFIERS = Object.freeze({
@@ -51,7 +51,7 @@ const PRICE_SCAN_RATE = 0.5;
 const PRICE_ANIMATION_DURATION_MS = 280;
 
 const PRICE_ERROR_MESSAGES = Object.freeze({
-  sqft: "Enter between 100 and 10,000 square feet."
+  sqft: "Enter between 100 and 6,000 square feet."
 });
 
 const PRICE_DELIVERY_HINTS = Object.freeze({

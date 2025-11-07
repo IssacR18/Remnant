@@ -17,6 +17,27 @@
   gap: 2.75rem;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   margin-bottom: 3.75rem;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.light-rays-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.light-rays-layer .light-rays-mount {
+  width: 100%;
+  height: 100%;
+}
+
+.hiw-hero__intro,
+.hiw-hero__stats {
+  position: relative;
+  z-index: 2;
 }
 
 .hiw-hero__intro > *:not(:last-child) {
@@ -232,6 +253,11 @@
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+.hiw-light-rays canvas {
+  mix-blend-mode: screen;
+  opacity: 0.85;
 }
 
 .site-footer {

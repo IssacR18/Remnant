@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.0"
+    "@supabase/supabase-js": "^2.45.0",
+    "gsap": "^3.13.0"
   }
 }
