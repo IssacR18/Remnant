@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Schedule Your Remnant Capture</title>
+    <title>Schedule Your Remnant Capture · Step 1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="../styles/main.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body class="order-page">
+  <body class="order-page" data-step-page="1">
     <a class="skip-link" href="#order-wizard">Skip to order wizard</a>
     <header class="shell">
       <nav class="nav" aria-label="Primary navigation">
@@ -75,7 +75,7 @@
               Log Out
             </a>
             <div class="nav__cta">
-              <a class="btn btn--energy" href="./" aria-current="page">Schedule Scan</a>
+              <a class="btn btn--energy" href="./step-1.html" aria-current="page">Schedule Scan</a>
               <a class="btn btn--energy-strong" href="../vault/">Enter Vault</a>
               <a class="btn btn--glass" href="../support/">Support</a>
             </div>
@@ -108,8 +108,9 @@
 
       <section class="order-wizard" id="order-wizard" data-order-wizard>
         <header class="order-wizard__header">
-          <h2>Schedule your Remnant capture</h2>
-          <p>Five deliberate steps so we can prepare the perfect archival session.</p>
+          <p class="step-kicker">Step 1</p>
+          <h2>Plan your capture</h2>
+          <p>Choose the environment, immersion tier, and optional rush speed.</p>
         </header>
 
         <ol class="order-progress" data-progress role="list" aria-label="Order steps">
@@ -140,18 +141,13 @@
           <div class="order-total__value" data-odometer aria-label="Order total">$0.00</div>
         </div>
 
-        <form class="order-form" data-order-form novalidate>
-          <section
-            class="order-step is-active"
-            data-step="0"
-            aria-labelledby="step-quote-heading"
-          >
+        <form class="order-form" data-step-form novalidate>
+          <section class="order-step is-active" aria-labelledby="step-1-heading">
             <div class="order-step__content">
               <div class="order-step__intro">
-                <p class="step-kicker">Step 1</p>
-                <h3 id="step-quote-heading">First, let&rsquo;s gather a few details.</h3>
+                <h3 id="step-1-heading">Choose the feel of your capture</h3>
                 <p class="step-description">
-                  These help us tailor capture logistics and the experience you&rsquo;ll receive.
+                  These choices shape your base quote before we layer in the location details.
                 </p>
               </div>
               <div class="step-one">
@@ -164,6 +160,7 @@
                         name="environment"
                         value="indoor"
                         data-price-input="environment"
+                        required
                       />
                       <span class="step-pill__label">Indoor</span>
                     </label>
@@ -173,6 +170,7 @@
                         name="environment"
                         value="outdoor"
                         data-price-input="environment"
+                        required
                       />
                       <span class="step-pill__label">Outdoor</span>
                     </label>
@@ -182,6 +180,7 @@
                         name="environment"
                         value="both"
                         data-price-input="environment"
+                        required
                       />
                       <span class="step-pill__label">Both</span>
                     </label>
@@ -205,6 +204,7 @@
                         name="immersionTier"
                         value="basic"
                         data-price-input="tier"
+                        required
                       />
                       <div class="tier-card__body">
                         <div class="tier-card__header">
@@ -227,6 +227,7 @@
                         name="immersionTier"
                         value="realistic"
                         data-price-input="tier"
+                        required
                       />
                       <div class="tier-card__body">
                         <div class="tier-card__header">
@@ -246,6 +247,7 @@
                         name="immersionTier"
                         value="immersive"
                         data-price-input="tier"
+                        required
                       />
                       <div class="tier-card__body">
                         <div class="tier-card__header">
@@ -275,242 +277,11 @@
               </div>
             </div>
           </section>
-
-          <section class="order-step" data-step="1" aria-labelledby="step-location-heading">
-            <div class="order-step__content">
-              <div class="order-step__intro">
-                <p class="step-kicker">Step 2</p>
-                <h3 id="step-location-heading">Where and when should we arrive?</h3>
-                <p class="step-description">
-                  Share the location details, preferred access notes, and an ideal arrival window.
-                </p>
-              </div>
-              <div class="form-grid">
-                <label class="field">
-                  <span class="field__label">Square footage <span aria-hidden="true">*</span></span>
-                  <input
-                    type="number"
-                    name="sqft"
-                    inputmode="numeric"
-                    min="100"
-                    max="10000"
-                    step="1"
-                    data-price-input="sqft"
-                    required
-                  />
-                  <p class="price-field__hint" data-price-error="sqft" aria-live="polite"></p>
-                </label>
-                <label class="field field--full">
-                  <span class="field__label">Service address <span aria-hidden="true">*</span></span>
-                  <input
-                    type="text"
-                    name="serviceAddress"
-                    data-address-input
-                    required
-                    autocomplete="street-address"
-                    placeholder="123 Main St, Temecula, CA 92592"
-                  />
-                </label>
-                <p class="travel-hint">
-                  We&apos;ll calculate the travel distance automatically when you continue, or get an
-                  instant estimate now. The hub address stays confidential.
-                </p>
-                <div class="travel-actions">
-                  <button
-                    type="button"
-                    class="btn btn--glass travel-actions__estimate"
-                    data-travel-estimate
-                    data-default-text="Estimate travel fee"
-                    data-loading-text="Estimating..."
-                  >
-                    Estimate travel fee
-                  </button>
-                </div>
-                <div class="travel-feedback" data-travel-feedback hidden>
-                  <p class="travel-feedback__message" data-travel-message role="status"></p>
-                  <div class="travel-feedback__actions">
-                    <button type="button" class="travel-feedback__action" data-travel-retry>
-                      Try lookup again
-                    </button>
-                    <button
-                      type="button"
-                      class="travel-feedback__action travel-feedback__action--quiet"
-                      data-travel-override
-                    >
-                      Continue without travel fee
-                    </button>
-                  </div>
-                </div>
-                <label class="field">
-                  <span class="field__label">Gate / access codes</span>
-                  <input type="text" name="gate" data-field="gateCodes" autocomplete="off" placeholder="Optional" />
-                </label>
-                <label class="field">
-                  <span class="field__label">Preferred date <span aria-hidden="true">*</span></span>
-                  <input type="date" name="date" data-field="date" required />
-                </label>
-                <label class="field">
-                  <span class="field__label">Arrival window <span aria-hidden="true">*</span></span>
-                  <input type="time" name="time" data-field="time" required />
-                </label>
-                <label class="field field--textarea">
-                  <span class="field__label">What should we focus on?</span>
-                  <textarea
-                    name="scope"
-                    data-field="scope"
-                    rows="3"
-                    placeholder="Share specific rooms, objects, or stories we should prepare for."
-                  ></textarea>
-                </label>
-              </div>
-            </div>
-          </section>
-
-          <section class="order-step" data-step="2" aria-labelledby="step-addons-heading">
-            <div class="order-step__content">
-              <div class="order-step__intro">
-                <p class="step-kicker">Step 3</p>
-                <h3 id="step-addons-heading">Enhance your capture</h3>
-                <p class="step-description">
-                  Optional upgrades add more layers to your archive. Toggle the ones that resonate.
-                </p>
-              </div>
-              <fieldset class="addon-grid" data-addons>
-                <legend class="sr-only">Add-on options</legend>
-                <label class="addon-card">
-                  <input type="checkbox" value="Vault Orientation" data-price="149" />
-                  <div class="addon-card__body">
-                    <span class="addon-card__title">Vault orientation for your family</span>
-                    <p>Guided walkthrough for up to 8 guests plus concierge Q&amp;A.</p>
-                    <span class="addon-card__price">+$149</span>
-                  </div>
-                </label>
-                <label class="addon-card">
-                  <input type="checkbox" value="Legacy Highlight Reel" data-price="199" />
-                  <div class="addon-card__body">
-                    <span class="addon-card__title">Legacy highlight reel</span>
-                    <p>One-minute cinematic cut with captions for sharing beyond the vault.</p>
-                    <span class="addon-card__price">+$199</span>
-                  </div>
-                </label>
-                <label class="addon-card">
-                  <input type="checkbox" value="Archive Transcripts" data-price="129" />
-                  <div class="addon-card__body">
-                    <span class="addon-card__title">Archive transcripts</span>
-                    <p>Full speech-to-text transcripts for every captured room.</p>
-                    <span class="addon-card__price">+$129</span>
-                  </div>
-                </label>
-              </fieldset>
-            </div>
-          </section>
-
-          <section class="order-step" data-step="3" aria-labelledby="step-review-heading">
-            <div class="order-step__content">
-              <div class="order-step__intro">
-                <p class="step-kicker">Step 4</p>
-                <h3 id="step-review-heading">Review and finalize details</h3>
-                <p class="step-description">
-                  Confirm the essentials. We&apos;ll send a full itinerary and prep list as soon as you
-                  submit.
-                </p>
-              </div>
-              <div class="review-card">
-                <dl class="review-list" data-review-list></dl>
-                <div class="review-note">
-                  <strong>Heads up:</strong> You can adjust details with your archivist after
-                  scheduling. We&apos;ll confirm availability within 12 hours.
-                </div>
-              </div>
-              <div class="quote-review">
-                <h4 class="quote-review__heading">Your finalized quote</h4>
-                <p class="quote-review__note">Finalized based on your selections.</p>
-                <div class="quote-summary" data-price-summary aria-live="polite">
-                  <span class="price-estimator__label">Estimated total</span>
-                  <div class="price-estimator__amount" data-price-amount>
-                    <span class="price-estimator__value" data-price-value>$0</span>
-                  </div>
-                  <span class="price-estimator__exact" data-price-exact>
-                    Quote exact (before rounding): $0.00
-                  </span>
-                  <dl class="price-estimator__breakdown" data-price-breakdown></dl>
-                  <div class="price-estimator__modifiers" data-price-modifiers></div>
-                  <p class="price-estimator__timeline" data-price-timeline>
-                    Standard: ~5–7 business days (up to 10 for very large jobs)
-                  </p>
-                </div>
-                <div class="selections-recap">
-                  <div class="selections-recap__header">
-                    <h4 class="selections-recap__title">Selections recap</h4>
-                    <button
-                      type="button"
-                      class="selections-recap__edit"
-                      data-selection-edit
-                    >
-                      Change selections
-                    </button>
-                  </div>
-                  <ul class="selections-recap__list">
-                    <li data-selection-environment>Environment: Not selected</li>
-                    <li data-selection-tier>Immersion tier: Not selected</li>
-                    <li data-selection-rush>Rush delivery: No</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="order-step" data-step="4" aria-labelledby="step-confirm-heading">
-            <div class="order-step__content">
-              <div class="order-step__intro">
-                <p class="step-kicker">Step 5</p>
-                <h3 id="step-confirm-heading">Confirm your capture request</h3>
-                <p class="step-description">
-                  Press confirm to reserve this itinerary. We&apos;ll log it instantly in your vault and
-                  send your order number.
-                </p>
-              </div>
-              <div class="confirm-card">
-                <p>
-                  Double-check the summary above. When you submit, we&apos;ll gently pulse your total,
-                  create the order in Supabase, and email you a copy.
-                </p>
-                <label class="confirm-checkbox">
-                  <input type="checkbox" data-confirm-checkbox required />
-                  <span>I&apos;m ready to confirm this capture plan.</span>
-                </label>
-                <p class="confirm-hint">
-                  Need to revisit later? Your progress is saved locally and will reload when you
-                  return.
-                </p>
-              </div>
-            </div>
-          </section>
         </form>
 
         <div class="order-actions">
           <button class="btn btn--primary" type="button" data-prev disabled>Back</button>
-          <button class="btn btn--primary" type="button" data-next disabled>
-            Next step
-          </button>
-        </div>
-      </section>
-
-      <section class="order-success" data-order-success hidden aria-live="polite">
-        <div class="order-success__card">
-          <div class="order-success__icon" aria-hidden="true">
-            <span></span>
-          </div>
-          <h2>Your order is locked in</h2>
-          <p>
-            We&apos;ve logged your capture itinerary and alerted your archivist. You&apos;ll receive an
-            email with all the details momentarily.
-          </p>
-          <p class="order-success__id">Order ID: <span data-order-id></span></p>
-          <div class="order-success__actions">
-            <a class="btn btn--accent" href="../vault/">Go to Vault</a>
-            <a class="btn btn--ghost" href="../support/">Talk with support</a>
-          </div>
+          <button class="btn btn--primary" type="button" data-next>Continue</button>
         </div>
       </section>
     </main>

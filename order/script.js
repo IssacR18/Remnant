@@ -268,12 +268,11 @@ const runEstimateTests = () => {
 runEstimateTests.hasRun = false;
 
 const selectors = {
-  gate: document.querySelector("[data-auth-gate]"),
   wizard: document.querySelector("[data-order-wizard]"),
   success: document.querySelector("[data-order-success]"),
   orderId: document.querySelector("[data-order-id]"),
+  stepForm: document.querySelector("[data-step-form]"),
   progressSteps: Array.from(document.querySelectorAll("[data-progress-step]")),
-  steps: Array.from(document.querySelectorAll("[data-step]")),
   nextBtn: document.querySelector("[data-next]"),
   prevBtn: document.querySelector("[data-prev]"),
   odometer: document.querySelector("[data-odometer]"),
@@ -299,6 +298,9 @@ const selectors = {
   selectionEdit: document.querySelector("[data-selection-edit]")
 };
 
+const STEP_FILES = ["step-1.html", "step-2.html", "step-3.html", "step-4.html", "step-5.html"];
+const STEP_COUNT = STEP_FILES.length;
+
 const defaultState = () => ({
   priceConfig: defaultPriceConfig(),
   priceQuote: estimatePrice(defaultPriceConfig()),
@@ -320,6 +322,13 @@ const defaultState = () => ({
   confirmAcknowledged: false,
   stepIndex: 0
 });
+
+const getCurrentPageIndex = () => {
+  const attr = document.body?.dataset.stepPage;
+  const numeric = Number(attr);
+  if (!Number.isFinite(numeric)) return 0;
+  return clamp(numeric - 1, 0, STEP_COUNT - 1);
+};
 
 const normalizeAddressObject = (address) => {
   if (!address || typeof address !== "object") return "";
@@ -382,7 +391,7 @@ const normalizeTravelState = (incomingTravel, serviceAddress) => {
 };
 
 let state = defaultState();
-let currentStep = 0;
+let pageIndex = 0;
 let currentUser = null;
 let isSubmitting = false;
 let submitCooldownActive = false;
@@ -1459,10 +1468,12 @@ const getStepValidity = (index) => {
     case 0: {
       const hasEnvironment = Boolean(state.priceConfig?.environment);
       const hasTier = Boolean(state.priceConfig?.tier);
-      return priceInvalidFields.size === 0 && hasEnvironment && hasTier;
+      return hasEnvironment && hasTier;
     }
-    case 1:
-      return Boolean(state.serviceAddress) && Boolean(state.date) && Boolean(state.time);
+    case 1: {
+      const baseReady = Boolean(state.serviceAddress) && Boolean(state.date) && Boolean(state.time);
+      return baseReady && priceInvalidFields.size === 0;
+    }
     case 4:
       return Boolean(state.confirmAcknowledged) && !isSubmitting;
     default:
@@ -1470,79 +1481,54 @@ const getStepValidity = (index) => {
   }
 };
 
-const focusFirstElement = (stepIndex) => {
-  const step = selectors.steps[stepIndex];
-  if (!step) return;
-  const focusable = step.querySelector(
-    'input:not([type="hidden"]), textarea, select, button, [tabindex]:not([tabindex="-1"])'
-  );
-  if (focusable) {
-    focusable.focus({ preventScroll: true });
-  } else {
-    const heading = step.querySelector("h3");
-    heading?.focus?.({ preventScroll: true });
+const getFirstIncompleteStep = () => {
+  for (let i = 0; i < STEP_COUNT; i += 1) {
+    if (!getStepValidity(i)) {
+      return i;
+    }
   }
+  return null;
+};
+
+const enforceStepAccess = () => {
+  const firstIncomplete = getFirstIncompleteStep();
+  if (firstIncomplete === null) return true;
+  if (pageIndex > firstIncomplete) {
+    const targetFile = STEP_FILES[firstIncomplete] || STEP_FILES[0];
+    window.location.replace(targetFile);
+    return false;
+  }
+  return true;
 };
 
 const updateProgressState = () => {
   selectors.progressSteps.forEach((stepEl, index) => {
-    stepEl.classList.toggle("is-active", index === currentStep);
-    stepEl.classList.toggle("is-complete", index < currentStep);
-  });
-};
-
-const updateStepAccessibility = () => {
-  selectors.steps.forEach((step, index) => {
-    step.setAttribute("aria-hidden", index === currentStep ? "false" : "true");
+    stepEl.classList.toggle("is-active", index === pageIndex);
+    stepEl.classList.toggle("is-complete", index < pageIndex);
   });
 };
 
 const updateNavButtons = () => {
   if (!selectors.nextBtn || !selectors.prevBtn) return;
-  selectors.prevBtn.disabled = currentStep === 0;
+  const isFirstStep = pageIndex === 0;
+  selectors.prevBtn.disabled = isFirstStep;
+  const stepValid = getStepValidity(pageIndex);
+  const isTravelComputing = pageIndex === 1 && state.travel.status === "fetching";
   const shouldDisable =
-    !getStepValidity(currentStep) || submitCooldownActive || priceInvalidFields.size > 0;
-  const isTravelComputing = currentStep === 1 && state.travel.status === "fetching";
-  selectors.nextBtn.disabled = shouldDisable || isTravelComputing;
+    !stepValid || submitCooldownActive || priceInvalidFields.size > 0 || isTravelComputing;
+  selectors.nextBtn.disabled = shouldDisable;
 
-  if (currentStep === selectors.steps.length - 1) {
+  if (pageIndex === STEP_COUNT - 1) {
     selectors.nextBtn.textContent = isSubmitting ? "Submitting..." : "Place order";
-  } else if (currentStep === selectors.steps.length - 2) {
+  } else if (pageIndex === STEP_COUNT - 2) {
     selectors.nextBtn.textContent = "Confirm details";
-  } else if (currentStep === 1 && isTravelComputing) {
+  } else if (pageIndex === 1 && isTravelComputing) {
     selectors.nextBtn.textContent = "Calculating...";
-  } else if (currentStep === 0) {
+  } else if (pageIndex === 0) {
     selectors.nextBtn.textContent = "Continue";
   } else {
     selectors.nextBtn.textContent = "Next step";
   }
-};
-
-const showStep = (index) => {
-  const nextIndex = Math.max(0, Math.min(selectors.steps.length - 1, index));
-  if (nextIndex === currentStep) {
-    updateNavButtons();
-    return;
-  }
-  const direction = nextIndex > currentStep ? "right" : "left";
-  const currentEl = selectors.steps[currentStep];
-  const nextEl = selectors.steps[nextIndex];
-  if (currentEl) {
-    currentEl.classList.remove("is-active");
-    currentEl.classList.add(direction === "right" ? "is-exit-left" : "is-exit-right");
-    window.setTimeout(() => currentEl.classList.remove("is-exit-left", "is-exit-right"), 500);
-  }
-  if (nextEl) {
-    nextEl.classList.add("is-active");
-  }
-  currentStep = nextIndex;
-  state.stepIndex = currentStep;
-  saveState();
-  updateProgressState();
-  updateStepAccessibility();
-  updateNavButtons();
-  updateReview();
-  focusFirstElement(nextIndex);
 };
 
 const serializeAddOns = (addOns) => {
@@ -1583,8 +1569,8 @@ const startSubmitCooldown = () => {
 };
 
 const submitOrder = async () => {
-  if (!sb || !currentUser) {
-    showToast("You need to be signed in before placing an order.", "error");
+  if (!sb) {
+    showToast("Ordering is unavailable right now. Please try again shortly.", "error");
     return;
   }
   if (isSubmitting) return;
@@ -1601,8 +1587,10 @@ const submitOrder = async () => {
   if (quote.config.rush) captureSummaryParts.push("rush");
   const captureSummary = `Custom Quote · ${captureSummaryParts.join(" · ")}`;
 
+  const userEmail = currentUser?.email ?? null;
+
   const payload = {
-    account_email_attached: currentUser.email,
+    account_email_attached: userEmail,
     capturing: captureSummary,
     address: formatAddress(state.serviceAddress),
     gate_codes: state.gateCodes || "",
@@ -1629,7 +1617,7 @@ const submitOrder = async () => {
     distance_miles: Number.isFinite(state.travel.distanceMiles)
       ? Math.round(state.travel.distanceMiles)
       : null,
-    user_email: currentUser.email ?? null,
+    user_email: userEmail,
     notes: state.scope || null
   };
 
@@ -1648,14 +1636,13 @@ const submitOrder = async () => {
 
     state = defaultState();
     saveState();
-    currentStep = 0;
+    state.stepIndex = 0;
+    pageIndex = 0;
     syncAddOnsUI();
     applyStateToInputs();
     updateTotal();
     updateReview();
-    selectors.steps.forEach((step, index) => step.classList.toggle("is-active", index === 0));
     updateProgressState();
-    updateStepAccessibility();
     showSuccess(data?.id || data?.order_id || "");
     showToast("Capture scheduled! Your archivist is reviewing the request.", "success");
   } catch (error) {
@@ -1668,66 +1655,56 @@ const submitOrder = async () => {
   }
 };
 
+const navigateToStep = (targetIndex) => {
+  const safeIndex = clamp(targetIndex, 0, STEP_COUNT - 1);
+  const file = STEP_FILES[safeIndex] || STEP_FILES[0];
+  window.location.href = file;
+};
+
 const goToNextStep = async () => {
-  if (!getStepValidity(currentStep)) {
-    const stepEl = selectors.steps[currentStep];
-    if (stepEl) {
-      const firstInvalid = stepEl.querySelector(
-        "input:invalid, textarea:invalid, select:invalid"
-      );
+  if (!getStepValidity(pageIndex)) {
+    if (selectors.stepForm?.reportValidity) {
+      selectors.stepForm.reportValidity();
+    } else {
+      const firstInvalid = document.querySelector("input:invalid, textarea:invalid, select:invalid");
       firstInvalid?.reportValidity?.();
     }
     updateNavButtons();
     return;
   }
-  if (currentStep === selectors.steps.length - 1) {
+  if (pageIndex === 1) {
+    const ready = await ensureAddressReady();
+    if (!ready) return;
+  }
+  if (pageIndex === STEP_COUNT - 1) {
     submitOrder();
     return;
   }
-  if (currentStep === 1) {
-    const ready = await ensureAddressReady();
-    if (ready) {
-      showStep(currentStep + 1);
-    }
-    return;
-  }
-  showStep(currentStep + 1);
+  const nextIndex = clamp(pageIndex + 1, 0, STEP_COUNT - 1);
+  state.stepIndex = nextIndex;
+  saveState();
+  navigateToStep(nextIndex);
 };
 
 const goToPrevStep = () => {
-  if (currentStep === 0) return;
-  showStep(currentStep - 1);
+  if (pageIndex === 0) return;
+  const prevIndex = clamp(pageIndex - 1, 0, STEP_COUNT - 1);
+  state.stepIndex = prevIndex;
+  saveState();
+  navigateToStep(prevIndex);
 };
 
-const renderGate = (session) => {
-  const user = session?.user ?? null;
-  currentUser = user;
-  const isLoggedIn = Boolean(user);
-  if (selectors.gate) selectors.gate.hidden = isLoggedIn;
-  if (selectors.wizard && (!selectors.success || selectors.success.hidden)) {
-    selectors.wizard.hidden = !isLoggedIn;
+const applySession = (session) => {
+  currentUser = session?.user ?? null;
+  if (selectors.success && !selectors.success.hidden) {
+    return;
   }
-  if (!isLoggedIn) {
-    if (selectors.success) selectors.success.hidden = true;
-    if (selectors.wizard) selectors.wizard.hidden = true;
-  } else {
-    if (selectors.gate) selectors.gate.hidden = true;
-    if (selectors.success && !selectors.success.hidden) {
-      selectors.wizard.hidden = true;
-      return;
-    }
-    if (selectors.wizard) selectors.wizard.hidden = false;
-    syncAddOnsUI();
-    applyStateToInputs();
-    updateTotal();
-    updateReview();
-    updateNavButtons();
-  }
+  if (selectors.wizard) selectors.wizard.hidden = false;
 };
 
 const handleSharedAuthEvent = (event) => {
   const session = event?.detail?.session ?? null;
-  renderGate(session);
+  applySession(session);
 };
 
 window.addEventListener(AUTH_EVENT_NAME, handleSharedAuthEvent);
@@ -1980,8 +1957,9 @@ const initEventListeners = () => {
   });
 
   selectors.selectionEdit?.addEventListener("click", () => {
-    showStep(0);
-    focusFirstElement(0);
+    state.stepIndex = 0;
+    saveState();
+    window.location.href = STEP_FILES[0];
   });
 
   selectors.nextBtn?.addEventListener("click", () => goToNextStep());
@@ -1989,22 +1967,17 @@ const initEventListeners = () => {
 };
 
 const initSupabase = async () => {
-  currentStep = Math.max(
-    0,
-    Math.min(selectors.steps.length - 1, Number(state.stepIndex) || 0)
-  );
-  selectors.steps.forEach((step, index) => step.classList.toggle("is-active", index === currentStep));
   updateProgressState();
-  updateStepAccessibility();
   syncAddOnsUI();
   applyStateToInputs();
   updateTotal();
   updateReview();
+  updatePriceUI(state.priceQuote, { animate: false });
   updateNavButtons();
 
   const sharedSession = window.__remnantAuthSession ?? null;
   if (sharedSession) {
-    renderGate(sharedSession);
+    applySession(sharedSession);
   }
 
   if (!sb) {
@@ -2016,15 +1989,15 @@ const initSupabase = async () => {
     const { data, error } = await sb.auth.getSession();
     if (error) throw error;
     const session = data?.session ?? (window.__remnantAuthSession ?? null);
-    renderGate(session);
+    applySession(session);
   } catch (error) {
     console.warn("order-page: unable to fetch session", error);
     const fallbackSession = window.__remnantAuthSession ?? null;
-    renderGate(fallbackSession);
+    applySession(fallbackSession);
   }
 
   sb.auth.onAuthStateChange((_event, session) => {
-    renderGate(session ?? null);
+    applySession(session ?? null);
   });
 };
 
@@ -2032,6 +2005,11 @@ const formatAddressForSubmission = () => formatAddress(state.serviceAddress);
 
 const init = () => {
   loadState();
+  pageIndex = getCurrentPageIndex();
+  const accessGranted = enforceStepAccess();
+  if (!accessGranted) return;
+  state.stepIndex = pageIndex;
+  saveState();
   initPriceEstimator();
   initMemoryOrb();
   initEventListeners();

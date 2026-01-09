@@ -110,30 +110,6 @@
   }
 }
 
-.order-gate {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  margin: 0 auto 2rem;
-  max-width: 640px;
-}
-
-.order-gate__card {
-  background: var(--surface-strong);
-  border: 1px solid var(--border);
-  border-radius: 28px;
-  box-shadow: var(--shadow);
-  padding: 2.25rem 2rem;
-  text-align: center;
-}
-
-.order-gate__actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 1.75rem;
-}
-
 .order-wizard {
   background: rgba(10, 15, 30, 0.9);
   border: 1px solid var(--border);

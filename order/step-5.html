@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schedule Your Remnant Capture · Step 5</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="../images/logo-mark.png" type="image/png" />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="order-page" data-step-page="5">
+    <a class="skip-link" href="#order-wizard">Skip to order wizard</a>
+    <header class="shell">
+      <nav class="nav" aria-label="Primary navigation">
+        <div class="auth-badge" data-auth-status hidden aria-live="polite">
+          <span class="auth-badge__label">Logged in as</span>
+          <span class="auth-badge__email" data-auth-email></span>
+        </div>
+        <a class="nav__brand" href="../#top" aria-label="Remnant home">
+          <img
+            src="../images/logo-mark.png"
+            alt="Remnant"
+            class="nav__logo"
+            width="40"
+            height="40"
+          />
+          <span class="nav__wordmark">emnant</span>
+        </a>
+        <button
+          class="nav__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-menu"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <svg
+            class="nav__toggle-icon"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-hidden="true"
+          >
+            <path
+              class="nav__toggle-icon-bars"
+              d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="nav__cluster">
+          <div class="nav__links" id="primary-menu">
+            <a href="../#top" class="nav__link nav__link--core">Home</a>
+            <a href="../how-it-works/" class="nav__link nav__link--core">How it works</a>
+            <a href="../stories/" class="nav__link nav__link--ghost">Stories</a>
+            <a href="../prep-guide/" class="nav__link nav__link--core" data-auth-visible="signed-in">Prep Guide</a>
+            <a href="../signup/" class="nav__link nav__link--energy" data-auth-visible="signed-out">Sign Up</a>
+            <a href="../signin/" class="nav__link nav__link--glass" data-auth-visible="signed-out">Log In</a>
+            <a
+              href="#"
+              class="nav__link nav__link--danger nav__link--logout"
+              data-auth-visible="signed-in"
+              data-logout
+              data-logout-redirect="/signin/"
+              hidden
+            >
+              Log Out
+            </a>
+            <div class="nav__cta">
+              <a class="btn btn--energy" href="./step-1.html" aria-current="page">Schedule Scan</a>
+              <a class="btn btn--energy-strong" href="../vault/">Enter Vault</a>
+              <a class="btn btn--glass" href="../support/">Support</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="order-main">
+      <section class="order-hero">
+        <div class="order-hero__content">
+          <p class="eyebrow">Remnant Order Portal</p>
+          <h1>Craft your Remnant order in five luminous steps.</h1>
+          <p>
+            Tell us what you want to preserve, where to arrive, and how you would like your
+            vault prepared. We will setup the entire session and send a confirmation the
+            moment it locks in.
+          </p>
+          <div class="order-hero__meta">
+            <span class="order-hero__meta-item">Live availability sync</span>
+            <span class="order-hero__meta-item">Auto-saves every choice</span>
+            <span class="order-hero__meta-item">Secure checkout</span>
+          </div>
+        </div>
+        <div class="order-hero__orb" aria-hidden="true">
+          <canvas class="memory-orb" data-memory-orb width="280" height="280"></canvas>
+          <div class="memory-orb__halo"></div>
+        </div>
+      </section>
+
+      <section class="order-wizard" id="order-wizard" data-order-wizard>
+        <header class="order-wizard__header">
+          <p class="step-kicker">Step 5</p>
+          <h2>Confirm and submit</h2>
+          <p>Give us the final green light and we'll log your order instantly.</p>
+        </header>
+
+        <ol class="order-progress" data-progress role="list" aria-label="Order steps">
+          <li class="order-progress__step" data-progress-step>
+            <span class="order-progress__badge">1</span>
+            <span class="order-progress__label">First Details</span>
+          </li>
+          <li class="order-progress__step" data-progress-step>
+            <span class="order-progress__badge">2</span>
+            <span class="order-progress__label">Location &amp; Time</span>
+          </li>
+          <li class="order-progress__step" data-progress-step>
+            <span class="order-progress__badge">3</span>
+            <span class="order-progress__label">Add-ons</span>
+          </li>
+          <li class="order-progress__step" data-progress-step>
+            <span class="order-progress__badge">4</span>
+            <span class="order-progress__label">Review</span>
+          </li>
+          <li class="order-progress__step" data-progress-step>
+            <span class="order-progress__badge">5</span>
+            <span class="order-progress__label">Confirm</span>
+          </li>
+        </ol>
+
+        <div class="order-total" aria-live="polite">
+          <span class="order-total__label">Current total</span>
+          <div class="order-total__value" data-odometer aria-label="Order total">$0.00</div>
+        </div>
+
+        <form class="order-form" data-step-form novalidate>
+          <section class="order-step is-active" aria-labelledby="step-5-heading">
+            <div class="order-step__content">
+              <div class="order-step__intro">
+                <h3 id="step-5-heading">Confirm your capture request</h3>
+                <p class="step-description">
+                  Press confirm to reserve this itinerary. We'll log it instantly in your vault and send your order number.
+                </p>
+              </div>
+              <div class="confirm-card">
+                <p>
+                  Double-check the summary above. When you submit, we'll gently pulse your total,
+                  create the order in Supabase, and email you a copy.
+                </p>
+                <label class="confirm-checkbox">
+                  <input type="checkbox" data-confirm-checkbox required />
+                  <span>I'm ready to confirm this capture plan.</span>
+                </label>
+                <p class="confirm-hint">
+                  Need to revisit later? Your progress is saved locally and will reload when you return.
+                </p>
+              </div>
+            </div>
+          </section>
+        </form>
+
+        <div class="order-actions">
+          <button class="btn btn--primary" type="button" data-prev>Back</button>
+          <button class="btn btn--primary" type="button" data-next>Place order</button>
+        </div>
+      </section>
+
+      <section class="order-success" data-order-success hidden aria-live="polite">
+        <div class="order-success__card">
+          <div class="order-success__icon" aria-hidden="true">
+            <span></span>
+          </div>
+          <h2>Your order is locked in</h2>
+          <p>
+            We've logged your capture itinerary and alerted your archivist. You'll receive an
+            email with all the details momentarily.
+          </p>
+          <p class="order-success__id">Order ID: <span data-order-id></span></p>
+          <div class="order-success__actions">
+            <a class="btn btn--accent" href="../vault/">Go to Vault</a>
+            <a class="btn btn--ghost" href="../support/">Talk with support</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../scripts/main.js" defer></script>
+    <script src="script.js" defer></script>
+  </body>
+</html>

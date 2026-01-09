@@ -22,18 +22,6 @@
   overflow: hidden;
 }
 
-.light-rays-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.light-rays-layer .light-rays-mount {
-  width: 100%;
-  height: 100%;
-}
-
 .stories-hero__copy,
 .stories-hero__media {
   position: relative;
@@ -181,11 +169,6 @@
 .story-card__link {
   color: var(--primary);
   font-weight: 500;
-}
-
-.stories-light-rays canvas {
-  mix-blend-mode: screen;
-  opacity: 0.85;
 }
 
 .story-details {

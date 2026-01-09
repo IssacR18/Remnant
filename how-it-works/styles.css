@@ -22,18 +22,6 @@
   overflow: hidden;
 }
 
-.light-rays-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.light-rays-layer .light-rays-mount {
-  width: 100%;
-  height: 100%;
-}
-
 .hiw-hero__intro,
 .hiw-hero__stats {
   position: relative;
@@ -253,11 +241,6 @@
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-}
-
-.hiw-light-rays canvas {
-  mix-blend-mode: screen;
-  opacity: 0.85;
 }
 
 .site-footer {

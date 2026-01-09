@@ -11,7 +11,6 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../styles/main.css" />
-    <link rel="stylesheet" href="../LightRays/light.css" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" href="../images/logo-mark.png" type="image/png" />
   </head>
@@ -86,13 +85,6 @@
 
     <main>
       <section class="hiw-hero">
-        <div class="light-rays-layer" aria-hidden="true">
-          <div
-            class="light-rays-mount"
-            data-light-rays
-            data-light-rays-config='{"className":"hiw-light-rays","raysOrigin":"top-center","raysColor":"#00ffff","raysSpeed":1.5,"lightSpread":0.8,"rayLength":1.2,"followMouse":true,"mouseInfluence":0.1,"noiseAmount":0.1,"distortion":0.05}'
-          ></div>
-        </div>
         <div class="hiw-hero__intro">
           <p class="eyebrow">How Remnant captures your memories</p>
           <h1>Three carefully engineered phases turn your memory into a living archive.</h1>
@@ -206,15 +198,5 @@
     <script>
       document.querySelector("[data-current-year]").textContent = new Date().getFullYear();
     </script>
-    <script type="importmap">
-      {
-        "imports": {
-          "react": "https://esm.sh/react@18.3.1",
-          "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
-          "ogl": "https://esm.sh/ogl@1.0.4"
-        }
-      }
-    </script>
-    <script type="module" src="../LightRays/init.js"></script>
   </body>
 </html>
